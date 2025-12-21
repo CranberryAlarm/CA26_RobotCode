@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.5319584232918464,
+        "y": 4.528264482386809
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.1547367397503354,
+        "y": 4.90548616592832
+      },
+      "isLocked": false,
+      "linkedName": "Note3"
+    },
+    {
+      "anchor": {
+        "x": 1.3274844567707151,
+        "y": 5.519087794932347
+      },
+      "prevControl": {
+        "x": 1.9274844567707152,
+        "y": 5.519087794932347
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "BlueShoot"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 2.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "reversed": true,
+  "folder": "PPTestMode",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": true
+}
