@@ -4,15 +4,24 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
 
 public class DriveSubsystem extends SubsystemBase {
+  private static final double kTrackWidth = Units.inchesToMeters(20.75);
+  private static final double kWheelRadius = Units.inchesToMeters(3.0);
+  private static final double kGearRatio = 10.71;
+  private static final double kMetersPerRev = (2.0 * Math.PI * kWheelRadius) / kGearRatio;
+
   // Motor controllers
   private final SparkMax m_frontLeft = new SparkMax(DriveConstants.kFrontLeftMotorId, MotorType.kBrushless);
   private final SparkMax m_backLeft = new SparkMax(DriveConstants.kBackLeftMotorId, MotorType.kBrushless);
@@ -24,20 +33,44 @@ public class DriveSubsystem extends SubsystemBase {
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
-    // Configure back motors to follow front motors
-    var backLeftConfig = new SparkMaxConfig().follow(DriveConstants.kFrontLeftMotorId);
-    m_backLeft.configure(backLeftConfig, SparkMax.ResetMode.kResetSafeParameters,
-        SparkMax.PersistMode.kPersistParameters);
+    var globalConfig = new SparkMaxConfig()
+        .idleMode(IdleMode.kCoast);
 
-    var backRightConfig = new SparkMaxConfig().follow(DriveConstants.kFrontRightMotorId);
-    m_backRight.configure(backRightConfig, SparkMax.ResetMode.kResetSafeParameters,
-        SparkMax.PersistMode.kPersistParameters);
+    var encoderConfig = new SparkMaxConfig().encoder
+        // The "native units" for the SparkMax is motor rotations:
+        // Conversion factor = (distance traveled per motor shaft rotation)
+        .positionConversionFactor(kMetersPerRev)
 
-    // Invert right side motors if needed
-    // SparkMaxConfig rightConfig = new SparkMaxConfig();
-    // rightConfig.inverted(true);
-    // m_frontRight.configure(rightConfig, SparkMax.ResetMode.kResetSafeParameters,
-    // SparkMax.PersistMode.kPersistParameters);
+        // The "native units" for the SparkMax is RPM:
+        // Conversion factor = (distance traveled per motor shaft rotation) / (60
+        // seconds)
+        .velocityConversionFactor(kMetersPerRev / 60);
+
+    var leftLeaderConfig = new SparkMaxConfig()
+        .apply(globalConfig)
+        .apply(encoderConfig);
+
+    var leftFollowerConfig = new SparkMaxConfig()
+        .apply(globalConfig)
+        .follow(m_frontLeft);
+
+    // We need to invert one side of the drivetrain so that positive voltages
+    // result in both sides moving forward. Depending on how your robot's
+    // gearbox is constructed, you might have to invert the left side instead.
+    var rightLeaderConfig = new SparkMaxConfig()
+        .apply(globalConfig)
+        .apply(encoderConfig)
+        .inverted(true);
+
+    var rightFollowerConfig = new SparkMaxConfig()
+        .apply(globalConfig)
+        .apply(rightLeaderConfig)
+        .follow(m_frontRight);
+
+    m_frontLeft.configure(leftLeaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    m_backLeft.configure(leftFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    m_frontRight.configure(rightLeaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    m_backRight.configure(rightFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
   /**

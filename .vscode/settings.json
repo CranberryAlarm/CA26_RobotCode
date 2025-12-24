@@ -57,5 +57,10 @@
     "edu.wpi.first.math.**.proto.*",
     "edu.wpi.first.math.**.struct.*",
   ],
-  "java.compile.nullAnalysis.mode": "automatic"
+  "java.compile.nullAnalysis.mode": "automatic",
+  "java.problems.enabled": true,
+  "java.codeAction.sortMembers.avoidVolatileChanges": true,
+  "java.errors.incompleteClasspath.severity": "ignore",
+  "java.sources.organizeImports.staticStarThreshold": 99,
+  "java.symbols.includeSourceMethodDeclarations": true
 }
