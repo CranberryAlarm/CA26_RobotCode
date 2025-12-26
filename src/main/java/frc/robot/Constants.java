@@ -12,4 +12,9 @@ public final class Constants {
     public static final int kFrontRightMotorId = 6;
     public static final int kBackRightMotorId = 5;
   }
+
+  public static class AlgaeConstants {
+    public static final int kWristMotorId = 13;
+    public static final int kIntakeMotorId = 14;
+  }
 }
