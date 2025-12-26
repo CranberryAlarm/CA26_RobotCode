@@ -2,7 +2,6 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Degrees;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.OperatorConstants;
@@ -32,7 +31,8 @@ public class RobotContainer {
             () -> -m_driverController.getLeftY(),
             () -> -m_driverController.getRightY()));
 
-    m_algaeSubsystem.setDefaultCommand(m_algaeSubsystem.setAngle(Degrees.of(0)));
+    // m_algaeSubsystem.setDefaultCommand(m_algaeSubsystem.setAngle(Degrees.of(0)));
+    // m_algaeSubsystem.setDefaultCommand(m_algaeSubsystem.set(0));
 
     // Configure the trigger bindings
     configureBindings();
@@ -41,13 +41,15 @@ public class RobotContainer {
   private void configureBindings() {
     // Schedule `setAngle` when the Xbox controller's B button is pressed,
     // cancelling on release.
-    m_driverController.a().whileTrue(m_algaeSubsystem.setAngle(Degrees.of(-5)));
-    m_driverController.b().whileTrue(m_algaeSubsystem.setAngle(Degrees.of(15)));
+    m_driverController.a().onTrue(m_algaeSubsystem.setAngle(Degrees.of(-93)));
+    m_driverController.b().onTrue(m_algaeSubsystem.setAngle(Degrees.of(0)));
 
     // Schedule `set` when the Xbox controller's B button is pressed,
     // cancelling on release.
-    m_driverController.x().whileTrue(m_algaeSubsystem.set(0.3));
-    m_driverController.y().whileTrue(m_algaeSubsystem.set(-0.3));
+    m_driverController.x().whileTrue(m_algaeSubsystem.set(0.2));
+    m_driverController.y().whileTrue(m_algaeSubsystem.set(-0.2));
+
+    // m_driverController.start().whileTrue(m_algaeSubsystem.sysId());
   }
 
   public Command getAutonomousCommand() {

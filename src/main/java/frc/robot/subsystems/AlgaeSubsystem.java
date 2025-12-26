@@ -1,5 +1,10 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
+
+import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.system.plant.DCMotor;
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
@@ -9,12 +14,6 @@ import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
-
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkMax;
-
-import edu.wpi.first.math.controller.ArmFeedforward;
-import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -33,26 +32,17 @@ import yams.motorcontrollers.local.SparkWrapper;
 public class AlgaeSubsystem extends SubsystemBase {
   private SmartMotorControllerConfig wristSMCConfig = new SmartMotorControllerConfig(this)
       .withControlMode(ControlMode.CLOSED_LOOP)
-      // Feedback Constants (PID Constants)
-      .withClosedLoopController(50, 0, 0, DegreesPerSecond.of(90), DegreesPerSecondPerSecond.of(45))
-      .withSimClosedLoopController(50, 0, 0, DegreesPerSecond.of(90), DegreesPerSecondPerSecond.of(45))
-      // Feedforward Constants
-      .withFeedforward(new ArmFeedforward(0, 0, 0))
-      .withSimFeedforward(new ArmFeedforward(0, 0, 0))
-      // Telemetry name and verbosity level
+      .withClosedLoopController(200, 0, 0, DegreesPerSecond.of(1080), DegreesPerSecondPerSecond.of(1080))
+      .withSimClosedLoopController(200, 0, 0, DegreesPerSecond.of(1080), DegreesPerSecondPerSecond.of(1080))
+      .withFeedforward(new ArmFeedforward(0, 0, 0.1))
+      .withSimFeedforward(new ArmFeedforward(0, 0, 0.1))
       .withTelemetry("WristMotor", TelemetryVerbosity.HIGH)
-      // Gearing from the motor rotor to final shaft.
-      // In this example GearBox.fromReductionStages(3,4) is the same as
-      // GearBox.fromStages("3:1","4:1") which corresponds to the gearbox attached to
-      // your motor.
-      // You could also use .withGearing(12) which does the same thing.
-      .withGearing(new MechanismGearing(GearBox.fromReductionStages(3, 4)))
-      // Motor properties to prevent over currenting.
+      .withGearing(new MechanismGearing(GearBox.fromReductionStages(125, 48.0/36.0)))
       .withMotorInverted(true)
       .withIdleMode(MotorMode.BRAKE)
       .withStatorCurrentLimit(Amps.of(40))
-      .withClosedLoopRampRate(Seconds.of(0.25))
-      .withOpenLoopRampRate(Seconds.of(0.25));
+      .withClosedLoopRampRate(Seconds.of(0.1))
+      .withOpenLoopRampRate(Seconds.of(0.1));
 
   // Vendor motor controller object
   private SparkMax spark = new SparkMax(Constants.AlgaeConstants.kWristMotorId, MotorType.kBrushless);
@@ -62,13 +52,13 @@ public class AlgaeSubsystem extends SubsystemBase {
 
   private final ArmConfig wristConfig = new ArmConfig(sparkSMC)
       // Soft limit is applied to the SmartMotorControllers PID
-      .withSoftLimits(Degrees.of(-20), Degrees.of(10))
+      .withSoftLimits(Degrees.of(-135), Degrees.of(5))
       // Hard limit is applied to the simulation.
-      .withHardLimit(Degrees.of(-30), Degrees.of(40))
+      .withHardLimit(Degrees.of(-140), Degrees.of(10))
       // Starting position is where your arm starts
-      .withStartingPosition(Degrees.of(-5))
+      .withStartingPosition(Degrees.of(0))
       // Length and mass of your arm for sim.
-      .withLength(Feet.of(3))
+      .withLength(Feet.of(1.5))
       .withMass(Pounds.of(1))
       // Telemetry name and verbosity for the arm.
       .withTelemetry("Wrist", TelemetryVerbosity.HIGH);
@@ -88,7 +78,7 @@ public class AlgaeSubsystem extends SubsystemBase {
   }
 
   public Command sysId() {
-    return wrist.sysId(Volts.of(7), Volts.of(2).per(Second), Seconds.of(4));
+    return wrist.sysId(Volts.of(7), Volts.of(2).per(Second), Seconds.of(10));
   }
 
   @Override
