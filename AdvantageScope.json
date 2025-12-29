@@ -1,0 +1,154 @@
+{
+  "hubs": [
+    {
+      "x": -8,
+      "y": -8,
+      "width": 1680,
+      "height": 1077,
+      "state": {
+        "sidebar": {
+          "width": 414,
+          "expanded": [
+            "/SmartDashboard/Mechanisms",
+            "/SmartDashboard/Mechanisms/Commands",
+            "/SmartDashboard/Mechanisms/Commands/AlgaeSubsystem",
+            "/Mechanisms",
+            "/Mechanisms/Wrist/WristMotor/closedloop/setpoint",
+            "/Tuning",
+            "/Tuning/Wrist",
+            "/Mechanisms/Wrist/WristMotor/current",
+            "/Mechanisms/Wrist/WristMotor/mechanism",
+            "/Mechanisms/Wrist/WristMotor/motor",
+            "/Mechanisms/Wrist/WristMotor/rotor",
+            "/SmartDashboard",
+            "/SmartDashboard/Mechanisms/Commands/WristMotor",
+            "/Mechanisms/Wrist",
+            "/Mechanisms/Wrist/WristMotor",
+            "/Mechanisms/Wrist/WristMotor/closedloop",
+            "/Shuffleboard",
+            "/SmartDashboard/Mechanisms/Commands/AlgaeSubsystem/Live Tuning"
+          ]
+        },
+        "tabs": {
+          "selected": 1,
+          "tabs": [
+            {
+              "type": 0,
+              "title": "",
+              "controller": null,
+              "controllerUUID": "on0fizdrltfc2t6jt8rkzdu1sgfo1fap",
+              "renderer": "#/",
+              "controlsHeight": 0
+            },
+            {
+              "type": 1,
+              "title": "Line Graph",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/Mechanisms/Wrist/WristMotor/closedloop/setpoint/position",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/Mechanisms/Wrist/WristMotor/mechanism/position",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/Mechanisms/Wrist/WristMotor/motor/outputVoltage",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#af2437",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "discreteSources": [],
+                "leftLockedRange": null,
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "rightUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "6afvvu1a96op3lsweb6f5m6nvlj22e3c",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 10,
+              "title": "Mechanism",
+              "controller": [],
+              "controllerUUID": "gh2pkf1rr30rwu3x36akx9zyxy7lw3q3",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 2,
+              "title": "Odometry",
+              "controller": {
+                "sources": [],
+                "game": "Evergreen",
+                "bumpers": "auto",
+                "origin": "auto",
+                "orientation": 0,
+                "size": 30
+              },
+              "controllerUUID": "1npq4dqcvggzre3q8ty9c968x7gf5jjh",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 3,
+              "title": "3D Field",
+              "controller": {
+                "sources": [],
+                "game": "Evergreen",
+                "origin": "auto"
+              },
+              "controllerUUID": "uzrj315xa8pwfkzcaomlyhazy07itnpa",
+              "renderer": {
+                "cameraIndex": -1,
+                "orbitFov": 50,
+                "cameraPosition": [
+                  7.442528592075523,
+                  7.538556449849757,
+                  -8.325712657689833
+                ],
+                "cameraTarget": [
+                  0,
+                  0.5,
+                  0
+                ]
+              },
+              "controlsHeight": 200
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "satellites": [],
+  "version": "4.1.5"
+}
