@@ -31,16 +31,16 @@ import yams.motorcontrollers.local.SparkWrapper;
 
 public class AlgaeSubsystem extends SubsystemBase {
   private SmartMotorControllerConfig wristSMCConfig = new SmartMotorControllerConfig(this)
-      .withControlMode(ControlMode.CLOSED_LOOP)
-      .withClosedLoopController(200, 0, 0, DegreesPerSecond.of(1080), DegreesPerSecondPerSecond.of(1080))
-      .withFeedforward(new ArmFeedforward(0, 0, 0.1))
-      .withTelemetry("WristMotor", TelemetryVerbosity.HIGH)
-      .withGearing(new MechanismGearing(GearBox.fromReductionStages(125, 48.0/36.0)))
-      .withMotorInverted(true)
-      .withIdleMode(MotorMode.BRAKE)
-      .withStatorCurrentLimit(Amps.of(40))
-      .withClosedLoopRampRate(Seconds.of(0.1))
-      .withOpenLoopRampRate(Seconds.of(0.1));
+    .withControlMode(ControlMode.CLOSED_LOOP)
+    .withClosedLoopController(200, 0, 0, DegreesPerSecond.of(1080), DegreesPerSecondPerSecond.of(1080))
+    .withFeedforward(new ArmFeedforward(0, 0, 0.1))
+    .withTelemetry("WristMotor", TelemetryVerbosity.HIGH)
+    .withGearing(new MechanismGearing(GearBox.fromReductionStages(125, 48.0/36.0)))
+    .withMotorInverted(true)
+    .withIdleMode(MotorMode.BRAKE)
+    .withStatorCurrentLimit(Amps.of(40))
+    .withClosedLoopRampRate(Seconds.of(0.1))
+    .withOpenLoopRampRate(Seconds.of(0.1));
 
   // Vendor motor controller object
   private SparkMax spark = new SparkMax(Constants.AlgaeConstants.kWristMotorId, MotorType.kBrushless);
@@ -49,17 +49,17 @@ public class AlgaeSubsystem extends SubsystemBase {
   private SmartMotorController sparkSMC = new SparkWrapper(spark, DCMotor.getNEO(1), wristSMCConfig);
 
   private final ArmConfig wristConfig = new ArmConfig(sparkSMC)
-      // Soft limit is applied to the SmartMotorControllers PID
-      .withSoftLimits(Degrees.of(-135), Degrees.of(5))
-      // Hard limit is applied to the simulation.
-      .withHardLimit(Degrees.of(-140), Degrees.of(10))
-      // Starting position is where your arm starts
-      .withStartingPosition(Degrees.of(0))
-      // Length and mass of your arm for sim.
-      .withLength(Feet.of(1.5))
-      .withMass(Pounds.of(1))
-      // Telemetry name and verbosity for the arm.
-      .withTelemetry("Wrist", TelemetryVerbosity.HIGH);
+    // Soft limit is applied to the SmartMotorControllers PID
+    .withSoftLimits(Degrees.of(-135), Degrees.of(5))
+    // Hard limit is applied to the simulation.
+    .withHardLimit(Degrees.of(-140), Degrees.of(10))
+    // Starting position is where your arm starts
+    .withStartingPosition(Degrees.of(0))
+    // Length and mass of your arm for sim.
+    .withLength(Feet.of(1.5))
+    .withMass(Pounds.of(1))
+    // Telemetry name and verbosity for the arm.
+    .withTelemetry("Wrist", TelemetryVerbosity.HIGH);
 
   // Wrist Mechanism
   private Arm wrist = new Arm(wristConfig);
