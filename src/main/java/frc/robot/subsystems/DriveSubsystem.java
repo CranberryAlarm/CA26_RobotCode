@@ -10,6 +10,8 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.wpilibj2.command.Command;
+import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -73,24 +75,16 @@ public class DriveSubsystem extends SubsystemBase {
     m_backRight.configure(rightFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
-  /**
-   * Drive the robot using tank drive controls.
-   *
-   * @param leftSpeed  The speed for the left side of the robot (-1.0 to 1.0)
-   * @param rightSpeed The speed for the right side of the robot (-1.0 to 1.0)
-   */
-  public void tankDrive(double leftSpeed, double rightSpeed) {
-    m_drive.tankDrive(leftSpeed, rightSpeed);
+  public Command tankDrive(DoubleSupplier leftSpeed, DoubleSupplier rightSpeed) {
+    return run(() -> {
+            m_drive.tankDrive(leftSpeed.getAsDouble(), rightSpeed.getAsDouble());
+        }).withName("drive.tankDrive");
   }
 
-  /**
-   * Drive the robot using arcade drive controls.
-   *
-   * @param speed    The forward/backward speed (-1.0 to 1.0)
-   * @param rotation The rotation speed (-1.0 to 1.0)
-   */
-  public void arcadeDrive(double speed, double rotation) {
-    m_drive.arcadeDrive(speed, rotation);
+  public Command arcadeDrive(DoubleSupplier speed, DoubleSupplier rotation) {
+    return run(() -> {
+            m_drive.arcadeDrive(speed.getAsDouble(), rotation.getAsDouble());
+        }).withName("drive.arcadeDrive");
   }
 
   /** Stops the drive motors. */

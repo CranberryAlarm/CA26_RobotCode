@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
-import frc.robot.commands.TankDriveCommand;
 import frc.robot.subsystems.AlgaeSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 
@@ -26,10 +25,9 @@ public class RobotContainer {
     // Configure the default command for the drive subsystem
     // Tank drive using left Y-axis and right Y-axis
     m_driveSubsystem.setDefaultCommand(
-        new TankDriveCommand(
-            m_driveSubsystem,
-            () -> -m_driverController.getLeftY(),
-            () -> -m_driverController.getRightY()));
+      m_driveSubsystem.arcadeDrive(
+        () -> -m_driverController.getLeftY(),
+        () -> -m_driverController.getRightY()));
 
     // m_algaeSubsystem.setDefaultCommand(m_algaeSubsystem.setAngle(Degrees.of(0)));
     // m_algaeSubsystem.setDefaultCommand(m_algaeSubsystem.set(0));
