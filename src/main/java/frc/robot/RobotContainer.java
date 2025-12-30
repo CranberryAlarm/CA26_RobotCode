@@ -27,7 +27,7 @@ public class RobotContainer {
     m_driveSubsystem.setDefaultCommand(
       m_driveSubsystem.arcadeDrive(
         () -> -m_driverController.getLeftY(),
-        () -> -m_driverController.getRightY()));
+        () -> -m_driverController.getRightX()));
 
     // m_algaeSubsystem.setDefaultCommand(m_algaeSubsystem.setAngle(Degrees.of(0)));
     // m_algaeSubsystem.setDefaultCommand(m_algaeSubsystem.set(0));
