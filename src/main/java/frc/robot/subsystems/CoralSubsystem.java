@@ -11,7 +11,6 @@ import com.revrobotics.spark.SparkMax;
 
 import au.grapplerobotics.ConfigurationFailedException;
 import au.grapplerobotics.LaserCan;
-
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -37,11 +36,10 @@ public class CoralSubsystem extends SubsystemBase {
 
   // Vendor motor controller object
   private SparkMax leftSpark = new SparkMax(Constants.CoralConstants.kLeftIndexMotorId, MotorType.kBrushless);
-  // private SparkMax rightSpark = new
-  // SparkMax(Constants.CoralConstants.kRightIndexMotorId, MotorType.kBrushless);
+  private SparkMax rightSpark = new SparkMax(Constants.CoralConstants.kRightIndexMotorId, MotorType.kBrushless);
 
   private SmartMotorControllerConfig coralSMCConfig = new SmartMotorControllerConfig(this)
-      // .withFollowers(Pair.of(rightSpark, false))
+      .withFollowers(Pair.of(rightSpark, true))
       .withControlMode(ControlMode.CLOSED_LOOP)
       .withClosedLoopController(0.144, 0, 0)
       .withFeedforward(new SimpleMotorFeedforward(0.122, 0.485, 0))
@@ -53,15 +51,13 @@ public class CoralSubsystem extends SubsystemBase {
 
   // Create our SmartMotorController from our Spark and config with the NEO.
   private SmartMotorController leftSparkSMC = new SparkWrapper(leftSpark, DCMotor.getNEO(1), coralSMCConfig);
-  // private SmartMotorController rightSparkSMC = new SparkWrapper(rightSpark,
-  // DCMotor.getNEO(1), coralSMCConfig);
 
   private final FlyWheelConfig coralConfig = new FlyWheelConfig(leftSparkSMC)
       .withDiameter(Inches.of(4))
       .withMass(Pounds.of(1))
       .withUpperSoftLimit(RPM.of(10000))
       .withLowerSoftLimit(RPM.of(-10000))
-      .withTelemetry("CoralRollers", TelemetryVerbosity.HIGH);
+      .withTelemetry("CoralIndexer", TelemetryVerbosity.HIGH);
 
   private FlyWheel coral = new FlyWheel(coralConfig);
 
