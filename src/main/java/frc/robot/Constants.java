@@ -17,4 +17,9 @@ public final class Constants {
     public static final int kWristMotorId = 13;
     public static final int kIntakeMotorId = 14;
   }
+
+  public static class CoralConstants {
+    public static final int kLeftIndexMotorId = 11;
+    public static final int kRightIndexMotorId = 12;
+  }
 }
