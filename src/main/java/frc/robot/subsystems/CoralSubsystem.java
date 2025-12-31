@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -18,6 +19,7 @@ import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import yams.gearing.GearBox;
@@ -73,6 +75,21 @@ public class CoralSubsystem extends SubsystemBase {
     }
   }
 
+  public Command intakeCoral() {
+    return Commands.sequence(
+        coral.setSpeed(RotationsPerSecond.of(5)).until(() -> getDistance() < 75.0),
+        coral.setSpeed(RotationsPerSecond.of(5)).until(() -> getDistance() > 75.0),
+        coral.setSpeed(RotationsPerSecond.of(-2)).until(() -> getDistance() < 75.0),
+        coral.setSpeed(RotationsPerSecond.of(0)).asProxy());
+  }
+
+  public Command scoreCoral() {
+    return Commands.sequence(
+        coral.setSpeed(RotationsPerSecond.of(24)).until(() -> getDistance() > 75.0),
+        Commands.waitSeconds(0.5),
+        coral.setSpeed(RotationsPerSecond.of(0)).asProxy());
+  }
+
   public AngularVelocity getVelocity() {
     return coral.getSpeed();
   }
@@ -87,6 +104,10 @@ public class CoralSubsystem extends SubsystemBase {
 
   public Command sysId() {
     return coral.sysId(Volts.of(10), Volts.of(2).per(Second), Seconds.of(10));
+  }
+
+  public double getDistance() {
+    return mLaserCAN.getMeasurement().distance_mm;
   }
 
   @Override

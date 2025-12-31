@@ -50,8 +50,8 @@ public class RobotContainer {
     // m_driverController.x().whileTrue(m_algaeSubsystem.set(0.2));
     // m_driverController.y().whileTrue(m_algaeSubsystem.set(-0.2));
 
-    m_driverController.x().whileTrue(m_coralSubsystem.setVelocity(RotationsPerSecond.of(24)));
-    m_driverController.y().whileTrue(m_coralSubsystem.setVelocity(RotationsPerSecond.of(10)));
+    m_driverController.y().onTrue(m_coralSubsystem.scoreCoral());
+    m_driverController.x().onTrue(m_coralSubsystem.intakeCoral());
 
     m_driverController.start().onTrue(m_coralSubsystem.sysId());
   }
