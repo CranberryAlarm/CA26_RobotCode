@@ -2,9 +2,6 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.RPM;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.AlgaeSubsystem;
@@ -35,20 +32,13 @@ public class RobotContainer {
     m_coralSubsystem.setDefaultCommand(
         m_coralSubsystem.set(0));
 
-    // m_algaeSubsystem.setDefaultCommand(m_algaeSubsystem.setAngle(Degrees.of(0)));
-    // m_algaeSubsystem.setDefaultCommand(m_algaeSubsystem.set(0));
-
     // Configure the trigger bindings
     configureBindings();
   }
 
   private void configureBindings() {
-    // Schedule `setAngle` when the Xbox controller's B button is pressed,
-    // cancelling on release.
-    m_driverController.a().onTrue(m_algaeSubsystem.setAngle(Degrees.of(-93)));
-    m_driverController.b().onTrue(m_algaeSubsystem.setAngle(Degrees.of(0)));
-    // m_driverController.x().whileTrue(m_algaeSubsystem.set(0.2));
-    // m_driverController.y().whileTrue(m_algaeSubsystem.set(-0.2));
+    m_driverController.a().onTrue(m_algaeSubsystem.setAngle(Degrees.of(3)));
+    m_driverController.b().onTrue(m_algaeSubsystem.setAngle(Degrees.of(-90)));
 
     m_driverController.y().onTrue(m_coralSubsystem.scoreCoral());
     m_driverController.x().onTrue(m_coralSubsystem.intakeCoral());
