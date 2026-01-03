@@ -1,11 +1,6 @@
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Pounds;
-import static edu.wpi.first.units.Units.RPM;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-import static edu.wpi.first.units.Units.Volts;
+import java.util.function.BooleanSupplier;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
@@ -15,8 +10,14 @@ import au.grapplerobotics.LaserCan;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Pounds;
+import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -25,6 +26,7 @@ import frc.robot.Constants;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.FlyWheelConfig;
+import yams.mechanisms.config.SensorConfig;
 import yams.mechanisms.velocity.FlyWheel;
 import yams.motorcontrollers.SmartMotorController;
 import yams.motorcontrollers.SmartMotorControllerConfig;
@@ -32,7 +34,7 @@ import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.local.SparkWrapper;
-import yams.telemetry.SmartMotorControllerTelemetryConfig;
+import yams.motorcontrollers.simulation.Sensor;
 
 public class CoralSubsystem extends SubsystemBase {
 
@@ -63,7 +65,11 @@ public class CoralSubsystem extends SubsystemBase {
 
   private FlyWheel coral = new FlyWheel(coralConfig);
 
-  private final LaserCan mLaserCAN = new LaserCan(0);
+  private final LaserCan mLaserCAN = new LaserCan(Constants.CoralConstants.kIndexLaserCANId);
+
+  private final Sensor coralSensor = new SensorConfig("CoralDetectorLaserCAN")
+      .withField("distance_mm", () -> mLaserCAN.getMeasurement().distance_mm, 999.0)
+      .getSensor();
 
   public CoralSubsystem() {
     try {
@@ -77,15 +83,15 @@ public class CoralSubsystem extends SubsystemBase {
 
   public Command intakeCoral() {
     return Commands.sequence(
-        coral.setSpeed(RotationsPerSecond.of(5)).until(() -> getDistance() < 75.0),
-        coral.setSpeed(RotationsPerSecond.of(5)).until(() -> getDistance() > 75.0),
-        coral.setSpeed(RotationsPerSecond.of(-2)).until(() -> getDistance() < 75.0),
+        coral.setSpeed(RotationsPerSecond.of(5)).until(yesCoral()),
+        coral.setSpeed(RotationsPerSecond.of(5)).until(noCoral()),
+        coral.setSpeed(RotationsPerSecond.of(-2)).until(yesCoral()),
         coral.setSpeed(RotationsPerSecond.of(0)).asProxy());
   }
 
   public Command scoreCoral() {
     return Commands.sequence(
-        coral.setSpeed(RotationsPerSecond.of(24)).until(() -> getDistance() > 75.0),
+        coral.setSpeed(RotationsPerSecond.of(24)).until(noCoral()),
         Commands.waitSeconds(0.5),
         coral.setSpeed(RotationsPerSecond.of(0)).asProxy());
   }
@@ -106,8 +112,16 @@ public class CoralSubsystem extends SubsystemBase {
     return coral.sysId(Volts.of(10), Volts.of(2).per(Second), Seconds.of(10));
   }
 
-  public double getDistance() {
-    return mLaserCAN.getMeasurement().distance_mm;
+  public double getIndexDistance() {
+    return coralSensor.getAsDouble("distance_mm");
+  }
+
+  public BooleanSupplier yesCoral() {
+    return () -> getIndexDistance() < 75.0;
+  }
+
+  public BooleanSupplier noCoral() {
+    return () -> getIndexDistance() >= 75.0;
   }
 
   @Override

@@ -27,5 +27,7 @@ public final class Constants {
   public static class CoralConstants {
     public static final int kLeftIndexMotorId = 11;
     public static final int kRightIndexMotorId = 12;
+
+    public static final int kIndexLaserCANId = 0;
   }
 }
