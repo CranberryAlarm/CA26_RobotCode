@@ -6,11 +6,17 @@ public final class Constants {
   }
 
   public static class DriveConstants {
-    // Motor CAN IDs
-    public static final int kFrontLeftMotorId = 8;
-    public static final int kBackLeftMotorId = 7;
-    public static final int kFrontRightMotorId = 6;
-    public static final int kBackRightMotorId = 5;
+    public static final int kFLTMotorId = 5;
+    public static final int kFLDMotorId = 6;
+
+    public static final int kBLTMotorId = 7;
+    public static final int kBLDMotorId = 8;
+
+    public static final int kFRTMotorId = 9;
+    public static final int kFRDMotorId = 10;
+
+    public static final int kBRTMotorId = 11;
+    public static final int kBRDMotorId = 12;
   }
 
   public static class AlgaeConstants {
