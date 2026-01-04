@@ -50,11 +50,11 @@ public class Robot extends LoggedRobot {
       Pose3d[] notesPoses = SimulatedArena.getInstance().getGamePiecesArrayByType("Note");
       // Publish to telemetry using AdvantageKit
       Logger.recordOutput("FieldSimulation/NotesPositions", notesPoses);
-
-      Logger.recordOutput("FieldSimulation/RobotPose", m_robotContainer.getRobotPose());
-      Logger.recordOutput("FieldSimulation/TargetPose",
-          m_robotContainer.getSwerveDrive().field.getObject("targetPose").getPose());
     }
+
+    Logger.recordOutput("FieldSimulation/RobotPose", m_robotContainer.getRobotPose());
+    Logger.recordOutput("FieldSimulation/TargetPose",
+        m_robotContainer.getSwerveDrive().field.getObject("targetPose").getPose());
   }
 
   @Override
