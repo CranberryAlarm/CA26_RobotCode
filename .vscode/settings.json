@@ -62,5 +62,6 @@
   "java.codeAction.sortMembers.avoidVolatileChanges": true,
   "java.errors.incompleteClasspath.severity": "ignore",
   "java.sources.organizeImports.staticStarThreshold": 99,
-  "java.symbols.includeSourceMethodDeclarations": true
+  "java.symbols.includeSourceMethodDeclarations": true,
+  "java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx4G -Xms100m -Xlog:disable"
 }
