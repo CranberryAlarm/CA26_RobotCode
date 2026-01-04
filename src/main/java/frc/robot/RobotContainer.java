@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.SwerveSubsystem;
+import swervelib.SwerveDrive;
 import swervelib.SwerveInputStream;
 
 public class RobotContainer {
@@ -124,29 +125,21 @@ public class RobotContainer {
     }
 
     if (Robot.isSimulation()) {
-      Pose2d target = new Pose2d(new Translation2d(1, 4),
-          Rotation2d.fromDegrees(90));
-      // drivebase.getSwerveDrive().field.getObject("targetPose").setPose(target);
+      Pose2d target = new Pose2d(new Translation2d(1, 4), Rotation2d.fromDegrees(90));
+      drivebase.getSwerveDrive().field.getObject("targetPose").setPose(target);
+
       driveDirectAngleKeyboard.driveToPose(() -> target,
-          new ProfiledPIDController(5,
-              0,
-              0,
+          new ProfiledPIDController(5, 0, 0,
               new Constraints(5, 2)),
-          new ProfiledPIDController(5,
-              0,
-              0,
-              new Constraints(Units.degreesToRadians(360),
+          new ProfiledPIDController(5, 0, 0,
+              new Constraints(
+                  Units.degreesToRadians(360),
                   Units.degreesToRadians(180))));
       driverXbox.start().onTrue(Commands.runOnce(() -> drivebase.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
       driverXbox.button(1).whileTrue(drivebase.sysIdDriveMotorCommand());
-      driverXbox.button(2).whileTrue(Commands.runEnd(() -> driveDirectAngleKeyboard.driveToPoseEnabled(true),
+      driverXbox.button(2).whileTrue(Commands.runEnd(
+          () -> driveDirectAngleKeyboard.driveToPoseEnabled(true),
           () -> driveDirectAngleKeyboard.driveToPoseEnabled(false)));
-
-      // driverXbox.b().whileTrue(
-      // drivebase.driveToPose(
-      // new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
-      // );
-
     }
     if (DriverStation.isTest()) {
       drivebase.setDefaultCommand(driveFieldOrientedAngularVelocity); // Overrides drive command above!
@@ -171,5 +164,13 @@ public class RobotContainer {
 
   public void setMotorBrake(boolean brake) {
     drivebase.setMotorBrake(brake);
+  }
+
+  public SwerveDrive getSwerveDrive() {
+    return drivebase.getSwerveDrive();
+  }
+
+  public Pose2d getRobotPose() {
+    return drivebase.getPose();
   }
 }
