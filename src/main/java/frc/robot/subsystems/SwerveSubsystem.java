@@ -97,6 +97,8 @@ public class SwerveSubsystem extends SubsystemBase {
     // over the internal encoder and push the offsets onto it. Throws warning if not
     // possible
 
+    setMotorBrake(false);
+
     setupPathPlanner();
   }
 
