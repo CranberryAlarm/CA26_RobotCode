@@ -70,15 +70,13 @@ public class SwerveSubsystem extends SubsystemBase {
         : new Pose2d(new Translation2d(Meter.of(16),
             Meter.of(4)),
             Rotation2d.fromDegrees(180));
+
     // Configure the Telemetry before creating the SwerveDrive to avoid unnecessary
     // objects being created.
     SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
+
     try {
       swerveDrive = new SwerveParser(directory).createSwerveDrive(Constants.MAX_SPEED, startingPose);
-      // Alternative method if you don't want to supply the conversion factor via JSON
-      // files.
-      // swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumSpeed,
-      // angleConversionFactor, driveConversionFactor);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -94,12 +92,13 @@ public class SwerveSubsystem extends SubsystemBase {
     // Correct for skew that gets worse as angular velocity increases. Start with a
     // coefficient of 0.1.
 
-    swerveDrive.setModuleEncoderAutoSynchronize(false, 1);
+    swerveDrive.setModuleEncoderAutoSynchronize(true, 3);
     // Enable if you want to resynchronize your absolute encoders
     // and motor encoders periodically when they are not moving.
-    // swerveDrive.pushOffsetsToEncoders(); // Set the absolute encoder to be used
-    // over the internal encoder and push the offsets onto it. Throws warning if not
-    // possible
+
+    // swerveDrive.pushOffsetsToEncoders();
+    // Set the absolute encoder to be used over the internal encoder and push the
+    // offsets onto it. Throws warning if not possible
 
     // TODO: this lets you actual move the robot
     // setMotorBrake(false);
