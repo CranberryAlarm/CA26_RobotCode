@@ -103,9 +103,6 @@ public class RobotContainer {
     buildNamedAutoCommands();
     DriverStation.silenceJoystickConnectionWarning(true);
 
-    // Create the NamedCommands that will be used in PathPlanner
-    NamedCommands.registerCommand("test", Commands.print("I EXIST"));
-
     // Have the autoChooser pull in all PathPlanner autos as options
     autoChooser = AutoBuilder.buildAutoChooser();
 
@@ -124,14 +121,15 @@ public class RobotContainer {
     Command driveFieldOrientedAngularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
     // Command driveSetpointGen =
     // drivebase.driveWithSetpointGeneratorFieldRelative(driveDirectAngle);
-    Command driveFieldOrientedDirectAngleKeyboard = drivebase.driveFieldOriented(driveDirectAngleKeyboard);
+    Command driveFieldOrientedDirectAngleKeyboard = drivebase.driveFieldOriented(driveDirectAngleKeyboard)
+        .withName("Drive.FieldOrientedKeyboard");
     // Command driveSetpointGenKeyboard =
     // drivebase.driveWithSetpointGeneratorFieldRelative(driveDirectAngleKeyboard);
 
     if (RobotBase.isSimulation()) {
       drivebase.setDefaultCommand(driveFieldOrientedDirectAngleKeyboard);
     } else {
-      drivebase.setDefaultCommand(driveFieldOrientedAngularVelocity);
+      drivebase.setDefaultCommand(driveFieldOrientedAngularVelocity.withName("Drive.FieldOriented"));
     }
 
     if (Robot.isSimulation()) {
@@ -173,13 +171,15 @@ public class RobotContainer {
 
   private void buildNamedAutoCommands() {
     // Add any auto commands to the NamedCommands here
-    NamedCommands.registerCommand("ScoreCoral", Commands.runOnce(() -> {
-      System.out.println("Scoring Coral!");
-    }, drivebase));
+    NamedCommands.registerCommand("ScoreCoral",
+        Commands.runOnce(() -> System.out.println("Scoring Coral!"), drivebase)
+            .andThen(Commands.waitSeconds(1))
+            .withName("Auto.ScoreCoral"));
 
-    NamedCommands.registerCommand("Dealgae", Commands.runOnce(() -> {
-      System.out.println("Dealgae!");
-    }, drivebase));
+    NamedCommands.registerCommand("Dealgae",
+        Commands.runOnce(() -> System.out.println("Dealgae!"), drivebase)
+            .andThen(Commands.waitSeconds(1))
+            .withName("Auto.Dealgae"));
   }
 
   public Command getAutonomousCommand() {
@@ -236,6 +236,6 @@ public class RobotContainer {
               pose3ds.toArray(Pose3d[]::new)));
 
       arena.addGamePieceProjectile(algae);
-    });
+    }).withName("Fire.Algae");
   }
 }

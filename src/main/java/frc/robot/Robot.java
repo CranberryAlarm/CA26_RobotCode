@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.util.CommandsLogging;
 
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
@@ -29,12 +30,27 @@ public class Robot extends LoggedRobot {
 
     Logger.start();
 
+    // Register command logging callbacks with CommandScheduler
+    CommandScheduler.getInstance().onCommandInitialize(CommandsLogging::commandStarted);
+    CommandScheduler.getInstance().onCommandFinish(CommandsLogging::commandEnded);
+    CommandScheduler.getInstance()
+        .onCommandInterrupt(
+            (interrupted, interrupting) -> {
+              interrupting.ifPresent(
+                  interrupter -> CommandsLogging.runningInterrupters.put(interrupter, interrupted));
+              CommandsLogging.commandEnded(interrupted);
+            });
+
     m_robotContainer = new RobotContainer();
   }
 
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
+
+    // Log running commands and subsystem requirements
+    CommandsLogging.logRunningCommands();
+    CommandsLogging.logRequiredSubsystems();
 
     if (Robot.isSimulation()) {
       Pose3d[] algaePoses = arena.getGamePiecesArrayByType("Algae");
