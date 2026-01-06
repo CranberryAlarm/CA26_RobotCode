@@ -6,12 +6,14 @@ import java.io.File;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeAlgaeOnFly;
+import org.littletonrobotics.junction.Logger;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
@@ -162,30 +164,7 @@ public class RobotContainer {
       driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
       driverXbox.start().whileTrue(Commands.none());
 
-      driverXbox.back().whileTrue(Commands.runOnce(() -> {
-        System.err.println("FIRE!");
-
-        SimulatedArena arena = SimulatedArena.getInstance();
-
-        // Translation2d robotPosition,
-        // Translation2d shooterPositionOnRobot,
-        // ChassisSpeeds chassisSpeeds,
-        // Rotation2d shooterFacing,
-        // Distance initialHeight,
-        // LinearVelocity launchingSpeed,
-        // Angle shooterAngle
-
-        ReefscapeAlgaeOnFly algae = new ReefscapeAlgaeOnFly(
-            drivebase.getPose().getTranslation(),
-            new Translation2d(),
-            drivebase.getSwerveDrive().getRobotVelocity().times(-1),
-            drivebase.getSwerveDrive().getOdometryHeading(),
-            Distance.ofBaseUnits(1, Feet),
-            LinearVelocity.ofBaseUnits(5, FeetPerSecond),
-            Angle.ofBaseUnits(45, Degrees));
-
-        arena.addGamePieceProjectile(algae);
-      }, drivebase));
+      driverXbox.back().whileTrue(fireAlgae());
 
       driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
       driverXbox.rightBumper().onTrue(Commands.none());
@@ -221,5 +200,42 @@ public class RobotContainer {
 
   public SwerveDriveSimulation getSwerveDriveSimulation() {
     return drivebase.getSwerveDrive().getMapleSimDrive().orElseThrow();
+  }
+
+  public Command fireAlgae() {
+    return Commands.runOnce(() -> {
+      System.err.println("FIRE!");
+
+      SimulatedArena arena = SimulatedArena.getInstance();
+
+      // Translation2d robotPosition,
+      // Translation2d shooterPositionOnRobot,
+      // ChassisSpeeds chassisSpeeds,
+      // Rotation2d shooterFacing,
+      // Distance initialHeight,
+      // LinearVelocity launchingSpeed,
+      // Angle shooterAngle
+
+      ReefscapeAlgaeOnFly algae = new ReefscapeAlgaeOnFly(
+          drivebase.getPose().getTranslation(),
+          new Translation2d(),
+          drivebase.getSwerveDrive().getRobotVelocity().times(-1),
+          drivebase.getSwerveDrive().getOdometryHeading(),
+          Distance.ofBaseUnits(1, Feet),
+          LinearVelocity.ofBaseUnits(5, FeetPerSecond),
+          Angle.ofBaseUnits(45, Degrees));
+
+      // Configure callbacks to visualize the flight trajectory of the projectile
+      algae.withProjectileTrajectoryDisplayCallBack(
+          // Callback for when the note will eventually hit the target (if configured)
+          (pose3ds) -> Logger.recordOutput("FieldSimulation/Shooter/ProjectileSuccessfulShot",
+              pose3ds.toArray(Pose3d[]::new)),
+          // Callback for when the note will eventually miss the target, or if no target
+          // is configured
+          (pose3ds) -> Logger.recordOutput("FieldSimulation/Shooter/ProjectileUnsuccessfulShot",
+              pose3ds.toArray(Pose3d[]::new)));
+
+      arena.addGamePieceProjectile(algae);
+    });
   }
 }
