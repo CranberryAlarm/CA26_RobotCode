@@ -64,16 +64,20 @@ public final class Constants {
   }
 
   public static class ShooterConstants {
-    // Flywheel: 2 Neos, 4in shooter wheels, 4:1 gearbox reduction
-    public static final int kFlywheelLeaderMotorId = 15;
-    public static final int kFlywheelFollowerMotorId = 16;
+    // 2 Neos, 4in shooter wheels, 4:1 gearbox reduction
+    public static final int kLeaderMotorId = 15;
+    public static final int kFollowerMotorId = 16;
+  }
 
-    // Turret: 2 Neos, 12in diameter, 25:1 gearbox, 10:1 pivot gearing,
-    // non-continuous (270 FOV)
-    public static final int kTurretLeaderMotorId = 17;
-    public static final int kTurretFollowerMotorId = 18;
+  public static class TurretConstants {
+    // 2 Neos, 12in diameter, 25:1 gearbox, 10:1 pivot gearing, non-continuous (270
+    // FOV)
+    public static final int kLeaderMotorId = 17;
+    public static final int kFollowerMotorId = 18;
+  }
 
-    // Hood: 1 Neo, 0-90 degree variability, 50:1 reduction
-    public static final int kHoodMotorId = 19;
+  public static class HoodConstants {
+    // 1 Neo, 0-90 degree variability, 50:1 reduction
+    public static final int kMotorId = 19;
   }
 }
