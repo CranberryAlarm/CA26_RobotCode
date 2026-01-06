@@ -3,6 +3,10 @@ package frc.robot;
 
 import java.io.File;
 
+import org.ironmaple.simulation.SimulatedArena;
+import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeAlgaeOnFly;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -12,6 +16,12 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Feet;
+import static edu.wpi.first.units.Units.FeetPerSecond;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -151,7 +161,32 @@ public class RobotContainer {
     } else {
       driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
       driverXbox.start().whileTrue(Commands.none());
-      driverXbox.back().whileTrue(Commands.none());
+
+      driverXbox.back().whileTrue(Commands.runOnce(() -> {
+        System.err.println("FIRE!");
+
+        SimulatedArena arena = SimulatedArena.getInstance();
+
+        // Translation2d robotPosition,
+        // Translation2d shooterPositionOnRobot,
+        // ChassisSpeeds chassisSpeeds,
+        // Rotation2d shooterFacing,
+        // Distance initialHeight,
+        // LinearVelocity launchingSpeed,
+        // Angle shooterAngle
+
+        ReefscapeAlgaeOnFly algae = new ReefscapeAlgaeOnFly(
+            drivebase.getPose().getTranslation(),
+            new Translation2d(),
+            drivebase.getSwerveDrive().getRobotVelocity().times(-1),
+            drivebase.getSwerveDrive().getOdometryHeading(),
+            Distance.ofBaseUnits(1, Feet),
+            LinearVelocity.ofBaseUnits(5, FeetPerSecond),
+            Angle.ofBaseUnits(45, Degrees));
+
+        arena.addGamePieceProjectile(algae);
+      }, drivebase));
+
       driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
       driverXbox.rightBumper().onTrue(Commands.none());
     }
@@ -182,5 +217,9 @@ public class RobotContainer {
 
   public Pose2d getRobotPose() {
     return drivebase.getPose();
+  }
+
+  public SwerveDriveSimulation getSwerveDriveSimulation() {
+    return drivebase.getSwerveDrive().getMapleSimDrive().orElseThrow();
   }
 }

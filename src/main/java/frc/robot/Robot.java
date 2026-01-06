@@ -1,7 +1,7 @@
 package frc.robot;
 
 import org.ironmaple.simulation.SimulatedArena;
-import org.ironmaple.simulation.seasonspecific.crescendo2024.CrescendoNoteOnField;
+import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeAlgaeOnField;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
@@ -37,10 +37,11 @@ public class Robot extends LoggedRobot {
     CommandScheduler.getInstance().run();
 
     if (Robot.isSimulation()) {
-      // Get the positions of the notes (both on the field and in the air)
-      Pose3d[] notesPoses = SimulatedArena.getInstance().getGamePiecesArrayByType("Note");
-      // Publish to telemetry using AdvantageKit
-      Logger.recordOutput("FieldSimulation/NotesPositions", notesPoses);
+      Pose3d[] algaePoses = arena.getGamePiecesArrayByType("Algae");
+      Logger.recordOutput("FieldSimulation/AlgaePoses", algaePoses);
+
+      Pose3d[] coralPoses = arena.getGamePiecesArrayByType("Coral");
+      Logger.recordOutput("FieldSimulation/CoralPoses", coralPoses);
     }
 
     Logger.recordOutput("FieldSimulation/RobotPose", m_robotContainer.getRobotPose());
@@ -94,7 +95,7 @@ public class Robot extends LoggedRobot {
   public void simulationInit() {
     arena = SimulatedArena.getInstance();
 
-    arena.addGamePiece(new CrescendoNoteOnField(new Translation2d(3, 3)));
+    arena.addGamePiece(new ReefscapeAlgaeOnField(new Translation2d(14, 1)));
   }
 
   @Override
