@@ -69,7 +69,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public Command stop() {
-    return shooter.setSpeed(RotationsPerSecond.of(0));
+    return shooter.set(0);
   }
 
   public AngularVelocity getSpeed() {
