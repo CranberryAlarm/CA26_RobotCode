@@ -88,7 +88,7 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the trigger bindings
     configureBindings();
-
+    buildNamedAutoCommands();
     DriverStation.silenceJoystickConnectionWarning(true);
 
     // Create the NamedCommands that will be used in PathPlanner
@@ -155,6 +155,17 @@ public class RobotContainer {
       driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
       driverXbox.rightBumper().onTrue(Commands.none());
     }
+  }
+
+  private void buildNamedAutoCommands() {
+    // Add any auto commands to the NamedCommands here
+    NamedCommands.registerCommand("ScoreCoral", Commands.runOnce(() -> {
+      System.out.println("Scoring Coral!");
+    }, drivebase));
+
+    NamedCommands.registerCommand("Dealgae", Commands.runOnce(() -> {
+      System.out.println("Dealgae!");
+    }, drivebase));
   }
 
   public Command getAutonomousCommand() {
