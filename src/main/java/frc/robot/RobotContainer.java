@@ -11,6 +11,7 @@ import org.littletonrobotics.junction.Logger;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -57,9 +58,9 @@ public class RobotContainer {
   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(drivebase.getSwerveDrive(),
       () -> driverXbox.getLeftY() * -1,
       () -> driverXbox.getLeftX() * -1)
-      .withControllerRotationAxis(driverXbox::getRightX)
+      .withControllerRotationAxis(() -> driverXbox.getRightX() * -1)
       .deadband(OperatorConstants.DEADBAND)
-      .scaleTranslation(0.8)
+      // .scaleTranslation(0.8) // TODO: Tune speed scaling
       .allianceRelativeControl(true);
 
   /**
@@ -111,7 +112,7 @@ public class RobotContainer {
 
     // Add a simple auto option to have the robot drive forward for 1 second then
     // stop
-    autoChooser.addOption("Drive Forward", drivebase.driveForward().withTimeout(1));
+    autoChooser.addOption("Drive Forward", drivebase.driveForward().withTimeout(10));
 
     // Put the autoChooser on the SmartDashboard
     SmartDashboard.putData("Auto Chooser", autoChooser);
@@ -121,6 +122,7 @@ public class RobotContainer {
     Command driveFieldOrientedAngularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
     // Command driveSetpointGen =
     // drivebase.driveWithSetpointGeneratorFieldRelative(driveDirectAngle);
+
     Command driveFieldOrientedDirectAngleKeyboard = drivebase.driveFieldOriented(driveDirectAngleKeyboard)
         .withName("Drive.FieldOrientedKeyboard");
     // Command driveSetpointGenKeyboard =
@@ -129,7 +131,13 @@ public class RobotContainer {
     if (RobotBase.isSimulation()) {
       drivebase.setDefaultCommand(driveFieldOrientedDirectAngleKeyboard);
     } else {
+      // FIELD RELATIVE DRIVE
       drivebase.setDefaultCommand(driveFieldOrientedAngularVelocity.withName("Drive.FieldOriented"));
+
+      // ROBOT RELATIVE DRIVE
+      // Command driveRobotOrientedAngularVelocity =
+      // drivebase.driveFieldOriented(driveRobotOriented);
+      // drivebase.setDefaultCommand(driveRobotOrientedAngularVelocity.withName("Drive.RobotOriented"));
     }
 
     if (Robot.isSimulation()) {
@@ -160,9 +168,10 @@ public class RobotContainer {
       driverXbox.rightBumper().onTrue(Commands.none());
     } else {
       driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
-      driverXbox.start().whileTrue(Commands.none());
 
-      driverXbox.back().whileTrue(fireAlgae());
+      driverXbox.start().whileTrue(drivebase.sysIdAngleMotorCommand());
+      driverXbox.back().whileTrue(drivebase.sysIdDriveMotorCommand());
+      // driverXbox.back().whileTrue(fireAlgae());
 
       driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
       driverXbox.rightBumper().onTrue(Commands.none());
