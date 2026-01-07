@@ -27,6 +27,12 @@
           "data": {
             "name": "Dealgae"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "To middle"
+          }
         }
       ]
     }
