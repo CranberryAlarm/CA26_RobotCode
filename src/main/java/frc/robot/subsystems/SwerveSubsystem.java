@@ -100,6 +100,9 @@ public class SwerveSubsystem extends SubsystemBase {
     // Set the absolute encoder to be used over the internal encoder and push the
     // offsets onto it. Throws warning if not possible
 
+    // FF values pulled from SysId characterization
+    // replaceSwerveModuleFeedforward(0.268, 2.67, 0.23);
+
     // TODO: this lets you actual move the robot
     // setMotorBrake(false);
 
