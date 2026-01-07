@@ -47,6 +47,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants;
@@ -143,25 +144,24 @@ public class SwerveSubsystem extends SubsystemBase {
         .withImuAssistAlpha(0.01)
         .save();
 
-    Trigger isEnabled = new Trigger(() -> {
-      return DriverStation.isEnabled();
-    });
-
-    isEnabled.onTrue(Commands.runOnce(() -> {
+    RobotModeTriggers.disabled().onTrue(Commands.runOnce(() -> {
       System.out.println("Setting LL IMU Assist Alpha to 0.001");
 
       limelight.getSettings()
           .withImuAssistAlpha(0.001)
           .save();
-    }));
+    }).ignoringDisable(true));
 
-    isEnabled.onFalse(Commands.runOnce(() -> {
+    Command onEnable = Commands.runOnce(() -> {
       System.out.println("Setting LL IMU Assist Alpha to 0.01");
 
       limelight.getSettings()
           .withImuAssistAlpha(0.01)
           .save();
-    }));
+    });
+    RobotModeTriggers.teleop().onTrue(onEnable);
+    RobotModeTriggers.autonomous().onTrue(onEnable);
+    RobotModeTriggers.test().onTrue(onEnable);
 
     // Required for megatag2 in periodic() function before fetching pose.
     limelight.getSettings()
@@ -174,8 +174,6 @@ public class SwerveSubsystem extends SubsystemBase {
         .save();
 
     poseEstimator = limelight.createPoseEstimator(EstimationMode.MEGATAG2);
-    // poseEstimator =
-    // limelight.createPoseEstimator(EstimationMode.MEGATAG2).getPoseEstimate();
 
     setupPathPlanner();
   }
