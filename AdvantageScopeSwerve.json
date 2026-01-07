@@ -3,17 +3,26 @@
     {
       "x": -8,
       "y": -8,
-      "width": 2576,
-      "height": 1408,
+      "width": 1680,
+      "height": 1077,
       "state": {
         "sidebar": {
           "width": 408,
           "expanded": [
             "/SmartDashboard/MapleSim/MatchData/Breakdown/blue Alliance",
-            "/SmartDashboard/Field",
+            "/SmartDashboard/swerve/advantagescope/currentStates/1/angle",
+            "/SmartDashboard/swerve/advantagescope/currentStates/0/angle",
+            "/SmartDashboard/swerve/advantagescope/currentStates/3",
+            "/SmartDashboard/swerve/advantagescope/currentStates/3/angle",
             "/AdvantageKit",
+            "/AdvantageKit/RealOutputs/FieldSimulation",
             "/AdvantageKit/RealOutputs",
-            "/AdvantageKit/RealOutputs/FieldSimulation"
+            "/SmartDashboard",
+            "/SmartDashboard/swerve/modules",
+            "/SmartDashboard/swerve/modules/frontright",
+            "/SmartDashboard/swerve/modules/frontleft",
+            "/SmartDashboard/swerve/modules/backright",
+            "/SmartDashboard/swerve/modules/backleft"
           ]
         },
         "tabs": {
@@ -24,7 +33,7 @@
               "title": "",
               "controller": null,
               "controllerUUID": "ql47zcr1ofhsuuoqsclmd6jpcxwfefcz",
-              "renderer": "#/tab-reference/mechanism",
+              "renderer": "#/",
               "controlsHeight": 0
             },
             {
@@ -32,15 +41,6 @@
               "title": "3D Field",
               "controller": {
                 "sources": [
-                  {
-                    "type": "gamePiece",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/FieldSimulation/NotesPositions/0",
-                    "logType": "Pose3d",
-                    "visible": true,
-                    "options": {
-                      "variant": "Algae"
-                    }
-                  },
                   {
                     "type": "robot",
                     "logKey": "NT:/AdvantageKit/RealOutputs/FieldSimulation/RobotPose",
@@ -57,6 +57,16 @@
                     "visible": true,
                     "options": {
                       "model": "Crab Bot",
+                      "color": "#0000ff"
+                    }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/FieldSimulation/LLPose",
+                    "logType": "Pose3d",
+                    "visible": true,
+                    "options": {
+                      "model": "Crab Bot",
                       "color": "#00ff00"
                     }
                   }
@@ -69,14 +79,14 @@
                 "cameraIndex": -1,
                 "orbitFov": 50,
                 "cameraPosition": [
-                  7.8865956573723075,
-                  11.0633214757221,
-                  -0.33734729510191175
+                  -8.213793838348083,
+                  9.984019446636196,
+                  -2.8847015884021476
                 ],
                 "cameraTarget": [
-                  5.2102737072081675,
-                  -0.6963403084088023,
-                  -0.35926622461547786
+                  -4.333498230620374,
+                  -1.8078313603407625,
+                  0.2364458308149924
                 ]
               },
               "controlsHeight": 329
@@ -88,21 +98,21 @@
                 "sources": [
                   {
                     "type": "states",
-                    "logKey": "NT:/SmartDashboard/swerve/advantagescope/currentStates",
-                    "logType": "SwerveModuleState[]",
-                    "visible": true,
-                    "options": {
-                      "color": "#ff0000",
-                      "arrangement": "0,1,2,3"
-                    }
-                  },
-                  {
-                    "type": "states",
                     "logKey": "NT:/SmartDashboard/swerve/advantagescope/desiredStates",
                     "logType": "SwerveModuleState[]",
                     "visible": true,
                     "options": {
                       "color": "#0000ff",
+                      "arrangement": "0,1,2,3"
+                    }
+                  },
+                  {
+                    "type": "states",
+                    "logKey": "NT:/SmartDashboard/swerve/advantagescope/currentStates",
+                    "logType": "SwerveModuleState[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#ff0000",
                       "arrangement": "0,1,2,3"
                     }
                   },
@@ -117,17 +127,56 @@
                 "maxSpeed": 5,
                 "sizeX": 0.65,
                 "sizeY": 0.65,
-                "orientation": 1
+                "orientation": 3
               },
               "controllerUUID": "mbdmekf3z1pwqg286njh7yvk9q6gao06",
               "renderer": null,
               "controlsHeight": 200
             },
             {
+              "type": 1,
+              "title": "Commands",
+              "controller": {
+                "leftSources": [],
+                "rightSources": [],
+                "discreteSources": [
+                  {
+                    "type": "alerts",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/CommandScheduler/Running",
+                    "logType": "Alerts",
+                    "visible": true,
+                    "options": {}
+                  },
+                  {
+                    "type": "alerts",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/CommandScheduler/Subsystems",
+                    "logType": "Alerts",
+                    "visible": true,
+                    "options": {}
+                  }
+                ],
+                "leftLockedRange": null,
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "rightUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "pigoam74jesfb4nbj26dep7viktz08f8",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
               "type": 5,
               "title": "Console",
-              "controller": null,
-              "controllerUUID": "1o84vzw36h1ui9qjbknnuff5f4trsjca",
+              "controller": "NT:/AdvantageKit/RealOutputs/Console",
+              "controllerUUID": "uv5up5g3ebsg6srxe6xpjd0wk37924t2",
               "renderer": {
                 "highlight": false
               },

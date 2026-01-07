@@ -47,6 +47,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants;
 import limelight.Limelight;
@@ -143,7 +144,22 @@ public class SwerveSubsystem extends SubsystemBase {
     // seems to work better for us.
     limelight.getNTTable().getEntry("imumode_set").setNumber(3); // TODO: make this a method
 
-    limelight.getNTTable().getEntry("imuassistalpha_set").setNumber(0.01); // TODO: make this a method
+    // TODO: remove this once the code blow is working
+    limelight.getNTTable().getEntry("imuassistalpha_set").setNumber(0.01);
+
+    Trigger isEnabled = new Trigger(() -> {
+      return DriverStation.isEnabled();
+    });
+
+    isEnabled.onTrue(Commands.runOnce(() -> {
+      System.out.println("Setting LL IMU Assist Alpha to 0.001");
+      limelight.getNTTable().getEntry("imuassistalpha_set").setNumber(0.001);
+    }));
+
+    isEnabled.onFalse(Commands.runOnce(() -> {
+      System.out.println("Setting LL IMU Assist Alpha to 0.01");
+      limelight.getNTTable().getEntry("imuassistalpha_set").setNumber(0.01);
+    }));
 
     // Required for megatag2 in periodic() function before fetching pose.
     limelight.getSettings()
