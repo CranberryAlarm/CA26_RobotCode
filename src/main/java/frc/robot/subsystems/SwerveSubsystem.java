@@ -57,6 +57,7 @@ import limelight.networktables.LimelightSettings.ImuMode;
 import limelight.networktables.LimelightSettings.LEDMode;
 import limelight.networktables.Orientation3d;
 import limelight.networktables.PoseEstimate;
+import limelight.networktables.LimelightPoseEstimator.EstimationMode;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
@@ -171,7 +172,7 @@ public class SwerveSubsystem extends SubsystemBase {
                     DegreesPerSecond.of(0))))
         .save();
 
-    poseEstimator = limelight.getPoseEstimator(true);
+    poseEstimator = limelight.createPoseEstimator(EstimationMode.MEGATAG2);
     // poseEstimator =
     // limelight.createPoseEstimator(EstimationMode.MEGATAG2).getPoseEstimate();
 
