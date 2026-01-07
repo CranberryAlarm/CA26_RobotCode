@@ -139,14 +139,9 @@ public class SwerveSubsystem extends SubsystemBase {
             Inches.of(4.750).in(Meters),
             Inches.of(17.25).in(Meters),
             Rotation3d.kZero))
+        .withImuMode(ImuMode.InternalImuMT1Assist)
+        .withImuAssistAlpha(0.01)
         .save();
-
-    // Big hack to set ImuMode to "IMU_ASSIST_MT1", an undocumented mode that
-    // seems to work better for us.
-    limelight.getNTTable().getEntry("imumode_set").setNumber(3); // TODO: make this a method
-
-    // TODO: remove this once the code blow is working
-    limelight.getNTTable().getEntry("imuassistalpha_set").setNumber(0.01);
 
     Trigger isEnabled = new Trigger(() -> {
       return DriverStation.isEnabled();
@@ -154,12 +149,18 @@ public class SwerveSubsystem extends SubsystemBase {
 
     isEnabled.onTrue(Commands.runOnce(() -> {
       System.out.println("Setting LL IMU Assist Alpha to 0.001");
-      limelight.getNTTable().getEntry("imuassistalpha_set").setNumber(0.001);
+
+      limelight.getSettings()
+          .withImuAssistAlpha(0.001)
+          .save();
     }));
 
     isEnabled.onFalse(Commands.runOnce(() -> {
       System.out.println("Setting LL IMU Assist Alpha to 0.01");
-      limelight.getNTTable().getEntry("imuassistalpha_set").setNumber(0.01);
+
+      limelight.getSettings()
+          .withImuAssistAlpha(0.01)
+          .save();
     }));
 
     // Required for megatag2 in periodic() function before fetching pose.
