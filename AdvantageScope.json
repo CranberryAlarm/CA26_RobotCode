@@ -1,0 +1,166 @@
+{
+  "hubs": [
+    {
+      "x": -8,
+      "y": -8,
+      "width": 1680,
+      "height": 1077,
+      "state": {
+        "sidebar": {
+          "width": 350,
+          "expanded": [
+            "/Mechanisms/Wrist/WristMotor/closedloop/setpoint",
+            "/Tuning",
+            "/Mechanisms/Wrist/WristMotor/current",
+            "/Mechanisms/Wrist/WristMotor/mechanism",
+            "/Mechanisms/Wrist/WristMotor/motor",
+            "/Mechanisms/Wrist/WristMotor/rotor",
+            "/SmartDashboard",
+            "/Mechanisms/Wrist/WristMotor",
+            "/Mechanisms/Wrist/WristMotor/closedloop",
+            "/Shuffleboard",
+            "/Tuning/Wrist/WristMotor/closedloop/feedback",
+            "/Mechanisms/CoralMech",
+            "/Mechanisms/CoralRollers",
+            "/Mechanisms/CoralRollers/CoralMotor",
+            "/Mechanisms/CoralRollers/CoralMotor/closedloop/setpoint",
+            "/Mechanisms/CoralRollers/CoralMotor/mechanism",
+            "/Mechanisms/CoralRollers/CoralMotor/closedloop",
+            "/SmartDashboard/Mechanisms",
+            "/Mechanisms",
+            "/Mechanisms/CoralRollers/CoralMotor/motor",
+            "/Mechanisms/CoralRollers/CoralMotor/rotor",
+            "/Tuning/CoralRollers/CoralMotor",
+            "/Tuning/CoralRollers/CoralMotor/ramprate/dutycycle",
+            "/SmartDashboard/Mechanisms/Commands",
+            "/ActiveCommands"
+          ]
+        },
+        "tabs": {
+          "selected": 2,
+          "tabs": [
+            {
+              "type": 0,
+              "title": "",
+              "controller": null,
+              "controllerUUID": "on0fizdrltfc2t6jt8rkzdu1sgfo1fap",
+              "renderer": "#/tab-reference/mechanism",
+              "controlsHeight": 0
+            },
+            {
+              "type": 1,
+              "title": "AlgaeArm",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/Mechanisms/Wrist/WristMotor/closedloop/setpoint/position",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/Mechanisms/Wrist/WristMotor/mechanism/position",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/Mechanisms/Wrist/WristMotor/motor/outputVoltage",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#af2437",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "discreteSources": [],
+                "leftLockedRange": null,
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "rightUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "6afvvu1a96op3lsweb6f5m6nvlj22e3c",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 1,
+              "title": "Coral",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/Mechanisms/CoralRollers/CoralMotor/mechanism/velocity",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/Mechanisms/CoralRollers/CoralMotor/closedloop/setpoint/velocity",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [],
+                "discreteSources": [],
+                "leftLockedRange": null,
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "rightUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "rdhogbt8mmllipnr14sdaxsj488uhqhu",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 10,
+              "title": "Mechanism",
+              "controller": [],
+              "controllerUUID": "lsq153cko7dbxem16aoc4x6o4s72ro5h",
+              "renderer": null,
+              "controlsHeight": 200
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "satellites": [],
+  "version": "4.1.5"
+}
