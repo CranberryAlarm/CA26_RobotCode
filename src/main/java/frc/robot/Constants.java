@@ -11,14 +11,12 @@ public final class Constants {
   public static final double LOOP_TIME = 0.13; // s, 20ms + 110ms spark max velocity lag
   public static final double MAX_SPEED = Units.feetToMeters(14.5);
 
-  public static class OperatorConstants {
+  public static class ControllerConstants {
     public static final int kDriverControllerPort = 0;
+    public static final int kOperatorControllerPort = 1;
 
     // Joystick Deadband
     public static final double DEADBAND = 0.1;
-    public static final double LEFT_Y_DEADBAND = 0.1;
-    public static final double RIGHT_X_DEADBAND = 0.1;
-    public static final double TURN_CONSTANT = 6;
   }
 
   public static class DriveConstants {
