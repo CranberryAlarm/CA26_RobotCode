@@ -55,7 +55,7 @@ public class DriverControls {
         // ???
       }
     }
-    ;
+
     drivetrain.setDefaultCommand(
         drivetrain.driveFieldOriented(driveInputStream).withName("Drive" + driveMode.name()));
 
