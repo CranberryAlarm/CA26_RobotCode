@@ -17,7 +17,7 @@ public class DriverControls {
     AIM_AT_POSE
   }
 
-  private static DriveMode driveMode = DriveMode.FIELD_ORIENTED_HEADING;
+  private static DriveMode driveMode = DriveMode.FIELD_ORIENTED;
 
   public void setDriveMode(DriveMode mode) {
     driveMode = mode;
