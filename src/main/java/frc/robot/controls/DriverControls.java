@@ -1,6 +1,9 @@
 package frc.robot.controls;
 
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -40,8 +43,7 @@ public class DriverControls {
       case FIELD_ORIENTED -> driveInputStream
           .robotRelative(false)
           .allianceRelativeControl(true)
-          .withControllerRotationAxis(() -> controller.getRightX() * -1)
-          .headingWhile(true);
+          .withControllerRotationAxis(() -> controller.getRightX() * -1);
       case FIELD_ORIENTED_HEADING -> driveInputStream
           .robotRelative(false)
           .allianceRelativeControl(true)
@@ -59,35 +61,27 @@ public class DriverControls {
     drivetrain.setDefaultCommand(
         drivetrain.driveFieldOriented(driveInputStream).withName("Drive" + driveMode.name()));
 
-    // if (Robot.isSimulation()) {
-    // Pose2d target = new Pose2d(new Translation2d(1, 4),
-    // Rotation2d.fromDegrees(90));
-    // drivetrain.getSwerveDrive().field.getObject("targetPose").setPose(target);
+    driveInputStream.driveToPose(drivetrain.getTargetPoseSupplier(),
+        new ProfiledPIDController(5, 0, 0,
+            new Constraints(5, 2)),
+        new ProfiledPIDController(5, 0, 0,
+            new Constraints(
+                Units.degreesToRadians(360),
+                Units.degreesToRadians(180))));
 
-    // driveDirectAngleKeyboard.driveToPose(() -> target,
-    // new ProfiledPIDController(5, 0, 0,
-    // new Constraints(5, 2)),
-    // new ProfiledPIDController(5, 0, 0,
-    // new Constraints(
-    // Units.degreesToRadians(360),
-    // Units.degreesToRadians(180))));
-    // controller.start().onTrue(Commands.runOnce(() -> drivetrain.resetOdometry(new
-    // Pose2d(3, 3, new Rotation2d()))));
-    // controller.button(1).whileTrue(drivetrain.sysIdDriveMotorCommand());
-    // controller.button(2).whileTrue(Commands.runEnd(
-    // () -> driveDirectAngleKeyboard.driveToPoseEnabled(true),
-    // () -> driveDirectAngleKeyboard.driveToPoseEnabled(false)));
-    // }
+    controller.rightBumper().whileTrue(Commands.runEnd(
+        () -> driveInputStream.driveToPoseEnabled(true),
+        () -> driveInputStream.driveToPoseEnabled(false)));
 
     if (DriverStation.isTest()) {
-      // drivetrain.setDefaultCommand(driveFieldOrientedAngularVelocity); // Overrides
-      // drive command above!
+      // drivetrain.setDefaultCommand(driveFieldOrientedAngularVelocity);
+      // Overrides drive command above!
+      // Might be useful for robot-oriented controls in testing
 
       controller.x().whileTrue(Commands.runOnce(drivetrain::lock, drivetrain).repeatedly());
       controller.start().onTrue((Commands.runOnce(drivetrain::zeroGyro)));
       controller.back().whileTrue(drivetrain.centerModulesCommand());
       controller.leftBumper().onTrue(Commands.none());
-      controller.rightBumper().onTrue(Commands.none());
     } else {
       controller.a().onTrue((Commands.runOnce(drivetrain::zeroGyro)));
 
@@ -96,7 +90,6 @@ public class DriverControls {
       // controller.back().whileTrue(fireAlgae());
 
       controller.leftBumper().whileTrue(Commands.runOnce(drivetrain::lock, drivetrain).repeatedly());
-      controller.rightBumper().onTrue(Commands.none());
     }
   }
 }

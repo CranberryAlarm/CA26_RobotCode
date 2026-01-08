@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.controls.DriverControls;
+import frc.robot.controls.PoseControls;
 import frc.robot.subsystems.SwerveSubsystem;
 import swervelib.SwerveDrive;
 
@@ -62,6 +63,9 @@ public class RobotContainer {
   private void configureBindings() {
     // Set up controllers
     DriverControls.configure(ControllerConstants.kDriverControllerPort, drivebase, null);
+
+    // Configure pose controls for virtual target pose manipulation
+    PoseControls.configure(ControllerConstants.kPoseControllerPort, drivebase);
   }
 
   private void buildNamedAutoCommands() {
