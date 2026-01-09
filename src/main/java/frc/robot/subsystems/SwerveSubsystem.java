@@ -62,7 +62,6 @@ import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
 import swervelib.imu.SwerveIMU;
 import swervelib.math.SwerveMath;
-import swervelib.parser.SwerveControllerConfiguration;
 import swervelib.parser.SwerveDriveConfiguration;
 import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
@@ -176,20 +175,6 @@ public class SwerveSubsystem extends SubsystemBase {
     poseEstimator = limelight.createPoseEstimator(EstimationMode.MEGATAG2);
 
     setupPathPlanner();
-  }
-
-  /**
-   * Construct the swerve drive.
-   *
-   * @param driveCfg      SwerveDriveConfiguration for the swerve.
-   * @param controllerCfg Swerve Controller.
-   */
-  public SwerveSubsystem(SwerveDriveConfiguration driveCfg, SwerveControllerConfiguration controllerCfg) {
-    swerveDrive = new SwerveDrive(driveCfg,
-        controllerCfg,
-        Constants.MAX_SPEED,
-        new Pose2d(new Translation2d(Meter.of(2), Meter.of(0)),
-            Rotation2d.fromDegrees(0)));
   }
 
   @Override
@@ -714,16 +699,6 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public Pose2d getTargetPose() {
     return swerveDrive.field.getObject("targetPose").getPose();
-  }
-
-  /**
-   * Get a supplier for the current target pose.
-   * Useful for commands that need a dynamic pose reference.
-   *
-   * @return Supplier that returns the current target pose
-   */
-  public Supplier<Pose2d> getTargetPoseSupplier() {
-    return () -> getTargetPose();
   }
 
   /**

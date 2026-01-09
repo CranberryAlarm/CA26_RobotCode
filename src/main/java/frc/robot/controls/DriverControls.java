@@ -1,11 +1,7 @@
 package frc.robot.controls;
 
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.math.util.Units;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.ControllerConstants;
@@ -14,17 +10,9 @@ import frc.robot.subsystems.SwerveSubsystem;
 import swervelib.SwerveInputStream;
 
 public class DriverControls {
-  public enum DriveMode {
-    ROBOT_ORIENTED,
-    FIELD_ORIENTED,
-    FIELD_ORIENTED_HEADING,
-    AIM_AT_POSE
-  }
 
-  private static DriveMode driveMode = DriveMode.FIELD_ORIENTED;
-
-  public void setDriveMode(DriveMode mode) {
-    driveMode = mode;
+  private static Pose2d getTargetPose() {
+    return PoseControls.getTargetPose();
   }
 
   public static void configure(int port, SwerveSubsystem drivetrain, Superstructure superstructure) {
@@ -33,35 +21,23 @@ public class DriverControls {
     SwerveInputStream driveInputStream = SwerveInputStream.of(drivetrain.getSwerveDrive(),
         () -> controller.getLeftY() * -1,
         () -> controller.getLeftX() * -1)
+        .withControllerRotationAxis(() -> controller.getRightX() * -1)
+        .robotRelative(false)
+        .allianceRelativeControl(true)
         // .scaleTranslation(0.8) // TODO: Tune speed scaling
         .deadband(ControllerConstants.DEADBAND);
 
-    switch (driveMode) {
-      case ROBOT_ORIENTED -> driveInputStream
-          .robotRelative(true)
-          .allianceRelativeControl(false)
-          .withControllerRotationAxis(() -> controller.getRightX() * -1);
-      case FIELD_ORIENTED -> driveInputStream
-          .robotRelative(false)
-          .allianceRelativeControl(true)
-          .withControllerRotationAxis(() -> controller.getRightX() * -1);
-      case FIELD_ORIENTED_HEADING -> driveInputStream
-          .robotRelative(false)
-          .allianceRelativeControl(true)
-          .withControllerHeadingAxis(
-              controller::getRightX,
-              controller::getRightY)
-          .headingWhile(true)
-          .translationHeadingOffset(true)
-          .translationHeadingOffset(Rotation2d.fromDegrees(0));
-      case AIM_AT_POSE -> {
-        // ???
-      }
-    }
+    controller.y().whileTrue(Commands.run(
+        () -> {
+          driveInputStream
+              .aim(getTargetPose())
+              .aimWhile(true);
+        }).finallyDo(() -> driveInputStream.aimWhile(false)));
 
     drivetrain.setDefaultCommand(
-        drivetrain.driveFieldOriented(driveInputStream).withName("Drive" + driveMode.name()));
+        drivetrain.driveFieldOriented(driveInputStream).withName("Drive" + ".test"));
 
+    // NOTE: YAGSL way of doing direct drive to pose
     // driveInputStream.driveToPose(drivetrain.getTargetPoseSupplier(),
     // new ProfiledPIDController(5, 0, 0,
     // new Constraints(5, 2)),
@@ -74,8 +50,7 @@ public class DriverControls {
     // () -> driveInputStream.driveToPoseEnabled(true),
     // () -> driveInputStream.driveToPoseEnabled(false)));
 
-    // Use defer() to capture the target pose at button press time, not at robot
-    // init
+    // NOTE: PathPlanner way of doing obstacle-aware drive to pose
     controller.rightBumper()
         .whileTrue(Commands.defer(
             () -> drivetrain.driveToPose(drivetrain.getTargetPose()),
