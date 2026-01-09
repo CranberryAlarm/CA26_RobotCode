@@ -31,7 +31,7 @@ public class DriverControls {
   }
 
   public static void configure(int port, SwerveSubsystem drivetrain, Superstructure superstructure) {
-    CommandXboxController controller = new CommandXboxController(ControllerConstants.kDriverControllerPort);
+    CommandXboxController controller = new CommandXboxController(port);
 
     SwerveInputStream driveInputStream = SwerveInputStream.of(drivetrain.getSwerveDrive(),
         () -> controller.getLeftY() * -1,
