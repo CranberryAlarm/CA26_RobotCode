@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.ControllerConstants;
@@ -61,17 +62,24 @@ public class DriverControls {
     drivetrain.setDefaultCommand(
         drivetrain.driveFieldOriented(driveInputStream).withName("Drive" + driveMode.name()));
 
-    driveInputStream.driveToPose(drivetrain.getTargetPoseSupplier(),
-        new ProfiledPIDController(5, 0, 0,
-            new Constraints(5, 2)),
-        new ProfiledPIDController(5, 0, 0,
-            new Constraints(
-                Units.degreesToRadians(360),
-                Units.degreesToRadians(180))));
+    // driveInputStream.driveToPose(drivetrain.getTargetPoseSupplier(),
+    // new ProfiledPIDController(5, 0, 0,
+    // new Constraints(5, 2)),
+    // new ProfiledPIDController(5, 0, 0,
+    // new Constraints(
+    // Units.degreesToRadians(360),
+    // Units.degreesToRadians(180))));
 
-    controller.rightBumper().whileTrue(Commands.runEnd(
-        () -> driveInputStream.driveToPoseEnabled(true),
-        () -> driveInputStream.driveToPoseEnabled(false)));
+    // controller.rightBumper().whileTrue(Commands.runEnd(
+    // () -> driveInputStream.driveToPoseEnabled(true),
+    // () -> driveInputStream.driveToPoseEnabled(false)));
+
+    // Use defer() to capture the target pose at button press time, not at robot
+    // init
+    controller.rightBumper()
+        .whileTrue(Commands.defer(
+            () -> drivetrain.driveToPose(drivetrain.getTargetPose()),
+            java.util.Set.of(drivetrain)));
 
     if (DriverStation.isTest()) {
       // drivetrain.setDefaultCommand(driveFieldOrientedAngularVelocity);
