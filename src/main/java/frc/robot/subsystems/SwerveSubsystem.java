@@ -37,34 +37,31 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
-
 import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meter;
 import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.Inches;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants;
 import limelight.Limelight;
 import limelight.networktables.AngularVelocity3d;
 import limelight.networktables.LimelightPoseEstimator;
+import limelight.networktables.LimelightPoseEstimator.EstimationMode;
 import limelight.networktables.LimelightSettings.ImuMode;
 import limelight.networktables.LimelightSettings.LEDMode;
 import limelight.networktables.Orientation3d;
 import limelight.networktables.PoseEstimate;
-import limelight.networktables.LimelightPoseEstimator.EstimationMode;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
 import swervelib.imu.SwerveIMU;
 import swervelib.math.SwerveMath;
-import swervelib.parser.SwerveControllerConfiguration;
 import swervelib.parser.SwerveDriveConfiguration;
 import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
@@ -148,6 +145,7 @@ public class SwerveSubsystem extends SubsystemBase {
       System.out.println("Setting LL IMU Assist Alpha to 0.001");
 
       limelight.getSettings()
+          // .withImuMode(ImuMode.InternalImuMT1Assist)
           .withImuAssistAlpha(0.001)
           .save();
     }).ignoringDisable(true));
@@ -156,6 +154,7 @@ public class SwerveSubsystem extends SubsystemBase {
       System.out.println("Setting LL IMU Assist Alpha to 0.01");
 
       limelight.getSettings()
+          // .withImuMode(ImuMode.InternalImuMT1Assist)
           .withImuAssistAlpha(0.01)
           .save();
     });
@@ -178,20 +177,6 @@ public class SwerveSubsystem extends SubsystemBase {
     setupPathPlanner();
   }
 
-  /**
-   * Construct the swerve drive.
-   *
-   * @param driveCfg      SwerveDriveConfiguration for the swerve.
-   * @param controllerCfg Swerve Controller.
-   */
-  public SwerveSubsystem(SwerveDriveConfiguration driveCfg, SwerveControllerConfiguration controllerCfg) {
-    swerveDrive = new SwerveDrive(driveCfg,
-        controllerCfg,
-        Constants.MAX_SPEED,
-        new Pose2d(new Translation2d(Meter.of(2), Meter.of(0)),
-            Rotation2d.fromDegrees(0)));
-  }
-
   @Override
   public void periodic() {
     // swerveDrive.updateOdometry(); // TODO: see if this is needed
@@ -211,6 +196,10 @@ public class SwerveSubsystem extends SubsystemBase {
             poseEstimate.pose.toPose2d(),
             poseEstimate.timestampSeconds);
         // TODO: possibly add stddevs here
+        // TODO: Instead of providing the limelight's pose as is, replace the rotation
+        // component with the current pose rotation so the process doesn't take it into
+        // account?
+
       }
     });
   }
@@ -313,6 +302,20 @@ public class SwerveSubsystem extends SubsystemBase {
     // Since AutoBuilder is configured, we can use it to build pathfinding commands
     return AutoBuilder.pathfindToPose(
         pose,
+        constraints,
+        edu.wpi.first.units.Units.MetersPerSecond.of(0) // Goal end velocity in meters/sec
+    );
+  }
+
+  public Command driveToPoseCommand(Supplier<Pose2d> poseSupplier) {
+    // Create the constraints to use while pathfinding
+    PathConstraints constraints = new PathConstraints(
+        swerveDrive.getMaximumChassisVelocity(), 4.0,
+        swerveDrive.getMaximumChassisAngularVelocity(), Units.degreesToRadians(720));
+
+    // Since AutoBuilder is configured, we can use it to build pathfinding commands
+    return AutoBuilder.pathfindToPose(
+        poseSupplier.get(),
         constraints,
         edu.wpi.first.units.Units.MetersPerSecond.of(0) // Goal end velocity in meters/sec
     );
@@ -692,6 +695,10 @@ public class SwerveSubsystem extends SubsystemBase {
         angle.getRadians(),
         getHeading().getRadians(),
         Constants.MAX_SPEED);
+  }
+
+  public Pose2d getTargetPose() {
+    return swerveDrive.field.getObject("targetPose").getPose();
   }
 
   /**
