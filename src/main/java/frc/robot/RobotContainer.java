@@ -85,56 +85,11 @@ public class RobotContainer {
     return autoChooser.getSelected();
   }
 
-  public void setMotorBrake(boolean brake) {
-    drivebase.setMotorBrake(brake);
-  }
-
   public SwerveDrive getSwerveDrive() {
     return drivebase.getSwerveDrive();
   }
 
   public Pose2d getRobotPose() {
     return drivebase.getPose();
-  }
-
-  public SwerveDriveSimulation getSwerveDriveSimulation() {
-    return drivebase.getSwerveDrive().getMapleSimDrive().orElseThrow();
-  }
-
-  public Command fireAlgae() {
-    return Commands.runOnce(() -> {
-      System.err.println("FIRE!");
-
-      SimulatedArena arena = SimulatedArena.getInstance();
-
-      // Translation2d robotPosition,
-      // Translation2d shooterPositionOnRobot,
-      // ChassisSpeeds chassisSpeeds,
-      // Rotation2d shooterFacing,
-      // Distance initialHeight,
-      // LinearVelocity launchingSpeed,
-      // Angle shooterAngle
-
-      ReefscapeAlgaeOnFly algae = new ReefscapeAlgaeOnFly(
-          drivebase.getPose().getTranslation(),
-          new Translation2d(),
-          drivebase.getSwerveDrive().getRobotVelocity().times(-1),
-          drivebase.getSwerveDrive().getOdometryHeading(),
-          Distance.ofBaseUnits(1, Feet),
-          LinearVelocity.ofBaseUnits(5, FeetPerSecond),
-          Angle.ofBaseUnits(45, Degrees));
-
-      // Configure callbacks to visualize the flight trajectory of the projectile
-      algae.withProjectileTrajectoryDisplayCallBack(
-          // Callback for when the note will eventually hit the target (if configured)
-          (pose3ds) -> Logger.recordOutput("FieldSimulation/Shooter/ProjectileSuccessfulShot",
-              pose3ds.toArray(Pose3d[]::new)),
-          // Callback for when the note will eventually miss the target, or if no target
-          // is configured
-          (pose3ds) -> Logger.recordOutput("FieldSimulation/Shooter/ProjectileUnsuccessfulShot",
-              pose3ds.toArray(Pose3d[]::new)));
-
-      arena.addGamePieceProjectile(algae);
-    }).withName("Fire.Algae");
   }
 }

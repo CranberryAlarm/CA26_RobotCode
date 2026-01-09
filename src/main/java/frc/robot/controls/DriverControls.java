@@ -1,10 +1,25 @@
 package frc.robot.controls;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Feet;
+import static edu.wpi.first.units.Units.FeetPerSecond;
+
+import org.ironmaple.simulation.SimulatedArena;
+import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeAlgaeOnFly;
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.ControllerConstants;
+import frc.robot.Robot;
 import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.SwerveSubsystem;
 import swervelib.SwerveInputStream;
@@ -61,18 +76,56 @@ public class DriverControls {
       // Overrides drive command above!
       // Might be useful for robot-oriented controls in testing
 
-      controller.x().whileTrue(Commands.runOnce(drivetrain::lock, drivetrain).repeatedly());
-      controller.start().onTrue((Commands.runOnce(drivetrain::zeroGyro)));
-      controller.back().whileTrue(drivetrain.centerModulesCommand());
-      controller.leftBumper().onTrue(Commands.none());
-    } else {
       controller.a().onTrue((Commands.runOnce(drivetrain::zeroGyro)));
+      controller.b().whileTrue(drivetrain.centerModulesCommand());
+      controller.x().whileTrue(Commands.runOnce(drivetrain::lock, drivetrain).repeatedly());
+      controller.y().onTrue((Commands.runOnce(drivetrain::zeroGyro)));
 
       controller.start().whileTrue(drivetrain.sysIdAngleMotorCommand());
       controller.back().whileTrue(drivetrain.sysIdDriveMotorCommand());
-      // controller.back().whileTrue(fireAlgae());
 
+      controller.leftBumper().onTrue(Commands.none());
+    } else if (Robot.isSimulation()) {
+      controller.back().whileTrue(fireAlgae(drivetrain));
+    } else {
       controller.leftBumper().whileTrue(Commands.runOnce(drivetrain::lock, drivetrain).repeatedly());
     }
+  }
+
+  public static Command fireAlgae(SwerveSubsystem drivetrain) {
+    return Commands.runOnce(() -> {
+      System.err.println("FIRE!");
+
+      SimulatedArena arena = SimulatedArena.getInstance();
+
+      // Translation2d robotPosition,
+      // Translation2d shooterPositionOnRobot,
+      // ChassisSpeeds chassisSpeeds,
+      // Rotation2d shooterFacing,
+      // Distance initialHeight,
+      // LinearVelocity launchingSpeed,
+      // Angle shooterAngle
+
+      ReefscapeAlgaeOnFly algae = new ReefscapeAlgaeOnFly(
+          drivetrain.getPose().getTranslation(),
+          new Translation2d(),
+          drivetrain.getSwerveDrive().getRobotVelocity().times(-1),
+          drivetrain.getSwerveDrive().getOdometryHeading(),
+          Distance.ofBaseUnits(1, Feet),
+          LinearVelocity.ofBaseUnits(5, FeetPerSecond),
+          Angle.ofBaseUnits(45, Degrees));
+
+      // Configure callbacks to visualize the flight trajectory of the projectile
+      algae.withProjectileTrajectoryDisplayCallBack(
+          // Callback for when the note will eventually hit the target (if configured)
+          (pose3ds) -> Logger.recordOutput("FieldSimulation/Shooter/ProjectileSuccessfulShot",
+              pose3ds.toArray(Pose3d[]::new)),
+          // Callback for when the note will eventually miss the target, or if no target
+          // is configured
+          (pose3ds) -> Logger.recordOutput("FieldSimulation/Shooter/ProjectileUnsuccessfulShot",
+              pose3ds.toArray(Pose3d[]::new)));
+
+      arena.addGamePieceProjectile(algae);
+    }).withName("Fire.Algae");
   }
 }
