@@ -3,7 +3,11 @@ package frc.robot.subsystems;
 import java.util.function.Supplier;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.RPM;
+
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -41,10 +45,14 @@ public class Superstructure extends SubsystemBase {
   private Angle targetTurretAngle = Degrees.of(0);
   private Angle targetHoodAngle = Degrees.of(0);
 
+  private Pose3d targetPose = new Pose3d(Meters.of(0), Meters.of(0), Meters.of(0), Rotation3d.kZero);
+
   public Superstructure(ShooterSubsystem shooter, TurretSubsystem turret, HoodSubsystem hood) {
     this.shooter = shooter;
     this.turret = turret;
     this.hood = hood;
+
+    this.targetPose = new Pose3d(Meters.of(0), Meters.of(0), Meters.of(0), Rotation3d.kZero);
 
     // Create triggers for checking if mechanisms are at their targets
     this.isShooterAtSpeed = new Trigger(
@@ -186,6 +194,10 @@ public class Superstructure extends SubsystemBase {
 
   public Angle getTargetHoodAngle() {
     return targetHoodAngle;
+  }
+
+  public Pose3d getTargetPose() {
+    return targetPose;
   }
 
   @Override
