@@ -200,6 +200,13 @@ public class Superstructure extends SubsystemBase {
     return targetPose;
   }
 
+  public Rotation3d getAimRotation3d() {
+    return new Rotation3d(
+      Degrees.of(0), // no roll 🤞
+      hood.getAngle(),
+      turret.getAngle());
+  }
+
   @Override
   public void periodic() {
     // Superstructure doesn't need periodic updates - subsystems handle their own

@@ -7,6 +7,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -17,11 +18,19 @@ import frc.robot.Constants.ControllerConstants;
 import frc.robot.controls.DriverControls;
 import frc.robot.controls.OperatorControls;
 import frc.robot.controls.PoseControls;
+import frc.robot.subsystems.HoodSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.TurretSubsystem;
 import swervelib.SwerveDrive;
 
 public class RobotContainer {
   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
+  private final TurretSubsystem turret = new TurretSubsystem();
+  private final HoodSubsystem hood = new HoodSubsystem();
+  private final ShooterSubsystem shooter = new ShooterSubsystem();
+  private final Superstructure superstructure = new Superstructure(shooter, turret, hood);
 
   private final SendableChooser<Command> autoChooser;
 
@@ -53,8 +62,8 @@ public class RobotContainer {
 
   private void configureBindings() {
     // Set up controllers
-    DriverControls.configure(ControllerConstants.kDriverControllerPort, drivebase, null);
-    OperatorControls.configure(ControllerConstants.kOperatorControllerPort, drivebase, null);
+    DriverControls.configure(ControllerConstants.kDriverControllerPort, drivebase, superstructure);
+    OperatorControls.configure(ControllerConstants.kOperatorControllerPort, drivebase, superstructure);
     PoseControls.configure(ControllerConstants.kPoseControllerPort, drivebase);
   }
 
@@ -81,5 +90,9 @@ public class RobotContainer {
 
   public Pose2d getRobotPose() {
     return drivebase.getPose();
+  }
+
+  public Pose3d getAimDirection() {
+    return new Pose3d(drivebase.getPose()).rotateBy(superstructure.getAimRotation3d());
   }
 }

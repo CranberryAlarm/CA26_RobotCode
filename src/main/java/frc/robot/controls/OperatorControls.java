@@ -13,10 +13,10 @@ public class OperatorControls {
   public static void configure(int port, SwerveSubsystem drivetrain, Superstructure superstructure) {
     CommandXboxController controller = new CommandXboxController(port);
 
-    if (Robot.isSimulation() && superstructure != null) {
+    if (Robot.isSimulation()) {
       controller.leftTrigger().whileTrue(superstructure.aimDynamicCommand(() -> { return RotationsPerSecond.of(100); }, () -> {
         // Some combination of these is what I want.
-        return Degrees.of(drivetrain.getPose().relativeTo(superstructure.getTargetPose().toPose2d()).getRotation().getDegrees());
+        return Degrees.of(superstructure.getTargetPose().toPose2d().relativeTo(drivetrain.getPose()).getRotation().getDegrees());
       }, () -> {
         return Degrees.of(45); // Placeholder value
       }));
