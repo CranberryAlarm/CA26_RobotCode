@@ -583,6 +583,15 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   /**
+   * Gets the current 3d pose (position and rotation) of the robot, as reported by
+   * odometry. Transforms into a 3d pose assuming on the XY plane.
+   * @return
+   */
+  public Pose3d getPose3d() {
+    return new Pose3d(swerveDrive.getPose());
+  }
+
+  /**
    * Set chassis speeds with closed-loop velocity control.
    *
    * @param chassisSpeeds Chassis Speeds to set.

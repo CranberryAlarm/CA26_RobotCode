@@ -63,6 +63,7 @@ public class Robot extends LoggedRobot {
     Logger.recordOutput("FieldSimulation/TargetPose",
         m_robotContainer.getSwerveDrive().field.getObject("targetPose").getPose());
     Logger.recordOutput("FieldSimulation/AimDirection", m_robotContainer.getAimDirection());
+    Logger.recordOutput("FieldSimulation/AimTarget", m_robotContainer.getAimPoint());
   }
 
   @Override

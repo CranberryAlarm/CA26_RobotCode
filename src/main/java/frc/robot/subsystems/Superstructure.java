@@ -8,6 +8,7 @@ import static edu.wpi.first.units.Units.RPM;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -45,14 +46,14 @@ public class Superstructure extends SubsystemBase {
   private Angle targetTurretAngle = Degrees.of(0);
   private Angle targetHoodAngle = Degrees.of(0);
 
-  private Pose3d targetPose = new Pose3d(Meters.of(0), Meters.of(0), Meters.of(0), Rotation3d.kZero);
+  private Translation3d aimPoint = new Translation3d(Meters.of(0), Meters.of(0), Meters.of(0));
 
   public Superstructure(ShooterSubsystem shooter, TurretSubsystem turret, HoodSubsystem hood) {
     this.shooter = shooter;
     this.turret = turret;
     this.hood = hood;
 
-    this.targetPose = new Pose3d(Meters.of(0), Meters.of(0), Meters.of(0), Rotation3d.kZero);
+    this.aimPoint = new Translation3d(Meters.of(0), Meters.of(0), Meters.of(0));
 
     // Create triggers for checking if mechanisms are at their targets
     this.isShooterAtSpeed = new Trigger(
@@ -196,14 +197,18 @@ public class Superstructure extends SubsystemBase {
     return targetHoodAngle;
   }
 
-  public Pose3d getTargetPose() {
-    return targetPose;
+  public Translation3d getAimPoint() {
+    return aimPoint;
+  }
+
+  public void setAimPoint(Translation3d newAimPoint) {
+    this.aimPoint = newAimPoint;
   }
 
   public Rotation3d getAimRotation3d() {
     return new Rotation3d(
       Degrees.of(0), // no roll 🤞
-      hood.getAngle(),
+      Degrees.of(0), // hood.getAngle(),
       turret.getAngle());
   }
 
