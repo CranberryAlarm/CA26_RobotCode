@@ -79,4 +79,9 @@ public final class Constants {
     // 1 Neo, 0-90 degree variability, 50:1 reduction
     public static final int kMotorId = 19;
   }
+
+  public static class IntakeConstants {
+    // SparkFlex controlling the intake flywheel
+    public static final int kFlywheelMotorId = 30;
+  }
 }

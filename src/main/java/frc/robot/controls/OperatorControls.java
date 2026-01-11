@@ -8,5 +8,11 @@ public class OperatorControls {
 
   public static void configure(int port, SwerveSubsystem drivetrain, Superstructure superstructure) {
     CommandXboxController controller = new CommandXboxController(port);
+
+    // Intake controls - A to intake, B to eject
+    if (superstructure != null) {
+      controller.a().whileTrue(superstructure.intakeCommand());
+      controller.b().whileTrue(superstructure.ejectCommand());
+    }
   }
 }

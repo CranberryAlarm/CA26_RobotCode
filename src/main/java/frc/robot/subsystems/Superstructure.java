@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
- * Superstructure coordinates the shooter, turret, and hood subsystems
+ * Superstructure coordinates the shooter, turret, hood, and intake subsystems
  * for unified control during shooting operations.
  */
 public class Superstructure extends SubsystemBase {
@@ -20,6 +20,7 @@ public class Superstructure extends SubsystemBase {
   private final ShooterSubsystem shooter;
   private final TurretSubsystem turret;
   private final HoodSubsystem hood;
+  private final IntakeSubsystem intake;
 
   // Default values for "ready" state
   private static final AngularVelocity DEFAULT_SHOOTER_SPEED = RPM.of(4000);
@@ -41,10 +42,11 @@ public class Superstructure extends SubsystemBase {
   private Angle targetTurretAngle = Degrees.of(0);
   private Angle targetHoodAngle = Degrees.of(0);
 
-  public Superstructure(ShooterSubsystem shooter, TurretSubsystem turret, HoodSubsystem hood) {
+  public Superstructure(ShooterSubsystem shooter, TurretSubsystem turret, HoodSubsystem hood, IntakeSubsystem intake) {
     this.shooter = shooter;
     this.turret = turret;
     this.hood = hood;
+    this.intake = intake;
 
     // Create triggers for checking if mechanisms are at their targets
     this.isShooterAtSpeed = new Trigger(
@@ -186,6 +188,20 @@ public class Superstructure extends SubsystemBase {
 
   public Angle getTargetHoodAngle() {
     return targetHoodAngle;
+  }
+
+  /**
+   * Command to run the intake while held.
+   */
+  public Command intakeCommand() {
+    return intake.intakeCommand().withName("Superstructure.intake");
+  }
+
+  /**
+   * Command to eject while held.
+   */
+  public Command ejectCommand() {
+    return intake.ejectCommand().withName("Superstructure.eject");
   }
 
   @Override
