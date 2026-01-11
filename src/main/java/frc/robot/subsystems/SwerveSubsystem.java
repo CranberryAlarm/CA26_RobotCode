@@ -76,6 +76,8 @@ public class SwerveSubsystem extends SubsystemBase {
   private Limelight limelight;
   private LimelightPoseEstimator poseEstimator;
 
+  private final boolean IS_LIMELIGHT_ENABLED = false;
+
   /**
    * Initialize {@link SwerveDrive} with the directory provided.
    *
@@ -129,50 +131,53 @@ public class SwerveSubsystem extends SubsystemBase {
 
     SwerveIMU gyro = swerveDrive.getGyro();
 
-    limelight = new Limelight("limelight");
-    limelight.getSettings()
-        .withLimelightLEDMode(LEDMode.PipelineControl)
-        .withCameraOffset(new Pose3d(
-            Inches.of(14.00).in(Meters),
-            Inches.of(4.750).in(Meters),
-            Inches.of(17.25).in(Meters),
-            Rotation3d.kZero))
-        .withImuMode(ImuMode.InternalImuMT1Assist)
-        .withImuAssistAlpha(0.01)
-        .save();
-
-    RobotModeTriggers.disabled().onTrue(Commands.runOnce(() -> {
-      System.out.println("Setting LL IMU Assist Alpha to 0.001");
-
+    if (IS_LIMELIGHT_ENABLED) {
+      limelight = new Limelight("limelight");
       limelight.getSettings()
-          // .withImuMode(ImuMode.InternalImuMT1Assist)
-          .withImuAssistAlpha(0.001)
-          .save();
-    }).ignoringDisable(true));
-
-    Command onEnable = Commands.runOnce(() -> {
-      System.out.println("Setting LL IMU Assist Alpha to 0.01");
-
-      limelight.getSettings()
-          // .withImuMode(ImuMode.InternalImuMT1Assist)
+          .withLimelightLEDMode(LEDMode.PipelineControl)
+          .withCameraOffset(new Pose3d(
+              Inches.of(14.00).in(Meters),
+              Inches.of(4.750).in(Meters),
+              Inches.of(17.25).in(Meters),
+              Rotation3d.kZero))
+          .withImuMode(ImuMode.InternalImuMT1Assist)
           .withImuAssistAlpha(0.01)
           .save();
-    });
-    RobotModeTriggers.teleop().onTrue(onEnable);
-    RobotModeTriggers.autonomous().onTrue(onEnable);
-    RobotModeTriggers.test().onTrue(onEnable);
 
-    // Required for megatag2 in periodic() function before fetching pose.
-    limelight.getSettings()
-        .withRobotOrientation(
-            new Orientation3d(gyro.getRotation3d(),
-                new AngularVelocity3d(
-                    DegreesPerSecond.of(0),
-                    DegreesPerSecond.of(0),
-                    DegreesPerSecond.of(0))))
-        .save();
+      RobotModeTriggers.disabled().onTrue(Commands.runOnce(() -> {
+        System.out.println("Setting LL IMU Assist Alpha to 0.001");
 
-    poseEstimator = limelight.createPoseEstimator(EstimationMode.MEGATAG2);
+        limelight.getSettings()
+            // .withImuMode(ImuMode.InternalImuMT1Assist)
+            .withImuAssistAlpha(0.001)
+            .save();
+      }).ignoringDisable(true));
+
+      Command onEnable = Commands.runOnce(() -> {
+        System.out.println("Setting LL IMU Assist Alpha to 0.01");
+
+        limelight.getSettings()
+            // .withImuMode(ImuMode.InternalImuMT1Assist)
+            .withImuAssistAlpha(0.01)
+            .save();
+      });
+
+      RobotModeTriggers.teleop().onTrue(onEnable);
+      RobotModeTriggers.autonomous().onTrue(onEnable);
+      RobotModeTriggers.test().onTrue(onEnable);
+
+      // Required for megatag2 in periodic() function before fetching pose.
+      limelight.getSettings()
+          .withRobotOrientation(
+              new Orientation3d(gyro.getRotation3d(),
+                  new AngularVelocity3d(
+                      DegreesPerSecond.of(0),
+                      DegreesPerSecond.of(0),
+                      DegreesPerSecond.of(0))))
+          .save();
+
+      poseEstimator = limelight.createPoseEstimator(EstimationMode.MEGATAG2);
+    }
 
     setupPathPlanner();
   }
@@ -181,27 +186,32 @@ public class SwerveSubsystem extends SubsystemBase {
   public void periodic() {
     // swerveDrive.updateOdometry(); // TODO: see if this is needed
 
-    // // Get MegaTag2 pose
-    Optional<PoseEstimate> visionEstimate = poseEstimator.getPoseEstimate();
+    if (IS_LIMELIGHT_ENABLED) {
+      // Get MegaTag2 pose
+      Optional<PoseEstimate> visionEstimate = poseEstimator.getPoseEstimate();
 
-    // If the pose is present
-    visionEstimate.ifPresent((PoseEstimate poseEstimate) -> {
-      if (poseEstimate.tagCount > 0) {
-        Logger.recordOutput("Limelight/Megatag2Count", poseEstimate.tagCount);
+      // If the pose is present
+      visionEstimate.ifPresent((PoseEstimate poseEstimate) -> {
+        if (poseEstimate.tagCount > 0) {
+          Logger.recordOutput("Limelight/Megatag2Count", poseEstimate.tagCount);
 
-        Logger.recordOutput("FieldSimulation/LLPose", poseEstimate.pose);
+          Logger.recordOutput("FieldSimulation/LLPose", poseEstimate.pose);
 
-        // Add it to the pose estimator.
-        swerveDrive.addVisionMeasurement(
-            poseEstimate.pose.toPose2d(),
-            poseEstimate.timestampSeconds);
-        // TODO: possibly add stddevs here
-        // TODO: Instead of providing the limelight's pose as is, replace the rotation
-        // component with the current pose rotation so the process doesn't take it into
-        // account?
+          // Add it to the pose estimator.
+          swerveDrive.addVisionMeasurement(
+              poseEstimate.pose.toPose2d(),
+              poseEstimate.timestampSeconds);
 
-      }
-    });
+          // TODO: possibly add stddevs here
+          // TODO: Instead of providing the limelight's pose as is, replace the
+          // rotation
+          // component with the current pose rotation so the process doesn't take it
+          // into
+          // account?
+
+        }
+      });
+    }
   }
 
   @Override
