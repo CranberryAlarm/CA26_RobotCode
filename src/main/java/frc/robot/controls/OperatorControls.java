@@ -26,7 +26,7 @@ public class OperatorControls {
     CommandXboxController controller = new CommandXboxController(port);
 
     if (Robot.isSimulation()) {
-      controller.leftBumper().whileTrue(aimCommand(drivetrain, superstructure));
+      controller.leftBumper().whileTrue(aimCommand(drivetrain, superstructure).repeatedly());
 
       Commands.run(() -> {
         double leftX = controller.getLeftX();
@@ -65,10 +65,13 @@ public class OperatorControls {
       System.out.println("Robot pose: " + drivetrain.getPose());
       var vectorToTarget = targetOnGround.minus(drivetrain.getPose().getTranslation());
 
-      // Calculate relative direction to target relative to the front of the robot
-      var frontOfRobot = drivetrain.getHeading();
-      var robotToTarget = vectorToTarget.rotateBy(frontOfRobot.unaryMinus());
-      return robotToTarget.getAngle().getMeasure();
+      Logger.recordOutput("Superstructure/VectorToTarget", vectorToTarget);
+
+      var calculatedHeading = drivetrain.getHeading().minus(vectorToTarget.getAngle()).getMeasure();
+
+      System.out.println("Calculated heading: " + calculatedHeading.in(Degrees) + " degrees");
+
+      return calculatedHeading;
       }, () -> {
         return Degrees.of(45); // Placeholder value
       });
