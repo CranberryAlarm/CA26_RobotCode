@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.robot.commands.ShootOnTheMoveCommand;
 import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.SwerveSubsystem;
 
@@ -54,25 +55,6 @@ public class OperatorControls {
   }
 
   private static Command aimCommand(SwerveSubsystem drivetrain, Superstructure superstructure) {
-    return superstructure.aimDynamicCommand(() -> { return RotationsPerSecond.of(1); }, () -> {
-      var target = superstructure.getAimPoint();
-      System.out.println("Aiming at target pose: " + target);
-      var targetOnGround = new Translation2d(target.getX(), target.getY());
-      System.out.println("Aiming at target pose (2d): " + targetOnGround);
-      Logger.recordOutput("Superstructure/TargetPose2d", targetOnGround);
-
-      System.out.println("Robot pose: " + drivetrain.getPose());
-      var vectorToTarget = targetOnGround.minus(drivetrain.getPose().getTranslation());
-
-      Logger.recordOutput("Superstructure/VectorToTarget", vectorToTarget);
-
-      var calculatedHeading = drivetrain.getHeading().minus(vectorToTarget.getAngle()).getMeasure();
-
-      System.out.println("Calculated heading: " + calculatedHeading.in(Degrees) + " degrees");
-
-      return calculatedHeading;
-      }, () -> {
-        return Degrees.of(45); // Placeholder value
-      });
+    return new ShootOnTheMoveCommand(drivetrain, superstructure, () -> superstructure.getAimPoint());
   }
 }
