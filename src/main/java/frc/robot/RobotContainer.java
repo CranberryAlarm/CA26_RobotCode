@@ -8,6 +8,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -95,7 +96,8 @@ public class RobotContainer {
   }
 
   public Pose3d getAimDirection() {
-    var pose = drivebase.getPose3d().plus(new Transform3d(Translation3d.kZero, superstructure.getAimRotation3d()));
+    var pose = drivebase.getPose3d().plus(new Transform3d(Translation3d.kZero, superstructure.getAimRotation3d().rotateBy(
+      new Rotation3d(drivebase.getHeading()))));
 
     return pose;
   }

@@ -7,6 +7,7 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -63,7 +64,7 @@ public class Robot extends LoggedRobot {
     Logger.recordOutput("FieldSimulation/TargetPose",
         m_robotContainer.getSwerveDrive().field.getObject("targetPose").getPose());
     Logger.recordOutput("FieldSimulation/AimDirection", m_robotContainer.getAimDirection());
-    Logger.recordOutput("FieldSimulation/AimTarget", m_robotContainer.getAimPoint());
+    Logger.recordOutput("FieldSimulation/AimTarget", new Pose3d(m_robotContainer.getAimPoint(), Rotation3d.kZero));
   }
 
   @Override

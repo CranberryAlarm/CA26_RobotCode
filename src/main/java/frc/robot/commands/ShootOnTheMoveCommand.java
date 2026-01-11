@@ -8,6 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.Logger;
+
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
@@ -63,7 +67,7 @@ public class ShootOnTheMoveCommand extends Command{
     // Calculate trajectory to aimPoint
     var target = aimPointSupplier.get();
 
-    var shooterLocation = drivetrain.getPose3d().getTranslation().plus(superstructure.getShooterTransform());
+    var shooterLocation = drivetrain.getPose3d().getTranslation().plus(superstructure.getShooterPose().getTranslation());
 
     // Ignore this parameter for now, the range tables will account for it :/
     // var deltaH = target.getMeasureZ().minus(shooterLocation.getMeasureZ());
@@ -79,9 +83,12 @@ public class ShootOnTheMoveCommand extends Command{
     // Calculate corrective vector based on our current velocity multiplied by time of flight.
     // If we're stationary, this should be zero. If we're backing up, this will be "ahead" of the target, etc.
     var updatedPosition = drivetrain.getFieldVelocity().times(timeOfFlight);
-    var correctiveVector = new Translation2d(updatedPosition.vxMetersPerSecond, updatedPosition.vyMetersPerSecond);
+    var correctiveVector = new Translation2d(updatedPosition.vxMetersPerSecond, updatedPosition.vyMetersPerSecond).unaryMinus();
+    var correctiveVector3d = new Translation3d(updatedPosition.vxMetersPerSecond, updatedPosition.vyMetersPerSecond, 0);
 
-    var correctedTarget = targetOnGround.minus(correctiveVector);
+    Logger.recordOutput("FieldSimulation/AimTargetCorrected", new Pose3d(target.plus(correctiveVector3d), Rotation3d.kZero));
+
+    var correctedTarget = targetOnGround.plus(correctiveVector);
 
     var vectorToTarget = correctedTarget.minus(drivetrain.getPose().getTranslation());
     var correctedDistance = Meters.of(vectorToTarget.getNorm());
@@ -114,9 +121,9 @@ public class ShootOnTheMoveCommand extends Command{
 
   // meters, RPS
   private static final InterpolatingDoubleTreeMap SHOOTING_SPEED_BY_DISTANCE = InterpolatingDoubleTreeMap.ofEntries(
-    Map.entry(1.0, 3.0),
-    Map.entry(2.0, 4.0),
-    Map.entry(3.0, 5.0)
+    Map.entry(1.0, 100.0),
+    Map.entry(2.0, 100.0),
+    Map.entry(3.0, 205.0)
   );
 
   // meters, degrees

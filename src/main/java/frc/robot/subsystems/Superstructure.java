@@ -54,7 +54,7 @@ public class Superstructure extends SubsystemBase {
     this.turret = turret;
     this.hood = hood;
 
-    this.aimPoint = new Translation3d(Meters.of(0), Meters.of(0), Meters.of(0));
+    this.aimPoint = new Translation3d(Meters.of(14.5), Meters.of(4), Meters.of(0));
 
     // Create triggers for checking if mechanisms are at their targets
     this.isShooterAtSpeed = new Trigger(
@@ -210,8 +210,8 @@ public class Superstructure extends SubsystemBase {
     // See https://docs.wpilib.org/en/stable/docs/software/basic-programming/coordinate-system.html
     return new Rotation3d(
       Degrees.of(0), // no roll 🤞
-      hood.getAngle().unaryMinus(), // pitch and yaw are both CCW in WPILib convention
-      turret.getAngle().unaryMinus());
+      hood.getAngle().unaryMinus(), // pitch is negative hood angle
+      turret.getAngle().unaryMinus()); // yaw is also negative
   }
 
   @Override
@@ -219,9 +219,8 @@ public class Superstructure extends SubsystemBase {
     // Superstructure doesn't need periodic updates - subsystems handle their own
   }
 
-  public Translation3d getShooterTransform() {
-    // Return the transform from the robot center to the shooter
-    // return new Translation3d(Meters.of(0.5), Meters.of(0), Inches.of(18.0));
-    return new Translation3d(Meters.of(0), Meters.of(0), Meters.of(0));
+  public Pose3d getShooterPose() {
+    // Position of the shooter relative to the "front" of the robot. Rotation element is based on hood and turret angles
+    return new Pose3d(Meters.of(0), Meters.of(0), Meters.of(0), getAimRotation3d());
   }
 }

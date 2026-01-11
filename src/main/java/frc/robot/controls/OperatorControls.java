@@ -1,12 +1,20 @@
 package frc.robot.controls;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Feet;
+import static edu.wpi.first.units.Units.FeetPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import org.ironmaple.simulation.SimulatedArena;
+import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeAlgaeOnFly;
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -23,6 +31,7 @@ public class OperatorControls {
 
     if (Robot.isSimulation()) {
       controller.leftBumper().whileTrue(aimCommand(drivetrain, superstructure));
+      controller.start().whileTrue(fireAlgae(drivetrain, superstructure));
 
       Commands.run(() -> {
         double leftX = controller.getLeftX();
@@ -60,5 +69,42 @@ public class OperatorControls {
 
   private static Command aimCommand(SwerveSubsystem drivetrain, Superstructure superstructure) {
     return new ShootOnTheMoveCommand(drivetrain, superstructure, () -> superstructure.getAimPoint());
+  }
+
+  public static Command fireAlgae(SwerveSubsystem drivetrain, Superstructure superstructure) {
+    return Commands.runOnce(() -> {
+      System.err.println("FIRE!");
+
+      SimulatedArena arena = SimulatedArena.getInstance();
+
+      // Translation2d robotPosition,
+      // Translation2d shooterPositionOnRobot,
+      // ChassisSpeeds chassisSpeeds,
+      // Rotation2d shooterFacing,
+      // Distance initialHeight,
+      // LinearVelocity launchingSpeed,
+      // Angle shooterAngle
+
+      ReefscapeAlgaeOnFly algae = new ReefscapeAlgaeOnFly(
+          drivetrain.getPose().getTranslation(),
+          new Translation2d(),
+          drivetrain.getSwerveDrive().getRobotVelocity().times(-1),
+          superstructure.getAimRotation3d().toRotation2d(),
+          Distance.ofBaseUnits(1, Feet),
+          LinearVelocity.ofBaseUnits(5, FeetPerSecond),
+          superstructure.getHoodAngle());
+
+      // Configure callbacks to visualize the flight trajectory of the projectile
+      algae.withProjectileTrajectoryDisplayCallBack(
+          // Callback for when the note will eventually hit the target (if configured)
+          (pose3ds) -> Logger.recordOutput("FieldSimulation/Shooter/ProjectileSuccessfulShot",
+              pose3ds.toArray(Pose3d[]::new)),
+          // Callback for when the note will eventually miss the target, or if no target
+          // is configured
+          (pose3ds) -> Logger.recordOutput("FieldSimulation/Shooter/ProjectileUnsuccessfulShot",
+              pose3ds.toArray(Pose3d[]::new)));
+
+      arena.addGamePieceProjectile(algae);
+    }).withName("Fire.Algae");
   }
 }
