@@ -22,6 +22,7 @@ import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.SwerveSubsystem;
 
 public class OperatorControls {
+  public static final boolean MACOS_WEIRD_CONTROLLER = true;
   public static void configure(int port, SwerveSubsystem drivetrain, Superstructure superstructure) {
     CommandXboxController controller = new CommandXboxController(port);
 
@@ -42,6 +43,11 @@ public class OperatorControls {
           rightY = 0;
 
         Translation3d translation = new Translation3d(leftX, leftY, rightY);
+
+        if (MACOS_WEIRD_CONTROLLER) {
+          // MacOS Xbox controller mapping is weird - swap X and Y
+          translation = new Translation3d(leftY, leftX, rightY);
+        }
 
         // System.out.println("Adjusting pose by: " + translation.toString());
 ;
