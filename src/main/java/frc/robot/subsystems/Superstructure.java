@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import java.util.function.Supplier;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.RPM;
 
@@ -206,14 +207,21 @@ public class Superstructure extends SubsystemBase {
   }
 
   public Rotation3d getAimRotation3d() {
+    // See https://docs.wpilib.org/en/stable/docs/software/basic-programming/coordinate-system.html
     return new Rotation3d(
       Degrees.of(0), // no roll 🤞
-      Degrees.of(0), // hood.getAngle(),
-      turret.getAngle().unaryMinus()); // yaw is negative in CCW +z direction
+      hood.getAngle().unaryMinus(), // pitch and yaw are both CCW in WPILib convention
+      turret.getAngle().unaryMinus());
   }
 
   @Override
   public void periodic() {
     // Superstructure doesn't need periodic updates - subsystems handle their own
+  }
+
+  public Translation3d getShooterTransform() {
+    // Return the transform from the robot center to the shooter
+    // return new Translation3d(Meters.of(0.5), Meters.of(0), Inches.of(18.0));
+    return new Translation3d(Meters.of(0), Meters.of(0), Meters.of(0));
   }
 }

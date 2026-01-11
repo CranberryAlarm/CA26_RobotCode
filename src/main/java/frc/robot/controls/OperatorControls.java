@@ -29,6 +29,10 @@ public class OperatorControls {
         double leftY = controller.getLeftY();
         double rightY = controller.getRightY();
 
+        if (MACOS_WEIRD_CONTROLLER) {
+          rightY = controller.getRightTriggerAxis() - controller.getLeftTriggerAxis();
+        }
+
         // Apply deadband
         if (Math.abs(leftX) < Constants.ControllerConstants.DEADBAND)
           leftX = 0;
