@@ -1,16 +1,10 @@
 package frc.robot.controls;
 
 import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
-
-import java.util.Set;
 
 import org.littletonrobotics.junction.Logger;
 
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -27,7 +21,7 @@ public class OperatorControls {
     CommandXboxController controller = new CommandXboxController(port);
 
     if (Robot.isSimulation()) {
-      controller.leftBumper().whileTrue(aimCommand(drivetrain, superstructure).repeatedly());
+      controller.leftBumper().whileTrue(aimCommand(drivetrain, superstructure));
 
       Commands.run(() -> {
         double leftX = controller.getLeftX();
@@ -50,7 +44,7 @@ public class OperatorControls {
         }
 
         // System.out.println("Adjusting pose by: " + translation.toString());
-;
+
         var newAimPoint = superstructure.getAimPoint().plus(translation.times(0.05));
           // new Transform3d(leftX * 0.05, leftY * 0.05, rightY * 0.05));
 
@@ -59,9 +53,8 @@ public class OperatorControls {
     }
   }
 
-
   private static Command aimCommand(SwerveSubsystem drivetrain, Superstructure superstructure) {
-    return superstructure.aimDynamicCommand(() -> { return RotationsPerSecond.of(100); }, () -> {
+    return superstructure.aimDynamicCommand(() -> { return RotationsPerSecond.of(1); }, () -> {
       var target = superstructure.getAimPoint();
       System.out.println("Aiming at target pose: " + target);
       var targetOnGround = new Translation2d(target.getX(), target.getY());

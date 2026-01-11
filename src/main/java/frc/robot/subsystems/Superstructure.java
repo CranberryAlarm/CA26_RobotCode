@@ -150,9 +150,9 @@ public class Superstructure extends SubsystemBase {
       targetHoodAngle = hoodAngleSupplier.get();
     }).alongWith(
         Commands.parallel(
-            shooter.setSpeed(shooterSpeedSupplier.get()).asProxy(),
-            turret.setAngle(turretAngleSupplier.get()).asProxy(),
-            hood.setAngle(hoodAngleSupplier.get()).asProxy()))
+            shooter.setSpeedDynamic(shooterSpeedSupplier).asProxy(),
+            turret.setAngleDynamic(turretAngleSupplier).asProxy(),
+            hood.setAngleDynamic(hoodAngleSupplier).asProxy()))
         .withName("Superstructure.aimDynamic");
   }
 
@@ -209,7 +209,7 @@ public class Superstructure extends SubsystemBase {
     return new Rotation3d(
       Degrees.of(0), // no roll 🤞
       Degrees.of(0), // hood.getAngle(),
-      turret.getAngle());
+      turret.getAngle().unaryMinus()); // yaw is negative in CCW +z direction
   }
 
   @Override

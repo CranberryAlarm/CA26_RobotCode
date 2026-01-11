@@ -12,6 +12,9 @@ import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
+
+import java.util.function.Supplier;
+
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -60,6 +63,10 @@ public class HoodSubsystem extends SubsystemBase {
 
   public Command setAngle(Angle angle) {
     return hood.setAngle(angle);
+  }
+
+  public Command setAngleDynamic(Supplier<Angle> hoodAngleSupplier) {
+    return hood.setAngle(hoodAngleSupplier);
   }
 
   public Command stow() {
