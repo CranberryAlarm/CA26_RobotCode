@@ -221,6 +221,13 @@ public class Superstructure extends SubsystemBase {
     return hopper.reverseCommand().withName("Superstructure.hopperReverse");
   }
 
+  /**
+   * Command to set the intake pivot angle.
+   */
+  public Command setIntakePivotAngle(Angle angle) {
+    return intake.setPivotAngle(angle).withName("Superstructure.setIntakePivotAngle");
+  }
+
   @Override
   public void periodic() {
     // Superstructure doesn't need periodic updates - subsystems handle their own
