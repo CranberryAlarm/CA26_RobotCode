@@ -8,8 +8,11 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
@@ -17,7 +20,11 @@ import static edu.wpi.first.units.Units.Volts;
 
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -93,11 +100,23 @@ public class ShooterSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    Logger.recordOutput("Shooter/DangIt", getTangentialVelocity());
     shooter.updateTelemetry();
   }
 
   @Override
   public void simulationPeriodic() {
     shooter.simIterate();
+  }
+
+  private Distance wheelRadius() {
+    return shooterConfig.getLength().orElse(Inches.of(4).div(2));
+  }
+
+  public LinearVelocity getTangentialVelocity() {
+    // Calculate tangential velocity at the edge of the wheel and convert to LinearVelocity
+
+    return MetersPerSecond.of(shooter.getSpeed().in(RadiansPerSecond)
+      * wheelRadius().in(Meters));
   }
 }

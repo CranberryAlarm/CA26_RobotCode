@@ -4,7 +4,6 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
-import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -15,7 +14,6 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
-import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
@@ -101,6 +99,8 @@ public class ShootOnTheMoveCommand extends Command{
     latestTurretAngle = calculatedHeading;
     latestShootSpeed = calculateRequiredShooterSpeed(correctedDistance);
     latestHoodAngle = calculateRequiredHoodAngle(correctedDistance);
+
+    // System.out.println("Shooting at distance: " + correctedDistance + " requires speed: " + latestShootSpeed + ", hood angle: " + latestHoodAngle + ", turret angle: " + latestTurretAngle);
   }
 
   private double getFlightTime(Distance distanceToTarget) {
@@ -127,7 +127,7 @@ public class ShootOnTheMoveCommand extends Command{
   private static final InterpolatingDoubleTreeMap SHOOTING_SPEED_BY_DISTANCE = InterpolatingDoubleTreeMap.ofEntries(
     Map.entry(1.0, 100.0),
     Map.entry(2.0, 100.0),
-    Map.entry(3.0, 205.0)
+    Map.entry(3.0, 100.0)
   );
 
   // meters, degrees

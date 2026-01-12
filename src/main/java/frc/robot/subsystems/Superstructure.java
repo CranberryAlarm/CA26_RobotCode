@@ -3,7 +3,6 @@ package frc.robot.subsystems;
 import java.util.function.Supplier;
 
 import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.RPM;
 
@@ -12,6 +11,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -222,5 +222,9 @@ public class Superstructure extends SubsystemBase {
   public Pose3d getShooterPose() {
     // Position of the shooter relative to the "front" of the robot. Rotation element is based on hood and turret angles
     return new Pose3d(Meters.of(0), Meters.of(0), Meters.of(0), getAimRotation3d());
+  }
+
+  public LinearVelocity getTangentialVelocity() {
+    return shooter.getTangentialVelocity();
   }
 }

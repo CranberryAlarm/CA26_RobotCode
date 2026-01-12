@@ -1,20 +1,14 @@
 package frc.robot.controls;
 
-import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Feet;
-import static edu.wpi.first.units.Units.FeetPerSecond;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-
 import org.ironmaple.simulation.SimulatedArena;
-import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeAlgaeOnFly;
+import org.ironmaple.simulation.gamepieces.GamePieceProjectile;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -23,6 +17,7 @@ import frc.robot.Robot;
 import frc.robot.commands.ShootOnTheMoveCommand;
 import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.util.RebuildFuelOnFly;
 
 public class OperatorControls {
   public static final boolean MACOS_WEIRD_CONTROLLER = true;
@@ -85,17 +80,20 @@ public class OperatorControls {
       // LinearVelocity launchingSpeed,
       // Angle shooterAngle
 
-      ReefscapeAlgaeOnFly algae = new ReefscapeAlgaeOnFly(
+
+      GamePieceProjectile fuel = new RebuildFuelOnFly(
           drivetrain.getPose().getTranslation(),
           new Translation2d(),
           drivetrain.getSwerveDrive().getRobotVelocity().times(-1),
           superstructure.getAimRotation3d().toRotation2d(),
           Distance.ofBaseUnits(1, Feet),
-          LinearVelocity.ofBaseUnits(5, FeetPerSecond),
+
+          // based on numbers from https://www.reca.lc/flywheel
+          superstructure.getTangentialVelocity().times(0.2), // adjust for simulation tuning
           superstructure.getHoodAngle());
 
       // Configure callbacks to visualize the flight trajectory of the projectile
-      algae.withProjectileTrajectoryDisplayCallBack(
+      fuel.withProjectileTrajectoryDisplayCallBack(
           // Callback for when the note will eventually hit the target (if configured)
           (pose3ds) -> Logger.recordOutput("FieldSimulation/Shooter/ProjectileSuccessfulShot",
               pose3ds.toArray(Pose3d[]::new)),
@@ -104,7 +102,7 @@ public class OperatorControls {
           (pose3ds) -> Logger.recordOutput("FieldSimulation/Shooter/ProjectileUnsuccessfulShot",
               pose3ds.toArray(Pose3d[]::new)));
 
-      arena.addGamePieceProjectile(algae);
-    }).withName("Fire.Algae");
+      arena.addGamePieceProjectile(fuel);
+    }).withName("Fire.Fuel");
   }
 }
