@@ -82,7 +82,7 @@ public final class Constants {
   // Intake subsystem CAN IDs start at 30
   public static class IntakeConstants {
     // SparkFlex controlling the intake flywheel
-    public static final int kFlywheelMotorId = 30;
+    public static final int kPivotMotorId = 30;
     public static final int kRollerMotorId = 31;
   }
 

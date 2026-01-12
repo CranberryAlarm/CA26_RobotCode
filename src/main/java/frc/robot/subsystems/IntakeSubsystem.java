@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.spark.SparkFlex;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.thethriftybot.ThriftyNova;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import static edu.wpi.first.units.Units.Amps;
@@ -20,14 +19,14 @@ import yams.motorcontrollers.SmartMotorControllerConfig;
 import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
-import yams.motorcontrollers.local.SparkWrapper;
+import yams.motorcontrollers.local.NovaWrapper;
 
 public class IntakeSubsystem extends SubsystemBase {
 
-  private static final double INTAKE_SPEED = 0.5;
+  private static final double INTAKE_SPEED = 1.0;
 
-  // SparkFlex controlling the intake flywheel
-  private SparkFlex flywheelSpark = new SparkFlex(Constants.IntakeConstants.kFlywheelMotorId, MotorType.kBrushless);
+  // ThriftyNova controlling the intake roller
+  private ThriftyNova rollerNova = new ThriftyNova(Constants.IntakeConstants.kRollerMotorId);
 
   private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
       .withControlMode(ControlMode.OPEN_LOOP)
@@ -37,13 +36,13 @@ public class IntakeSubsystem extends SubsystemBase {
       .withIdleMode(MotorMode.COAST)
       .withStatorCurrentLimit(Amps.of(40));
 
-  private SmartMotorController smc = new SparkWrapper(flywheelSpark, DCMotor.getNeoVortex(1), smcConfig);
+  private SmartMotorController smc = new NovaWrapper(rollerNova, DCMotor.getNeoVortex(1), smcConfig);
 
   private final FlyWheelConfig intakeConfig = new FlyWheelConfig(smc)
       .withDiameter(Inches.of(4))
       .withMass(Pounds.of(0.5))
-      .withUpperSoftLimit(RPM.of(6000))
-      .withLowerSoftLimit(RPM.of(-6000))
+      .withUpperSoftLimit(RPM.of(600000))
+      .withLowerSoftLimit(RPM.of(-600000))
       .withTelemetry("Intake", TelemetryVerbosity.HIGH);
 
   private FlyWheel intake = new FlyWheel(intakeConfig);
