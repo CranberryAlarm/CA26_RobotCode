@@ -23,7 +23,7 @@ import yams.motorcontrollers.local.NovaWrapper;
 
 public class IntakeSubsystem extends SubsystemBase {
 
-  private static final double INTAKE_SPEED = 1.0;
+  private static final double INTAKE_SPEED = 0.1;
 
   // ThriftyNova controlling the intake roller
   private ThriftyNova rollerNova = new ThriftyNova(Constants.IntakeConstants.kRollerMotorId);

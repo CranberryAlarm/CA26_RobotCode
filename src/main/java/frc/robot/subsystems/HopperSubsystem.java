@@ -24,7 +24,7 @@ import yams.motorcontrollers.local.NovaWrapper;
 
 public class HopperSubsystem extends SubsystemBase {
 
-  private static final double HOPPER_SPEED = 0.5;
+  private static final double HOPPER_SPEED = 1.0;
 
   // Nova motor controller with NEO motor
   private ThriftyNova hopperNova = new ThriftyNova(Constants.HopperConstants.kHopperMotorId);
@@ -35,7 +35,7 @@ public class HopperSubsystem extends SubsystemBase {
       .withGearing(new MechanismGearing(GearBox.fromReductionStages(4))) // 4:1 gear reduction
       .withMotorInverted(false)
       .withIdleMode(MotorMode.BRAKE)
-      .withStatorCurrentLimit(Amps.of(20));
+      .withStatorCurrentLimit(Amps.of(40));
 
   private SmartMotorController smc = new NovaWrapper(hopperNova, DCMotor.getNEO(1), smcConfig);
 
