@@ -43,7 +43,8 @@ public class Superstructure extends SubsystemBase {
   private Angle targetTurretAngle = Degrees.of(0);
   private Angle targetHoodAngle = Degrees.of(0);
 
-  public Superstructure(ShooterSubsystem shooter, TurretSubsystem turret, HoodSubsystem hood, IntakeSubsystem intake, HopperSubsystem hopper) {
+  public Superstructure(ShooterSubsystem shooter, TurretSubsystem turret, HoodSubsystem hood, IntakeSubsystem intake,
+      HopperSubsystem hopper) {
     this.shooter = shooter;
     this.turret = turret;
     this.hood = hood;
