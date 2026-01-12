@@ -69,10 +69,9 @@ public final class Constants {
   }
 
   public static class TurretConstants {
-    // 2 Neos, 12in diameter, 25:1 gearbox, 10:1 pivot gearing, non-continuous (270
-    // FOV)
-    public static final int kLeaderMotorId = 17;
-    public static final int kFollowerMotorId = 18;
+    // 1 Neo, 6.875 in diameter, 4:1 gearbox, 10:1 pivot gearing, non-continuous
+    // 360 deg
+    public static final int kMotorId = 17;
   }
 
   public static class HoodConstants {
@@ -80,8 +79,15 @@ public final class Constants {
     public static final int kMotorId = 19;
   }
 
+  // Intake subsystem CAN IDs start at 30
   public static class IntakeConstants {
     // SparkFlex controlling the intake flywheel
     public static final int kFlywheelMotorId = 30;
+    public static final int kRollerMotorId = 31;
+  }
+
+  // Hopper subsystem CAN IDs start at 40
+  public static class HopperConstants {
+    public static final int kHopperMotorId = 40;
   }
 }

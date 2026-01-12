@@ -21,6 +21,7 @@ public class Superstructure extends SubsystemBase {
   private final TurretSubsystem turret;
   private final HoodSubsystem hood;
   private final IntakeSubsystem intake;
+  private final HopperSubsystem hopper;
 
   // Default values for "ready" state
   private static final AngularVelocity DEFAULT_SHOOTER_SPEED = RPM.of(4000);
@@ -42,11 +43,12 @@ public class Superstructure extends SubsystemBase {
   private Angle targetTurretAngle = Degrees.of(0);
   private Angle targetHoodAngle = Degrees.of(0);
 
-  public Superstructure(ShooterSubsystem shooter, TurretSubsystem turret, HoodSubsystem hood, IntakeSubsystem intake) {
+  public Superstructure(ShooterSubsystem shooter, TurretSubsystem turret, HoodSubsystem hood, IntakeSubsystem intake, HopperSubsystem hopper) {
     this.shooter = shooter;
     this.turret = turret;
     this.hood = hood;
     this.intake = intake;
+    this.hopper = hopper;
 
     // Create triggers for checking if mechanisms are at their targets
     this.isShooterAtSpeed = new Trigger(
@@ -202,6 +204,20 @@ public class Superstructure extends SubsystemBase {
    */
   public Command ejectCommand() {
     return intake.ejectCommand().withName("Superstructure.eject");
+  }
+
+  /**
+   * Command to run the hopper forward while held.
+   */
+  public Command feedCommand() {
+    return hopper.feedCommand().withName("Superstructure.feed");
+  }
+
+  /**
+   * Command to run the hopper in reverse while held.
+   */
+  public Command hopperReverseCommand() {
+    return hopper.reverseCommand().withName("Superstructure.hopperReverse");
   }
 
   @Override
