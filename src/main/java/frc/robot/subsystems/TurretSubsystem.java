@@ -1,9 +1,7 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkMax;
+import com.thethriftybot.ThriftyNova;
 
-import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
 import static edu.wpi.first.units.Units.Amps;
@@ -26,34 +24,34 @@ import yams.motorcontrollers.SmartMotorControllerConfig;
 import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
-import yams.motorcontrollers.local.SparkWrapper;
+import yams.motorcontrollers.local.NovaWrapper;
 
 public class TurretSubsystem extends SubsystemBase {
 
-  // 2 Neos, 12in diameter, 25:1 gearbox, 10:1 pivot gearing reduction,
-  // non-continuous (270 FOV)
-  // Total reduction: 25 * 10 = 250:1
-  private SparkMax leaderSpark = new SparkMax(Constants.TurretConstants.kLeaderMotorId, MotorType.kBrushless);
-  private SparkMax followerSpark = new SparkMax(Constants.TurretConstants.kFollowerMotorId, MotorType.kBrushless);
+  private final double MAX_ONE_DIR_FOV = 45; // degrees
+
+  // 1 Neo, 6.875 in diameter, 4:1 gearbox, 10:1 pivot gearing, non-continuous
+  // 360 deg
+  // Total reduction: 4 * 10 = 40:1
+  private ThriftyNova nova = new ThriftyNova(Constants.TurretConstants.kMotorId);
 
   private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
-      .withFollowers(Pair.of(followerSpark, false))
       .withControlMode(ControlMode.CLOSED_LOOP)
       .withClosedLoopController(100, 0, 0, DegreesPerSecond.of(180), DegreesPerSecondPerSecond.of(180))
       .withFeedforward(new ArmFeedforward(0, 0, 0.1))
       .withTelemetry("TurretMotor", TelemetryVerbosity.HIGH)
-      .withGearing(new MechanismGearing(GearBox.fromReductionStages(25, 10)))
+      .withGearing(new MechanismGearing(GearBox.fromReductionStages(4, 10)))
       .withMotorInverted(false)
       .withIdleMode(MotorMode.BRAKE)
-      .withSoftLimit(Degrees.of(-135), Degrees.of(135)) // 270 FOV, centered at 0
+      .withSoftLimit(Degrees.of(-MAX_ONE_DIR_FOV), Degrees.of(MAX_ONE_DIR_FOV))
       .withStatorCurrentLimit(Amps.of(40))
       .withClosedLoopRampRate(Seconds.of(0.1))
       .withOpenLoopRampRate(Seconds.of(0.1));
 
-  private SmartMotorController smc = new SparkWrapper(leaderSpark, DCMotor.getNEO(2), smcConfig);
+  private SmartMotorController smc = new NovaWrapper(nova, DCMotor.getNEO(1), smcConfig);
 
   private final PivotConfig turretConfig = new PivotConfig(smc)
-      .withHardLimit(Degrees.of(-140), Degrees.of(140))
+      .withHardLimit(Degrees.of(-MAX_ONE_DIR_FOV - 5), Degrees.of(MAX_ONE_DIR_FOV + 5))
       .withStartingPosition(Degrees.of(0))
       .withMOI(0.05)
       .withTelemetry("Turret", TelemetryVerbosity.HIGH);
