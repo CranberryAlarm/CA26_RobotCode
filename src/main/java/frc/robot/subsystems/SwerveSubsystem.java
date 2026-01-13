@@ -41,6 +41,8 @@ import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meter;
 import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Radians;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -139,7 +141,8 @@ public class SwerveSubsystem extends SubsystemBase {
               Inches.of(-11.00).in(Meters),
               Inches.of(-9.0).in(Meters),
               Inches.of(12.75).in(Meters),
-              new Rotation3d(0, 21, 180)))
+              new Rotation3d(0, Degrees.of(21).in(Radians), Degrees.of(180).in(Radians))))
+          // new Rotation3d(0, 21, 180)))
           .withImuMode(ImuMode.InternalImuMT1Assist)
           .withImuAssistAlpha(0.01)
           .save();
