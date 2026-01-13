@@ -244,13 +244,26 @@ public class Superstructure extends SubsystemBase {
   public Command feedAllCommand() {
     return Commands.parallel(
         hopper.feedCommand().asProxy(),
-        kicker.feedCommand().asProxy()).withName("Superstructure.feedAll");
+        kicker.feedCommand().asProxy(),
+        intake.setPivotAngle(Degrees.of(46)).asProxy()).withName("Superstructure.feedAll");
   }
+
+  // public Command intakeBounceCommand() {
+  // return Commands.sequence(
+  // Commands.runOnce(() -> intake.setPivotAngle(Degrees.of(115))).asProxy()
+  // .withName("Superstructure.intakeBounce.deploy"),
+  // Commands.waitSeconds(0.5),
+  // Commands.runOnce(() -> intake.setPivotAngle(Degrees.of(59))).asProxy()
+  // .withName("Superstructure.intakeBounce.feed"),
+  // Commands.waitSeconds(0.5))
+  // .withName("Superstructure.intakeBounce");
+  // }
 
   public Command stopFeedingAllCommand() {
     return Commands.parallel(
         hopper.stopCommand().asProxy(),
-        kicker.stopCommand().asProxy()).withName("Superstructure.stopFeedingAll");
+        kicker.stopCommand().asProxy(),
+        intake.deployAndRollCommand().asProxy()).withName("Superstructure.stopFeedingAll");
   }
 
   /**

@@ -33,7 +33,7 @@ import yams.motorcontrollers.local.NovaWrapper;
 
 public class IntakeSubsystem extends SubsystemBase {
 
-  private static final double INTAKE_SPEED = 0.5;
+  private static final double INTAKE_SPEED = 1.0;
 
   // ThriftyNova controlling the intake roller
   private ThriftyNova rollerNova = new ThriftyNova(Constants.IntakeConstants.kRollerMotorId);
@@ -75,8 +75,8 @@ public class IntakeSubsystem extends SubsystemBase {
       intakePivotSmartMotorConfig);
 
   private final ArmConfig intakePivotConfig = new ArmConfig(intakePivotController)
-      .withSoftLimits(Degrees.of(0), Degrees.of(140))
-      .withHardLimit(Degrees.of(0), Degrees.of(145))
+      .withSoftLimits(Degrees.of(0), Degrees.of(150))
+      .withHardLimit(Degrees.of(0), Degrees.of(155))
       .withStartingPosition(Degrees.of(0))
       .withLength(Feet.of(1))
       .withMass(Pounds.of(2)) // Reis says: 2 pounds, not a lot
@@ -128,12 +128,16 @@ public class IntakeSubsystem extends SubsystemBase {
     intakePivotController.setPosition(Degrees.of(0));
   }
 
+  private void setIntakeFeed() {
+    intakePivotController.setPosition(Degrees.of(59));
+  }
+
   private void setIntakeHold() {
     intakePivotController.setPosition(Degrees.of(115));
   }
 
   private void setIntakeDeployed() {
-    intakePivotController.setPosition(Degrees.of(140));
+    intakePivotController.setPosition(Degrees.of(148));
   }
 
   @Override

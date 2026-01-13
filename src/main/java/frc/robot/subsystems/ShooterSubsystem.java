@@ -8,6 +8,8 @@ import frc.robot.Constants;
 
 public class ShooterSubsystem extends SubsystemBase {
 
+  private static final double SHOOTER_SPEED = 0.65;
+
   // 2 Neos, 4in shooter wheels
   private final ThriftyNova leaderNova = new ThriftyNova(Constants.ShooterConstants.kLeaderMotorId);
   private final ThriftyNova followerNova = new ThriftyNova(Constants.ShooterConstants.kFollowerMotorId);
@@ -50,8 +52,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public Command spinUp() {
     return run(() -> {
-      leaderNova.setPercent(0.7);
-      followerNova.setPercent(0.7);
+      leaderNova.setPercent(SHOOTER_SPEED);
+      followerNova.setPercent(SHOOTER_SPEED);
 
       // followerNova.follow(leaderNova.getID());
       // followerNova.setPercent(0.5);
