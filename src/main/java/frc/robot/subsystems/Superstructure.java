@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
- * Superstructure coordinates the shooter, turret, and hood subsystems
+ * Superstructure coordinates the shooter, turret, hood, and intake subsystems
  * for unified control during shooting operations.
  */
 public class Superstructure extends SubsystemBase {
@@ -26,6 +26,9 @@ public class Superstructure extends SubsystemBase {
   private final ShooterSubsystem shooter;
   private final TurretSubsystem turret;
   private final HoodSubsystem hood;
+  private final IntakeSubsystem intake;
+  private final HopperSubsystem hopper;
+  private final KickerSubsystem kicker;
 
   // Default values for "ready" state
   private static final AngularVelocity DEFAULT_SHOOTER_SPEED = RPM.of(4000);
@@ -49,10 +52,14 @@ public class Superstructure extends SubsystemBase {
 
   private Translation3d aimPoint = new Translation3d(Meters.of(0), Meters.of(0), Meters.of(0));
 
-  public Superstructure(ShooterSubsystem shooter, TurretSubsystem turret, HoodSubsystem hood) {
+  public Superstructure(ShooterSubsystem shooter, TurretSubsystem turret, HoodSubsystem hood, IntakeSubsystem intake,
+      HopperSubsystem hopper, KickerSubsystem kicker) {
     this.shooter = shooter;
     this.turret = turret;
     this.hood = hood;
+    this.intake = intake;
+    this.hopper = hopper;
+    this.kicker = kicker;
 
     this.aimPoint = new Translation3d(Meters.of(14.5), Meters.of(4), Meters.of(0));
 
@@ -207,11 +214,81 @@ public class Superstructure extends SubsystemBase {
   }
 
   public Rotation3d getAimRotation3d() {
-    // See https://docs.wpilib.org/en/stable/docs/software/basic-programming/coordinate-system.html
+    // See
+    // https://docs.wpilib.org/en/stable/docs/software/basic-programming/coordinate-system.html
     return new Rotation3d(
-      Degrees.of(0), // no roll 🤞
-      hood.getAngle().unaryMinus(), // pitch is negative hood angle
-      turret.getAngle());
+        Degrees.of(0), // no roll 🤞
+        // hood.getAngle().unaryMinus(), // pitch is negative hood angle
+        Degrees.of(60),
+        turret.getAngle());
+  }
+
+  /**
+   * Command to run the intake while held.
+   */
+  public Command intakeCommand() {
+    return intake.intakeCommand().withName("Superstructure.intake");
+  }
+
+  /**
+   * Command to eject while held.
+   */
+  public Command ejectCommand() {
+    return intake.ejectCommand().withName("Superstructure.eject");
+  }
+
+  /**
+   * Command to run the hopper forward while held.
+   */
+  public Command hopperFeedCommand() {
+    return hopper.feedCommand().withName("Superstructure.feed");
+  }
+
+  /**
+   * Command to run the hopper in reverse while held.
+   */
+  public Command hopperReverseCommand() {
+    return hopper.reverseCommand().withName("Superstructure.hopperReverse");
+  }
+
+  /**
+   * Command to run the kicker forward while held, stops when released.
+   */
+  public Command kickerFeedCommand() {
+    return kicker.feedCommand().withName("Superstructure.kickerFeed");
+  }
+
+  /**
+   * Command to run the kicker stop while held, stops when released.
+   */
+  public Command kickerStopCommand() {
+    return kicker.stopCommand().withName("Superstructure.kickerStop");
+  }
+
+  /**
+   * Command to set the intake pivot angle.
+   */
+  public Command setIntakePivotAngle(Angle angle) {
+    return intake.setPivotAngle(angle).withName("Superstructure.setIntakePivotAngle");
+  }
+
+  /**
+   * Command to shoot - spins up shooter.
+   */
+  public Command shootCommand() {
+    return shooter.spinUp().withName("Superstructure.shoot");
+  }
+
+  /**
+   * Command to stop shooting - stops shooter.
+   */
+  public Command stopShootingCommand() {
+    return shooter.stop().withName("Superstructure.stopShooting");
+  }
+
+  // Re-zero intake pivot if needed
+  public Command rezeroIntakePivotCommand() {
+    return Commands.runOnce(() -> intake.rezero(), intake).withName("Superstructure.rezeroIntakePivot");
   }
 
   @Override
@@ -220,7 +297,8 @@ public class Superstructure extends SubsystemBase {
   }
 
   public Pose3d getShooterPose() {
-    // Position of the shooter relative to the "front" of the robot. Rotation element is based on hood and turret angles
+    // Position of the shooter relative to the "front" of the robot. Rotation
+    // element is based on hood and turret angles
     return new Pose3d(Meters.of(0), Meters.of(0), Meters.of(0), getAimRotation3d());
   }
 

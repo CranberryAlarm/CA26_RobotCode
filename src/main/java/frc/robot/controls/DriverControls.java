@@ -74,6 +74,7 @@ public class DriverControls {
     } else if (Robot.isSimulation()) {
       // controller.back().whileTrue(fireAlgae(drivetrain));
     } else {
+      controller.y().onTrue((Commands.runOnce(drivetrain::zeroGyro)));
       controller.leftBumper().whileTrue(Commands.runOnce(drivetrain::lock, drivetrain).repeatedly());
     }
   }

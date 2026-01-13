@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.Robot;
@@ -21,6 +22,7 @@ import frc.robot.util.RebuildFuelOnFly;
 
 public class OperatorControls {
   public static final boolean MACOS_WEIRD_CONTROLLER = true;
+
   public static void configure(int port, SwerveSubsystem drivetrain, Superstructure superstructure) {
     CommandXboxController controller = new CommandXboxController(port);
 
@@ -55,11 +57,36 @@ public class OperatorControls {
         // System.out.println("Adjusting pose by: " + translation.toString());
 
         var newAimPoint = superstructure.getAimPoint().plus(translation.times(0.05));
-          // new Transform3d(leftX * 0.05, leftY * 0.05, rightY * 0.05));
+        // new Transform3d(leftX * 0.05, leftY * 0.05, rightY * 0.05));
 
         superstructure.setAimPoint(newAimPoint);
       }).ignoringDisable(true).schedule();
     }
+
+    // Intake controls - A to intake, B to eject
+    controller.a().whileTrue(superstructure.intakeCommand());
+    controller.b().whileTrue(superstructure.ejectCommand());
+
+    // Hopper controls - X to run hopper forward, Y to run backward
+    controller.x().whileTrue(superstructure.hopperFeedCommand());
+    controller.y().whileTrue(superstructure.hopperReverseCommand());
+
+    // Shooter controls - Right bumper to shoot
+    controller.rightBumper().whileTrue(superstructure.shootCommand());
+    controller.leftBumper().whileTrue(superstructure.stopShootingCommand());
+
+    // Kicker controls
+    controller.back().whileTrue(superstructure.kickerFeedCommand());
+    controller.start().whileTrue(superstructure.kickerStopCommand());
+
+    // Intake pivot controls. Setpoints need to be tested and finalized.
+
+    // 0 for default
+    // -45 for collection
+    // +25 just because. We can add more setpoints if necessary.
+    // controller.povUp().whileTrue(superstructure.setIntakePivotAngle(Degrees.of(25)));
+    // controller.povRight().whileTrue(superstructure.setIntakePivotAngle(Degrees.of(0)));
+    // controller.povDown().whileTrue(superstructure.setIntakePivotAngle(Degrees.of(-45)));
   }
 
   private static Command aimCommand(SwerveSubsystem drivetrain, Superstructure superstructure) {
@@ -79,7 +106,6 @@ public class OperatorControls {
       // Distance initialHeight,
       // LinearVelocity launchingSpeed,
       // Angle shooterAngle
-
 
       GamePieceProjectile fuel = new RebuildFuelOnFly(
           drivetrain.getPose().getTranslation(),
