@@ -249,6 +249,12 @@ public class Superstructure extends SubsystemBase {
         intake.setPivotAngle(Degrees.of(46)).asProxy()).withName("Superstructure.feedAll");
   }
 
+  public Command backFeedAllCommand() {
+    return Commands.parallel(
+        hopper.backFeedCommand().asProxy(),
+        intake.backFeedAndRollCommand().asProxy()).withName("Superstructure.backFeedAll");
+  }
+
   // public Command intakeBounceCommand() {
   // return Commands.sequence(
   // Commands.runOnce(() -> intake.setPivotAngle(Degrees.of(115))).asProxy()

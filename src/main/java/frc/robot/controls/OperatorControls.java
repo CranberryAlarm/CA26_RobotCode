@@ -48,5 +48,9 @@ public class OperatorControls {
     controller.a().whileTrue(
         superstructure.feedAllCommand()
             .finallyDo(() -> superstructure.stopFeedingAllCommand().schedule()));
+
+    controller.b().whileTrue(
+        superstructure.backFeedAllCommand()
+            .finallyDo(() -> superstructure.stopFeedingAllCommand().schedule()));
   }
 }

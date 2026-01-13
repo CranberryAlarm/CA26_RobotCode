@@ -58,6 +58,10 @@ public class HopperSubsystem extends SubsystemBase {
     return hopper.set(HOPPER_SPEED).finallyDo(() -> smc.setDutyCycle(0)).withName("Hopper.Feed");
   }
 
+  public Command backFeedCommand() {
+    return hopper.set(-HOPPER_SPEED).finallyDo(() -> smc.setDutyCycle(0)).withName("Hopper.BackFeed");
+  }
+
   /**
    * Command to run the hopper in reverse while held.
    */
