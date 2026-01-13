@@ -41,6 +41,8 @@ import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meter;
 import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Radians;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -77,6 +79,15 @@ public class SwerveSubsystem extends SubsystemBase {
   private LimelightPoseEstimator poseEstimator;
 
   private final boolean IS_LIMELIGHT_ENABLED = true;
+
+  private double distanceToHub = 0.0;
+
+  public double getDistanceToHub() {
+    if (IS_LIMELIGHT_ENABLED) {
+      return distanceToHub;
+    }
+    return 0.0;
+  }
 
   /**
    * Initialize {@link SwerveDrive} with the directory provided.
@@ -139,7 +150,8 @@ public class SwerveSubsystem extends SubsystemBase {
               Inches.of(-11.00).in(Meters),
               Inches.of(-9.0).in(Meters),
               Inches.of(12.75).in(Meters),
-              new Rotation3d(0, 21, 180)))
+              new Rotation3d(0, Degrees.of(21).in(Radians), Degrees.of(180).in(Radians))))
+          // new Rotation3d(0, 21, 180)))
           .withImuMode(ImuMode.InternalImuMT1Assist)
           .withImuAssistAlpha(0.01)
           .save();
@@ -196,6 +208,16 @@ public class SwerveSubsystem extends SubsystemBase {
           Logger.recordOutput("Limelight/Megatag2Count", poseEstimate.tagCount);
 
           Logger.recordOutput("FieldSimulation/LLPose", poseEstimate.pose);
+
+          Pose3d redHub = new Pose3d(
+              Meter.of(11.902),
+              Meter.of(4.031),
+              Meter.of(0.0),
+              new Rotation3d(0, 0, 0));
+
+          distanceToHub = poseEstimate.pose.toPose2d().minus(redHub.toPose2d()).getTranslation().getNorm();
+
+          Logger.recordOutput("FieldSimulation/hubDiff", distanceToHub);
 
           // Add it to the pose estimator.
           swerveDrive.addVisionMeasurement(
@@ -431,6 +453,12 @@ public class SwerveSubsystem extends SubsystemBase {
   public Command driveForward() {
     return run(() -> {
       swerveDrive.drive(new Translation2d(1, 0), 0, false, false);
+    }).finallyDo(() -> swerveDrive.drive(new Translation2d(0, 0), 0, false, false));
+  }
+
+  public Command driveBackwards() {
+    return run(() -> {
+      swerveDrive.drive(new Translation2d(-1, 0), 0, false, false);
     }).finallyDo(() -> swerveDrive.drive(new Translation2d(0, 0), 0, false, false));
   }
 

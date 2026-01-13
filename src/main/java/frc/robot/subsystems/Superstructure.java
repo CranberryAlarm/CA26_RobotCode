@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import static edu.wpi.first.units.Units.Degrees;
@@ -276,6 +277,12 @@ public class Superstructure extends SubsystemBase {
         intake.setPivotAngle(Degrees.of(46)).asProxy()).withName("Superstructure.feedAll");
   }
 
+  public Command backFeedAllCommand() {
+    return Commands.parallel(
+        hopper.backFeedCommand().asProxy(),
+        intake.backFeedAndRollCommand().asProxy()).withName("Superstructure.backFeedAll");
+  }
+
   // public Command intakeBounceCommand() {
   // return Commands.sequence(
   // Commands.runOnce(() -> intake.setPivotAngle(Degrees.of(115))).asProxy()
@@ -310,6 +317,13 @@ public class Superstructure extends SubsystemBase {
    */
   public Command shootCommand() {
     return shooter.spinUp().withName("Superstructure.shoot");
+  }
+
+  /**
+   * Command to shoot - spins up shooter.
+   */
+  public Command shootWithDistanceCommand(double distanceMeters) {
+    return shooter.shootAtDistance(distanceMeters).withName("Superstructure.shootWithDistance");
   }
 
   /**

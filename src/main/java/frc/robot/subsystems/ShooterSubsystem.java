@@ -1,5 +1,10 @@
 package frc.robot.subsystems;
 
+import java.util.Map;
+import java.util.function.DoubleSupplier;
+
+import org.littletonrobotics.junction.Logger;
+
 import com.thethriftybot.ThriftyNova;
 
 import edu.wpi.first.math.Pair;
@@ -24,14 +29,16 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class ShooterSubsystem extends SubsystemBase {
-
-  private static final double SHOOTER_SPEED = 0.65;
   private static final AngularVelocity SHOOTER_MAX_ANGULAR_VELOCITY = RotationsPerSecond.of(6000);
+  private double SHOOTER_SPEED = 0.65;
+  private double temp_distance = 0.0;
 
   // 2 Neos, 4in shooter wheels
   private final ThriftyNova leaderNova = new ThriftyNova(Constants.ShooterConstants.kLeaderMotorId);
@@ -62,8 +69,13 @@ public class ShooterSubsystem extends SubsystemBase {
   // private final FlyWheel shooter = new FlyWheel(shooterConfig);
 
   public ShooterSubsystem() {
+    SmartDashboard.putNumber("ShooterSpeed", SHOOTER_SPEED);
+
     leaderNova.factoryReset();
     followerNova.factoryReset();
+
+    // leaderNova.setVoltageCompensation(12);
+    // followerNova.setVoltageCompensation(12);
 
     leaderNova.setInverted(false);
     followerNova.setInverted(true);
@@ -99,6 +111,15 @@ public class ShooterSubsystem extends SubsystemBase {
     // return shooter.setSpeed(RotationsPerSecond.of(500));
   }
 
+  public Command shootAtDistance(double distanceMeters) {
+    return run(() -> {
+      temp_distance = SHOOTING_SPEED_BY_DISTANCE.get(distanceMeters);
+
+      leaderNova.setPercent(temp_distance);
+      followerNova.setPercent(temp_distance);
+    });
+  }
+
   public Command stop() {
     return run(() -> {
       leaderNova.setPercent(0);
@@ -124,6 +145,11 @@ public class ShooterSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // shooter.updateTelemetry();
+    SHOOTER_SPEED = SmartDashboard.getNumber("ShooterSpeed", SHOOTER_SPEED);
+
+    Logger.recordOutput("Shooter/Setpoint", temp_distance);
+    Logger.recordOutput("Shooter/LeaderVelocity", leaderNova.getVelocity());
+    Logger.recordOutput("Shooter/FollowerVelocity", followerNova.getVelocity());
   }
 
   @Override
@@ -142,4 +168,10 @@ public class ShooterSubsystem extends SubsystemBase {
     return MetersPerSecond.of(getSpeed().in(RadiansPerSecond)
         * wheelRadius().in(Meters));
   }
+
+  // meters, RPS
+  private static final InterpolatingDoubleTreeMap SHOOTING_SPEED_BY_DISTANCE = InterpolatingDoubleTreeMap.ofEntries(
+      Map.entry(2.63, 0.55),
+      Map.entry(3.4, 0.6),
+      Map.entry(4.83, 0.69));
 }
