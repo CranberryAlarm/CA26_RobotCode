@@ -60,8 +60,8 @@ public class IntakeSubsystem extends SubsystemBase {
   // 5:1, 5:1, 60/18 reduction
   private SmartMotorControllerConfig intakePivotSmartMotorConfig = new SmartMotorControllerConfig(this)
       .withControlMode(ControlMode.CLOSED_LOOP)
-      .withClosedLoopController(10, 0, 0, DegreesPerSecond.of(360), DegreesPerSecondPerSecond.of(360))
-      .withFeedforward(new ArmFeedforward(0, 0, 0.0))
+      .withClosedLoopController(10, 0, 0, DegreesPerSecond.of(1080), DegreesPerSecondPerSecond.of(1080))
+      .withFeedforward(new ArmFeedforward(0, 0, 1.3))
       .withTelemetry("IntakePivotMotor", TelemetryVerbosity.HIGH)
       .withGearing(new MechanismGearing(GearBox.fromReductionStages(5, 5, 60.0 / 18.0, 42)))
       .withMotorInverted(false)
@@ -75,8 +75,8 @@ public class IntakeSubsystem extends SubsystemBase {
       intakePivotSmartMotorConfig);
 
   private final ArmConfig intakePivotConfig = new ArmConfig(intakePivotController)
-      // .withSoftLimits(Degrees.of(0), Degrees.of(185))
-      // .withHardLimit(Degrees.of(0), Degrees.of(190))
+      .withSoftLimits(Degrees.of(0), Degrees.of(140))
+      .withHardLimit(Degrees.of(0), Degrees.of(145))
       .withStartingPosition(Degrees.of(0))
       .withLength(Feet.of(1))
       .withMass(Pounds.of(2)) // Reis says: 2 pounds, not a lot

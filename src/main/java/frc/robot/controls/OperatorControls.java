@@ -27,13 +27,10 @@ public class OperatorControls {
     controller.back().whileTrue(superstructure.kickerFeedCommand());
     controller.start().whileTrue(superstructure.kickerStopCommand());
 
-    // Intake pivot controls. Setpoints need to be tested and finalized.
-
-    // 0 for default
-    // -45 for collection
-    // +25 just because. We can add more setpoints if necessary.
-    controller.povUp().onTrue(superstructure.setIntakePivotAngle(Degrees.of(0)));
-    controller.povRight().onTrue(superstructure.setIntakePivotAngle(Degrees.of(90)));
+    // Intake pivot controls
+    controller.povUp().onTrue(superstructure.setIntakeStow());
+    controller.povRight().onTrue(superstructure.setIntakeHold());
+    controller.povRight().onTrue(superstructure.setIntakeDeployed());
 
     controller.povDown().onTrue(superstructure.rezeroIntakePivotCommand());
   }
