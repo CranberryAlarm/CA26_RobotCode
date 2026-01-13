@@ -231,6 +231,13 @@ public class Superstructure extends SubsystemBase {
   }
 
   /**
+   * Command to run the kicker stop while held, stops when released.
+   */
+  public Command kickerStopCommand() {
+    return kicker.stopCommand().withName("Superstructure.kickerStop");
+  }
+
+  /**
    * Command to set the intake pivot angle.
    */
   public Command setIntakePivotAngle(Angle angle) {

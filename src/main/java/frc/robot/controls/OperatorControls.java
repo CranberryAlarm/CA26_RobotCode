@@ -23,13 +23,17 @@ public class OperatorControls {
     controller.rightBumper().whileTrue(superstructure.shootCommand());
     controller.leftBumper().whileTrue(superstructure.stopShootingCommand());
 
+    // Kicker controls
+    controller.back().whileTrue(superstructure.kickerFeedCommand());
+    controller.start().whileTrue(superstructure.kickerStopCommand());
+
     // Intake pivot controls. Setpoints need to be tested and finalized.
 
     // 0 for default
     // -45 for collection
     // +25 just because. We can add more setpoints if necessary.
-    controller.povUp().whileTrue(superstructure.setIntakePivotAngle(Degrees.of(25)));
-    controller.povRight().whileTrue(superstructure.setIntakePivotAngle(Degrees.of(0)));
-    controller.povDown().whileTrue(superstructure.setIntakePivotAngle(Degrees.of(-45)));
+    // controller.povUp().whileTrue(superstructure.setIntakePivotAngle(Degrees.of(25)));
+    // controller.povRight().whileTrue(superstructure.setIntakePivotAngle(Degrees.of(0)));
+    // controller.povDown().whileTrue(superstructure.setIntakePivotAngle(Degrees.of(-45)));
   }
 }
