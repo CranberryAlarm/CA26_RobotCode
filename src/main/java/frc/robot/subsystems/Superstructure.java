@@ -241,6 +241,18 @@ public class Superstructure extends SubsystemBase {
     return kicker.stopCommand().withName("Superstructure.kickerStop");
   }
 
+  public Command feedAllCommand() {
+    return Commands.parallel(
+        hopper.feedCommand().asProxy(),
+        kicker.feedCommand().asProxy()).withName("Superstructure.feedAll");
+  }
+
+  public Command stopFeedingAllCommand() {
+    return Commands.parallel(
+        hopper.stopCommand().asProxy(),
+        kicker.stopCommand().asProxy()).withName("Superstructure.stopFeedingAll");
+  }
+
   /**
    * Command to set the intake pivot angle.
    */

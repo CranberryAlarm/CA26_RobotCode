@@ -39,8 +39,11 @@ public class OperatorControls {
     controller.rightBumper()
         .whileTrue(superstructure.setIntakeDeployAndRoll().withName("OperatorControls.intakeDeployed"));
 
-    // controller.rightBumper().whileTrue(Commands.parallel(
-    // superstructure.intakeCommand().asProxy(),
-    // superstructure.setIntakeDeployed().asProxy()).withName("OperatorControls.intakeDeployed"));
+    controller.y().whileTrue(superstructure.shootCommand());
+    controller.x().whileTrue(superstructure.stopShootingCommand());
+
+    controller.a().whileTrue(
+        superstructure.feedAllCommand()
+            .finallyDo(() -> superstructure.stopFeedingAllCommand().schedule()));
   }
 }
