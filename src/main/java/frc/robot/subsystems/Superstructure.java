@@ -54,8 +54,10 @@ public class Superstructure extends SubsystemBase {
     this.kicker = kicker;
 
     // Create triggers for checking if mechanisms are at their targets
-    this.isShooterAtSpeed = new Trigger(
-        () -> Math.abs(shooter.getSpeed().in(RPM) - targetShooterSpeed.in(RPM)) < SHOOTER_TOLERANCE.in(RPM));
+    this.isShooterAtSpeed = new Trigger(() -> false);
+    // this.isShooterAtSpeed = new Trigger(
+    // () -> Math.abs(shooter.getSpeed().in(RPM) - targetShooterSpeed.in(RPM)) <
+    // SHOOTER_TOLERANCE.in(RPM));
 
     this.isTurretOnTarget = new Trigger(
         () -> Math.abs(turret.getAngle().in(Degrees) - targetTurretAngle.in(Degrees)) < TURRET_TOLERANCE.in(Degrees));
@@ -63,7 +65,9 @@ public class Superstructure extends SubsystemBase {
     this.isHoodOnTarget = new Trigger(
         () -> Math.abs(hood.getAngle().in(Degrees) - targetHoodAngle.in(Degrees)) < HOOD_TOLERANCE.in(Degrees));
 
-    this.isReadyToShoot = isShooterAtSpeed.and(isTurretOnTarget).and(isHoodOnTarget);
+    this.isReadyToShoot = new Trigger(() -> false);
+    // this.isReadyToShoot =
+    // isShooterAtSpeed.and(isTurretOnTarget).and(isHoodOnTarget);
   }
 
   /**
@@ -89,7 +93,7 @@ public class Superstructure extends SubsystemBase {
       targetHoodAngle = DEFAULT_HOOD_ANGLE;
     }).andThen(
         Commands.parallel(
-            shooter.setSpeed(DEFAULT_SHOOTER_SPEED).asProxy(),
+            // shooter.setSpeed(DEFAULT_SHOOTER_SPEED).asProxy(),
             turret.center().asProxy(),
             hood.setAngle(DEFAULT_HOOD_ANGLE).asProxy()))
         .withName("Superstructure.ready");
@@ -105,7 +109,7 @@ public class Superstructure extends SubsystemBase {
       targetHoodAngle = Degrees.of(0);
     }).andThen(
         Commands.parallel(
-            shooter.stop().asProxy(),
+            // shooter.stop().asProxy(),
             turret.center().asProxy(),
             hood.stow().asProxy()))
         .withName("Superstructure.stow");
@@ -125,7 +129,7 @@ public class Superstructure extends SubsystemBase {
       targetHoodAngle = hoodAngle;
     }).andThen(
         Commands.parallel(
-            shooter.setSpeed(shooterSpeed).asProxy(),
+            // shooter.setSpeed(shooterSpeed).asProxy(),
             turret.setAngle(turretAngle).asProxy(),
             hood.setAngle(hoodAngle).asProxy()))
         .withName("Superstructure.aim");
@@ -148,7 +152,7 @@ public class Superstructure extends SubsystemBase {
       targetHoodAngle = hoodAngleSupplier.get();
     }).alongWith(
         Commands.parallel(
-            shooter.setSpeed(shooterSpeedSupplier.get()).asProxy(),
+            // shooter.setSpeed(shooterSpeedSupplier.get()).asProxy(),
             turret.setAngle(turretAngleSupplier.get()).asProxy(),
             hood.setAngle(hoodAngleSupplier.get()).asProxy()))
         .withName("Superstructure.aimDynamic");
@@ -171,9 +175,9 @@ public class Superstructure extends SubsystemBase {
   }
 
   // Getters for current state
-  public AngularVelocity getShooterSpeed() {
-    return shooter.getSpeed();
-  }
+  // public AngularVelocity getShooterSpeed() {
+  // return shooter.getSpeed();
+  // }
 
   public Angle getTurretAngle() {
     return turret.getAngle();
