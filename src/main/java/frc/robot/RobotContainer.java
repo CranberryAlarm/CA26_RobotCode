@@ -81,6 +81,10 @@ public class RobotContainer {
         Commands.runOnce(() -> System.out.println("Dealgae!"), drivebase)
             .andThen(Commands.waitSeconds(1))
             .withName("Auto.Dealgae"));
+
+    NamedCommands.registerCommand("driveBackwards",
+        drivebase.driveBackwards().withTimeout(1)
+            .withName("Auto.driveBackwards"));
   }
 
   public Command getAutonomousCommand() {
