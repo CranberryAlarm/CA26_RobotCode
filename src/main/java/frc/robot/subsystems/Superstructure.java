@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import static edu.wpi.first.units.Units.Degrees;
@@ -282,6 +283,13 @@ public class Superstructure extends SubsystemBase {
    */
   public Command shootCommand() {
     return shooter.spinUp().withName("Superstructure.shoot");
+  }
+
+  /**
+   * Command to shoot - spins up shooter.
+   */
+  public Command shootWithDistanceCommand(double distanceMeters) {
+    return shooter.shootAtDistance(distanceMeters).withName("Superstructure.shootWithDistance");
   }
 
   /**

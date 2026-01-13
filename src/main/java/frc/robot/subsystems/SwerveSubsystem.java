@@ -80,6 +80,15 @@ public class SwerveSubsystem extends SubsystemBase {
 
   private final boolean IS_LIMELIGHT_ENABLED = true;
 
+  private double distanceToHub = 0.0;
+
+  public double getDistanceToHub() {
+    if (IS_LIMELIGHT_ENABLED) {
+      return distanceToHub;
+    }
+    return 0.0;
+  }
+
   /**
    * Initialize {@link SwerveDrive} with the directory provided.
    *
@@ -199,6 +208,16 @@ public class SwerveSubsystem extends SubsystemBase {
           Logger.recordOutput("Limelight/Megatag2Count", poseEstimate.tagCount);
 
           Logger.recordOutput("FieldSimulation/LLPose", poseEstimate.pose);
+
+          Pose3d redHub = new Pose3d(
+              Meter.of(11.902),
+              Meter.of(4.031),
+              Meter.of(0.0),
+              new Rotation3d(0, 0, 0));
+
+          distanceToHub = poseEstimate.pose.toPose2d().minus(redHub.toPose2d()).getTranslation().getNorm();
+
+          Logger.recordOutput("FieldSimulation/hubDiff", distanceToHub);
 
           // Add it to the pose estimator.
           swerveDrive.addVisionMeasurement(

@@ -1,8 +1,5 @@
 package frc.robot.controls;
 
-import static edu.wpi.first.units.Units.Degrees;
-
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -38,6 +35,12 @@ public class OperatorControls {
 
     controller.rightBumper()
         .whileTrue(superstructure.setIntakeDeployAndRoll().withName("OperatorControls.intakeDeployed"));
+
+    // WIP on shooter power LERP
+    // controller.y()
+    // .whileTrue(Commands.defer(
+    // () -> superstructure.shootWithDistanceCommand(drivetrain.getDistanceToHub()),
+    // java.util.Set.of()));
 
     controller.y().whileTrue(superstructure.shootCommand());
     controller.x().whileTrue(superstructure.stopShootingCommand());
