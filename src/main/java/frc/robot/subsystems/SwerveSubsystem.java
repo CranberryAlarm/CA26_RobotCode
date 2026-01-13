@@ -76,7 +76,7 @@ public class SwerveSubsystem extends SubsystemBase {
   private Limelight limelight;
   private LimelightPoseEstimator poseEstimator;
 
-  private final boolean IS_LIMELIGHT_ENABLED = false;
+  private final boolean IS_LIMELIGHT_ENABLED = true;
 
   /**
    * Initialize {@link SwerveDrive} with the directory provided.
@@ -136,10 +136,10 @@ public class SwerveSubsystem extends SubsystemBase {
       limelight.getSettings()
           .withLimelightLEDMode(LEDMode.PipelineControl)
           .withCameraOffset(new Pose3d(
-              Inches.of(14.00).in(Meters),
-              Inches.of(4.750).in(Meters),
-              Inches.of(17.25).in(Meters),
-              Rotation3d.kZero))
+              Inches.of(-11.00).in(Meters),
+              Inches.of(-9.0).in(Meters),
+              Inches.of(12.75).in(Meters),
+              new Rotation3d(0, 21, 180)))
           .withImuMode(ImuMode.InternalImuMT1Assist)
           .withImuAssistAlpha(0.01)
           .save();

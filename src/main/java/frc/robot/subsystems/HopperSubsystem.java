@@ -33,7 +33,7 @@ public class HopperSubsystem extends SubsystemBase {
       .withControlMode(ControlMode.OPEN_LOOP)
       .withTelemetry("HopperMotor", TelemetryVerbosity.HIGH)
       .withGearing(new MechanismGearing(GearBox.fromReductionStages(4))) // 4:1 gear reduction
-      .withMotorInverted(false)
+      .withMotorInverted(true)
       .withIdleMode(MotorMode.BRAKE)
       .withStatorCurrentLimit(Amps.of(40));
 

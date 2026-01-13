@@ -12,6 +12,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.Robot;
@@ -64,29 +65,38 @@ public class OperatorControls {
     }
 
     // Intake controls - A to intake, B to eject
-    controller.a().whileTrue(superstructure.intakeCommand());
-    controller.b().whileTrue(superstructure.ejectCommand());
+    // controller.a().whileTrue(superstructure.intakeCommand());
+    // controller.b().whileTrue(superstructure.ejectCommand());
 
     // Hopper controls - X to run hopper forward, Y to run backward
-    controller.x().whileTrue(superstructure.hopperFeedCommand());
-    controller.y().whileTrue(superstructure.hopperReverseCommand());
+    // controller.x().whileTrue(superstructure.hopperFeedCommand());
+    // controller.y().whileTrue(superstructure.hopperReverseCommand());
 
     // Shooter controls - Right bumper to shoot
-    controller.rightBumper().whileTrue(superstructure.shootCommand());
-    controller.leftBumper().whileTrue(superstructure.stopShootingCommand());
+    // controller.rightBumper().whileTrue(superstructure.shootCommand());
+    // controller.leftBumper().whileTrue(superstructure.stopShootingCommand());
 
     // Kicker controls
-    controller.back().whileTrue(superstructure.kickerFeedCommand());
-    controller.start().whileTrue(superstructure.kickerStopCommand());
+    // controller.back().whileTrue(superstructure.kickerFeedCommand());
+    // controller.start().whileTrue(superstructure.kickerStopCommand());
 
-    // Intake pivot controls. Setpoints need to be tested and finalized.
+    // Intake pivot controls
+    // controller.povUp().onTrue(superstructure.setIntakeStow());
+    // controller.povRight().onTrue(superstructure.setIntakeHold());
+    // controller.povRight().onTrue(superstructure.setIntakeDeployed());
 
-    // 0 for default
-    // -45 for collection
-    // +25 just because. We can add more setpoints if necessary.
-    // controller.povUp().whileTrue(superstructure.setIntakePivotAngle(Degrees.of(25)));
-    // controller.povRight().whileTrue(superstructure.setIntakePivotAngle(Degrees.of(0)));
-    // controller.povDown().whileTrue(superstructure.setIntakePivotAngle(Degrees.of(-45)));
+    // REAL CONTROLS
+    controller.start().onTrue(superstructure.rezeroIntakePivotCommand().ignoringDisable(true));
+
+    controller.rightBumper()
+        .whileTrue(superstructure.setIntakeDeployAndRoll().withName("OperatorControls.intakeDeployed"));
+
+    controller.y().whileTrue(superstructure.shootCommand());
+    controller.x().whileTrue(superstructure.stopShootingCommand());
+
+    controller.a().whileTrue(
+        superstructure.feedAllCommand()
+            .finallyDo(() -> superstructure.stopFeedingAllCommand().schedule()));
   }
 
   private static Command aimCommand(SwerveSubsystem drivetrain, Superstructure superstructure) {

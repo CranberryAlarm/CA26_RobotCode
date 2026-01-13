@@ -27,95 +27,119 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import yams.gearing.GearBox;
-import yams.gearing.MechanismGearing;
-import yams.mechanisms.config.FlyWheelConfig;
-import yams.mechanisms.velocity.FlyWheel;
-import yams.motorcontrollers.SmartMotorController;
-import yams.motorcontrollers.SmartMotorControllerConfig;
-import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
-import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
-import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
-import yams.motorcontrollers.local.NovaWrapper;
 
 public class ShooterSubsystem extends SubsystemBase {
+
+  private static final double SHOOTER_SPEED = 0.65;
+  private static final AngularVelocity SHOOTER_MAX_ANGULAR_VELOCITY = RotationsPerSecond.of(6000);
 
   // 2 Neos, 4in shooter wheels
   private final ThriftyNova leaderNova = new ThriftyNova(Constants.ShooterConstants.kLeaderMotorId);
   private final ThriftyNova followerNova = new ThriftyNova(Constants.ShooterConstants.kFollowerMotorId);
 
-  private final SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
-      .withFollowers(Pair.of(followerNova, false))
-      .withControlMode(ControlMode.CLOSED_LOOP)
-      .withClosedLoopController(0.1, 0, 0)
-      .withFeedforward(new SimpleMotorFeedforward(0, 0.5, 0))
-      .withTelemetry("ShooterMotor", TelemetryVerbosity.HIGH)
-      .withGearing(new MechanismGearing(GearBox.fromReductionStages(1)))
-      .withMotorInverted(false)
-      .withIdleMode(MotorMode.COAST)
-      .withStatorCurrentLimit(Amps.of(40));
+  // private final SmartMotorControllerConfig smcConfig = new
+  // SmartMotorControllerConfig(this)
+  // .withFollowers(Pair.of(followerNova, false))
+  // .withControlMode(ControlMode.CLOSED_LOOP)
+  // .withClosedLoopController(0.1, 0, 0)
+  // .withFeedforward(new SimpleMotorFeedforward(0, 0.5, 0))
+  // .withTelemetry("ShooterMotor", TelemetryVerbosity.HIGH)
+  // .withGearing(new MechanismGearing(GearBox.fromReductionStages(1)))
+  // .withMotorInverted(false)
+  // .withIdleMode(MotorMode.COAST)
+  // .withStatorCurrentLimit(Amps.of(40));
 
-  private final SmartMotorController smc = new NovaWrapper(leaderNova, DCMotor.getNEO(2), smcConfig);
+  // private final SmartMotorController smc = new NovaWrapper(leaderNova,
+  // DCMotor.getNEO(2), smcConfig);
 
-  private final FlyWheelConfig shooterConfig = new FlyWheelConfig(smc)
-      .withDiameter(Inches.of(4))
-      .withMass(Pounds.of(1))
-      .withUpperSoftLimit(RotationsPerSecond.of(6000))
-      .withLowerSoftLimit(RotationsPerSecond.of(0))
-      .withTelemetry("Shooter", TelemetryVerbosity.HIGH);
+  // private final FlyWheelConfig shooterConfig = new FlyWheelConfig(smc)
+  // .withDiameter(Inches.of(4))
+  // .withMass(Pounds.of(1))
+  // .withUpperSoftLimit(RotationsPerSecond.of(6000))
+  // .withLowerSoftLimit(RotationsPerSecond.of(0))
+  // .withTelemetry("Shooter", TelemetryVerbosity.HIGH);
 
-  private final FlyWheel shooter = new FlyWheel(shooterConfig);
+  // private final FlyWheel shooter = new FlyWheel(shooterConfig);
 
   public ShooterSubsystem() {
+    leaderNova.factoryReset();
+    followerNova.factoryReset();
+
+    leaderNova.setInverted(false);
+    followerNova.setInverted(true);
   }
 
   public Command setSpeed(AngularVelocity speed) {
-    return shooter.setSpeed(speed);
+    return run(() -> {
+      var percent = speed.in(RotationsPerSecond) / SHOOTER_MAX_ANGULAR_VELOCITY.in(RotationsPerSecond);
+      leaderNova.setPercent(percent);
+      followerNova.setPercent(percent);
+    });
   }
 
   public Command setSpeedDynamic(Supplier<AngularVelocity> speedSupplier) {
-    return shooter.setSpeed(speedSupplier);
+    return run(() -> {
+      var speed = speedSupplier.get();
+      var percent = speed.in(RotationsPerSecond) / SHOOTER_MAX_ANGULAR_VELOCITY.in(RotationsPerSecond);
+      leaderNova.setPercent(percent);
+      followerNova.setPercent(percent);
+    });
   }
 
   public Command spinUp() {
-    return shooter.setSpeed(RotationsPerSecond.of(500));
+    return run(() -> {
+      leaderNova.setPercent(SHOOTER_SPEED);
+      followerNova.setPercent(SHOOTER_SPEED);
+
+      // followerNova.follow(leaderNova.getID());
+      // followerNova.setPercent(0.5);
+    });
+
+    // return shooter.set(0.5);
+    // return shooter.setSpeed(RotationsPerSecond.of(500));
   }
 
   public Command stop() {
-    return shooter.set(0);
+    return run(() -> {
+      leaderNova.setPercent(0);
+      followerNova.setPercent(0);
+      // followerNova.setPercent(0.5);
+    });
+    // return shooter.set(0);
   }
 
   public AngularVelocity getSpeed() {
-    return shooter.getSpeed();
+    return SHOOTER_MAX_ANGULAR_VELOCITY.times(leaderNova.get());
+    // return leaderNova.getAngularVelocity();
   }
 
-  public Command set(double dutyCycle) {
-    return shooter.set(dutyCycle);
-  }
+  // public Command set(double dutyCycle) {
+  // return shooter.set(dutyCycle);
+  // }
 
-  public Command sysId() {
-    return shooter.sysId(Volts.of(10), Volts.of(2).per(Second), Seconds.of(10));
-  }
+  // public Command sysId() {
+  // return shooter.sysId(Volts.of(10), Volts.of(2).per(Second), Seconds.of(10));
+  // }
 
   @Override
   public void periodic() {
-    Logger.recordOutput("Shooter/DangIt", getTangentialVelocity());
-    shooter.updateTelemetry();
+    // shooter.updateTelemetry();
   }
 
   @Override
   public void simulationPeriodic() {
-    shooter.simIterate();
+    // shooter.simIterate();
   }
 
   private Distance wheelRadius() {
-    return shooterConfig.getLength().orElse(Inches.of(4).div(2));
+    return Inches.of(4).div(2);
   }
 
   public LinearVelocity getTangentialVelocity() {
-    // Calculate tangential velocity at the edge of the wheel and convert to LinearVelocity
+    // Calculate tangential velocity at the edge of the wheel and convert to
+    // LinearVelocity
 
-    return MetersPerSecond.of(shooter.getSpeed().in(RadiansPerSecond)
-      * wheelRadius().in(Meters));
+    return MetersPerSecond.of(getSpeed().in(RadiansPerSecond)
+        * wheelRadius().in(Meters));
   }
 }

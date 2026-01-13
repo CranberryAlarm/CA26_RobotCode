@@ -25,7 +25,7 @@ public class DriverControls {
         .withControllerRotationAxis(() -> controller.getRightX() * -1)
         .robotRelative(false)
         .allianceRelativeControl(true)
-        // .scaleTranslation(0.8) // TODO: Tune speed scaling
+        .scaleTranslation(0.25) // TODO: Tune speed scaling
         .deadband(ControllerConstants.DEADBAND);
 
     controller.y().whileTrue(Commands.run(
@@ -74,7 +74,7 @@ public class DriverControls {
     } else if (Robot.isSimulation()) {
       // controller.back().whileTrue(fireAlgae(drivetrain));
     } else {
-      controller.y().onTrue((Commands.runOnce(drivetrain::zeroGyro)));
+      controller.start().onTrue((Commands.runOnce(drivetrain::zeroGyro)));
       controller.leftBumper().whileTrue(Commands.runOnce(drivetrain::lock, drivetrain).repeatedly());
     }
   }
