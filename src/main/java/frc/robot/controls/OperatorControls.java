@@ -16,8 +16,12 @@ public class OperatorControls {
     controller.b().whileTrue(superstructure.ejectCommand());
 
     // Hopper controls - X to run hopper forward, Y to run backward
-    controller.x().whileTrue(superstructure.feedCommand());
+    controller.x().whileTrue(superstructure.hopperFeedCommand());
     controller.y().whileTrue(superstructure.hopperReverseCommand());
+
+    // Shooter controls - Right bumper to shoot
+    controller.rightBumper().whileTrue(superstructure.shootCommand());
+    controller.leftBumper().whileTrue(superstructure.stopShootingCommand());
 
     // Intake pivot controls. Setpoints need to be tested and finalized.
 

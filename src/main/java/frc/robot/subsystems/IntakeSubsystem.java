@@ -17,6 +17,7 @@ import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Seconds;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import yams.gearing.GearBox;
@@ -52,8 +53,8 @@ public class IntakeSubsystem extends SubsystemBase {
   private final FlyWheelConfig intakeConfig = new FlyWheelConfig(smc)
       .withDiameter(Inches.of(4))
       .withMass(Pounds.of(0.5))
-      .withUpperSoftLimit(RPM.of(600000))
-      .withLowerSoftLimit(RPM.of(-600000))
+      .withUpperSoftLimit(RPM.of(6000))
+      .withLowerSoftLimit(RPM.of(-6000))
       .withTelemetry("Intake", TelemetryVerbosity.HIGH);
 
   private FlyWheel intake = new FlyWheel(intakeConfig);
@@ -64,7 +65,7 @@ public class IntakeSubsystem extends SubsystemBase {
       .withClosedLoopController(200, 0, 0, DegreesPerSecond.of(360), DegreesPerSecondPerSecond.of(360))
       .withFeedforward(new ArmFeedforward(0, 0, 0.1))
       .withTelemetry("IntakePivotMotor", TelemetryVerbosity.HIGH)
-      .withGearing(new MechanismGearing(GearBox.fromReductionStages(5,5, 60.0/18)))
+      .withGearing(new MechanismGearing(GearBox.fromReductionStages(5, 5, 60.0 / 18)))
       .withMotorInverted(true)
       .withIdleMode(MotorMode.BRAKE)
       .withStatorCurrentLimit(Amps.of(10))
@@ -72,10 +73,12 @@ public class IntakeSubsystem extends SubsystemBase {
 
   private ThriftyNova pivotMotor = new ThriftyNova(Constants.IntakeConstants.kPivotMotorId);
 
-  private SmartMotorController intakePivotController = new NovaWrapper(pivotMotor, DCMotor.getNeoVortex(1), intakePivotSmartMotorConfig);
+  private SmartMotorController intakePivotController = new NovaWrapper(pivotMotor, DCMotor.getNeoVortex(1),
+      intakePivotSmartMotorConfig);
 
   private final ArmConfig intakePivotConfig = new ArmConfig(intakePivotController)
-      .withSoftLimits(Degrees.of(-95), Degrees.of(45)) // TODO: Find and set proper limits once setpoints and range is known
+      .withSoftLimits(Degrees.of(-95), Degrees.of(45)) // TODO: Find and set proper limits once setpoints and range is
+                                                       // known
       .withHardLimit(Degrees.of(-100), Degrees.of(50))
       .withStartingPosition(Degrees.of(-90))
       .withLength(Feet.of(1))
@@ -103,6 +106,10 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public Command setPivotAngle(Angle angle) {
     return intakePivot.setAngle(angle).withName("IntakePivot.SetAngle");
+  }
+
+  public Command rezero() {
+    return Commands.runOnce(() -> pivotMotor.setEncoderPosition(0), this).withName("IntakePivot.Rezero");
   }
 
   @Override

@@ -63,7 +63,7 @@ public final class Constants {
   }
 
   public static class ShooterConstants {
-    // 2 Neos, 4in shooter wheels, 4:1 gearbox reduction
+    // 2 Neos, 4in shooter wheels
     public static final int kLeaderMotorId = 15;
     public static final int kFollowerMotorId = 16;
   }
@@ -89,5 +89,10 @@ public final class Constants {
   // Hopper subsystem CAN IDs start at 40
   public static class HopperConstants {
     public static final int kHopperMotorId = 40;
+  }
+
+  // Kicker subsystem CAN IDs start at 50
+  public static class KickerConstants {
+    public static final int kKickerMotorId = 50;
   }
 }

@@ -22,6 +22,7 @@ public class Superstructure extends SubsystemBase {
   private final HoodSubsystem hood;
   private final IntakeSubsystem intake;
   private final HopperSubsystem hopper;
+  private final KickerSubsystem kicker;
 
   // Default values for "ready" state
   private static final AngularVelocity DEFAULT_SHOOTER_SPEED = RPM.of(4000);
@@ -44,12 +45,13 @@ public class Superstructure extends SubsystemBase {
   private Angle targetHoodAngle = Degrees.of(0);
 
   public Superstructure(ShooterSubsystem shooter, TurretSubsystem turret, HoodSubsystem hood, IntakeSubsystem intake,
-      HopperSubsystem hopper) {
+      HopperSubsystem hopper, KickerSubsystem kicker) {
     this.shooter = shooter;
     this.turret = turret;
     this.hood = hood;
     this.intake = intake;
     this.hopper = hopper;
+    this.kicker = kicker;
 
     // Create triggers for checking if mechanisms are at their targets
     this.isShooterAtSpeed = new Trigger(
@@ -210,7 +212,7 @@ public class Superstructure extends SubsystemBase {
   /**
    * Command to run the hopper forward while held.
    */
-  public Command feedCommand() {
+  public Command hopperFeedCommand() {
     return hopper.feedCommand().withName("Superstructure.feed");
   }
 
@@ -222,10 +224,36 @@ public class Superstructure extends SubsystemBase {
   }
 
   /**
+   * Command to run the kicker forward while held, stops when released.
+   */
+  public Command kickerFeedCommand() {
+    return kicker.feedCommand().withName("Superstructure.kickerFeed");
+  }
+
+  /**
    * Command to set the intake pivot angle.
    */
   public Command setIntakePivotAngle(Angle angle) {
     return intake.setPivotAngle(angle).withName("Superstructure.setIntakePivotAngle");
+  }
+
+  /**
+   * Command to shoot - spins up shooter.
+   */
+  public Command shootCommand() {
+    return shooter.spinUp().withName("Superstructure.shoot");
+  }
+
+  /**
+   * Command to stop shooting - stops shooter.
+   */
+  public Command stopShootingCommand() {
+    return shooter.stop().withName("Superstructure.stopShooting");
+  }
+
+  // Re-zero intake pivot if needed
+  public Command rezeroIntakePivotCommand() {
+    return Commands.runOnce(() -> intake.rezero(), intake).withName("Superstructure.rezeroIntakePivot");
   }
 
   @Override

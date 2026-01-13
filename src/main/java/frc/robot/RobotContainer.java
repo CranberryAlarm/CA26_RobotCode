@@ -19,15 +19,21 @@ import frc.robot.controls.OperatorControls;
 import frc.robot.controls.PoseControls;
 import frc.robot.subsystems.HopperSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.KickerSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.SwerveSubsystem;
 import swervelib.SwerveDrive;
 
 public class RobotContainer {
   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
+
   private final IntakeSubsystem intake = new IntakeSubsystem();
   private final HopperSubsystem hopper = new HopperSubsystem();
-  private final Superstructure superstructure = new Superstructure(null, null, null, intake, hopper);
+  private final KickerSubsystem kicker = new KickerSubsystem();
+  private final ShooterSubsystem shooter = new ShooterSubsystem();
+
+  private final Superstructure superstructure = new Superstructure(shooter, null, null, intake, hopper, kicker);
 
   private final SendableChooser<Command> autoChooser;
 
