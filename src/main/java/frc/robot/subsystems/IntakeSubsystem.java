@@ -35,7 +35,7 @@ import yams.motorcontrollers.local.NovaWrapper;
 
 public class IntakeSubsystem extends SubsystemBase {
 
-  private static final double INTAKE_SPEED = 0.1;
+  private static final double INTAKE_SPEED = 0.5;
 
   // ThriftyNova controlling the intake roller
   private ThriftyNova rollerNova = new ThriftyNova(Constants.IntakeConstants.kRollerMotorId);
@@ -44,7 +44,7 @@ public class IntakeSubsystem extends SubsystemBase {
       .withControlMode(ControlMode.OPEN_LOOP)
       .withTelemetry("IntakeMotor", TelemetryVerbosity.HIGH)
       .withGearing(new MechanismGearing(GearBox.fromReductionStages(1))) // Direct drive, adjust if geared
-      .withMotorInverted(false)
+      .withMotorInverted(true)
       .withIdleMode(MotorMode.COAST)
       .withStatorCurrentLimit(Amps.of(40));
 
