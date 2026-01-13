@@ -248,16 +248,8 @@ public class Superstructure extends SubsystemBase {
     return intake.setPivotAngle(angle).withName("Superstructure.setIntakePivotAngle");
   }
 
-  public Command setIntakeStow() {
-    return intake.setPivotAngle(Degrees.of(0)).withName("Superstructure.setIntakeStow");
-  }
-
-  public Command setIntakeHold() {
-    return intake.setPivotAngle(Degrees.of(115)).withName("Superstructure.setIntakeHold");
-  }
-
-  public Command setIntakeDeployed() {
-    return intake.setPivotAngle(Degrees.of(140)).withName("Superstructure.setIntakeDeployed");
+  public Command setIntakeDeployAndRoll() {
+    return intake.deployAndRollCommand().withName("Superstructure.setIntakeDeployAndRoll");
   }
 
   /**

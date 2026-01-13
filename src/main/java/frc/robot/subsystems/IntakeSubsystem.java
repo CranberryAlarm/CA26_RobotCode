@@ -110,6 +110,32 @@ public class IntakeSubsystem extends SubsystemBase {
     return Commands.runOnce(() -> pivotMotor.setEncoderPosition(0), this).withName("IntakePivot.Rezero");
   }
 
+  /**
+   * Command to deploy intake and run roller while held.
+   * Stops roller when released.
+   */
+  public Command deployAndRollCommand() {
+    return Commands.run(() -> {
+      setIntakeDeployed();
+      smc.setDutyCycle(INTAKE_SPEED);
+    }, this).finallyDo(() -> {
+      smc.setDutyCycle(0);
+      setIntakeHold();
+    }).withName("Intake.DeployAndRoll");
+  }
+
+  private void setIntakeStow() {
+    intakePivotController.setPosition(Degrees.of(0));
+  }
+
+  private void setIntakeHold() {
+    intakePivotController.setPosition(Degrees.of(115));
+  }
+
+  private void setIntakeDeployed() {
+    intakePivotController.setPosition(Degrees.of(140));
+  }
+
   @Override
   public void periodic() {
     intake.updateTelemetry();
