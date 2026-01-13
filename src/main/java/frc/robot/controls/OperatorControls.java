@@ -32,8 +32,9 @@ public class OperatorControls {
     // 0 for default
     // -45 for collection
     // +25 just because. We can add more setpoints if necessary.
-    // controller.povUp().whileTrue(superstructure.setIntakePivotAngle(Degrees.of(25)));
-    // controller.povRight().whileTrue(superstructure.setIntakePivotAngle(Degrees.of(0)));
-    // controller.povDown().whileTrue(superstructure.setIntakePivotAngle(Degrees.of(-45)));
+    controller.povUp().onTrue(superstructure.setIntakePivotAngle(Degrees.of(0)));
+    controller.povRight().onTrue(superstructure.setIntakePivotAngle(Degrees.of(90)));
+
+    controller.povDown().onTrue(superstructure.rezeroIntakePivotCommand());
   }
 }
