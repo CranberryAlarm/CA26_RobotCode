@@ -21,6 +21,7 @@ import frc.robot.Constants.ControllerConstants;
 import frc.robot.controls.DriverControls;
 import frc.robot.controls.OperatorControls;
 import frc.robot.controls.PoseControls;
+import frc.robot.subsystems.HoodSubsystem;
 import frc.robot.subsystems.HopperSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.KickerSubsystem;
@@ -37,8 +38,9 @@ public class RobotContainer {
   private final IntakeSubsystem intake = new IntakeSubsystem();
   private final HopperSubsystem hopper = new HopperSubsystem();
   private final KickerSubsystem kicker = new KickerSubsystem();
+  private final HoodSubsystem hood = new HoodSubsystem();
 
-  private final Superstructure superstructure = new Superstructure(shooter, turret, null, intake, hopper, kicker);
+  private final Superstructure superstructure = new Superstructure(shooter, turret, hood, intake, hopper, kicker);
 
   private final SendableChooser<Command> autoChooser;
 
