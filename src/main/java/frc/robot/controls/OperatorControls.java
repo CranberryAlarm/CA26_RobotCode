@@ -42,7 +42,7 @@ public class OperatorControls {
     // () -> superstructure.shootWithDistanceCommand(drivetrain.getDistanceToHub()),
     // java.util.Set.of()));
 
-    controller.y().whileTrue(superstructure.shootCommand());
+    controller.y().onTrue(superstructure.shootCommand());
     controller.x().whileTrue(superstructure.stopShootingCommand());
 
     controller.a().whileTrue(
