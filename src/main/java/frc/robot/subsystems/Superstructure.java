@@ -223,8 +223,7 @@ public class Superstructure extends SubsystemBase {
     // https://docs.wpilib.org/en/stable/docs/software/basic-programming/coordinate-system.html
     return new Rotation3d(
         Degrees.of(0), // no roll 🤞
-        // hood.getAngle().unaryMinus(), // pitch is negative hood angle
-        Degrees.of(60),
+        hood.getAngle().unaryMinus(), // pitch is negative hood angle
         turret.getAngle());
   }
 
