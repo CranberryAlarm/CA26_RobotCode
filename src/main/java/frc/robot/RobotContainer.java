@@ -45,7 +45,7 @@ public class RobotContainer {
     configureBindings();
     buildNamedAutoCommands();
 
-    if (!Robot.isReal()) {
+    if (!Robot.isReal() || true) {
       DriverStation.silenceJoystickConnectionWarning(true);
     }
 
