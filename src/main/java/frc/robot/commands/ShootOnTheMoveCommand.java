@@ -95,7 +95,7 @@ public class ShootOnTheMoveCommand extends Command {
     var updatedPosition = drivetrain.getFieldVelocity().times(timeOfFlight);
     var correctiveVector = new Translation2d(updatedPosition.vxMetersPerSecond, updatedPosition.vyMetersPerSecond)
         .unaryMinus();
-    var correctiveVector3d = new Translation3d(updatedPosition.vxMetersPerSecond, updatedPosition.vyMetersPerSecond, 0);
+    var correctiveVector3d = new Translation3d(correctiveVector.getX(), correctiveVector.getY(), 0);
 
     Logger.recordOutput("FieldSimulation/AimTargetCorrected",
         new Pose3d(target.plus(correctiveVector3d), Rotation3d.kZero));
