@@ -1,6 +1,8 @@
 package frc.robot.controls;
 
 import static edu.wpi.first.units.Units.Feet;
+import static edu.wpi.first.units.Units.FeetPerSecond;
+
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.gamepieces.GamePieceProjectile;
 import org.littletonrobotics.junction.Logger;
@@ -9,6 +11,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 
@@ -135,7 +138,9 @@ public class OperatorControls {
           Distance.ofBaseUnits(1, Feet),
 
           // based on numbers from https://www.reca.lc/flywheel
-          superstructure.getTangentialVelocity().times(0.2), // adjust for simulation tuning
+          // superstructure.getTangentialVelocity().times(0.5), // adjust for simulation
+          // tuning
+          LinearVelocity.ofBaseUnits(5, FeetPerSecond),
           superstructure.getHoodAngle());
 
       // Configure callbacks to visualize the flight trajectory of the projectile
