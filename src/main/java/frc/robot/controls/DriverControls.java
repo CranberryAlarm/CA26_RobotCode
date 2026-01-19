@@ -48,7 +48,7 @@ public class DriverControls {
         .withControllerRotationAxis(() -> controller.getRightX() * -1)
         .robotRelative(false)
         .allianceRelativeControl(true)
-        // .scaleTranslation(0.25) // TODO: Tune speed scaling
+        .scaleTranslation(0.25) // TODO: Tune speed scaling
         .deadband(ControllerConstants.DEADBAND);
 
     controller.rightBumper().whileTrue(Commands.run(

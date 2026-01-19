@@ -114,6 +114,9 @@ public class OperatorControls {
     controller.povUp().onTrue(superstructure.setTurretForward().withName("OperatorControls.setTurretForward"));
     controller.povLeft().onTrue(superstructure.setTurretLeft().withName("OperatorControls.setTurretLeft"));
     controller.povRight().onTrue(superstructure.setTurretRight().withName("OperatorControls.setTurretRight"));
+
+    controller.povDown().whileTrue(
+        aimCommand(drivetrain, superstructure).ignoringDisable(true).withName("OperatorControls.aimCommand"));
   }
 
   private static Command aimCommand(SwerveSubsystem drivetrain, Superstructure superstructure) {

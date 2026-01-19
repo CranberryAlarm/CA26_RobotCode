@@ -7,7 +7,6 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
@@ -76,8 +75,8 @@ public class ShooterSubsystem extends SubsystemBase {
   private final FlyWheelConfig shooterConfig = new FlyWheelConfig(smc)
       .withDiameter(Inches.of(4))
       .withMass(Pounds.of(1))
-      .withUpperSoftLimit(RotationsPerSecond.of(60000))
-      .withLowerSoftLimit(RotationsPerSecond.of(0))
+      .withUpperSoftLimit(RPM.of(6000))
+      .withLowerSoftLimit(RPM.of(0))
       .withTelemetry("Shooter", TelemetryVerbosity.HIGH);
 
   private final FlyWheel shooter = new FlyWheel(shooterConfig);
@@ -134,7 +133,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public Command stop() {
-    return setSpeed(RotationsPerSecond.of(0));
+    return setSpeed(RPM.of(0));
     // return run(() -> {
 
     // // leaderNova.setPercent(0);
@@ -159,7 +158,7 @@ public class ShooterSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // shooter.updateTelemetry();
-    SHOOTER_SPEED = SmartDashboard.getNumber("ShooterSpeed", SHOOTER_SPEED);
+    // SHOOTER_SPEED = SmartDashboard.getNumber("ShooterSpeed", SHOOTER_SPEED);
 
     Logger.recordOutput("Shooter/Setpoint", temp_distance);
     Logger.recordOutput("Shooter/LeaderVelocity", leaderSpark.getEncoder().getVelocity());

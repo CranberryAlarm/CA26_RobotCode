@@ -1,6 +1,8 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Meter;
+
 import java.io.File;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -112,8 +114,9 @@ public class RobotContainer {
 
   public Pose3d getAimDirection() {
     var pose = drivebase.getPose3d()
-        .plus(new Transform3d(Translation3d.kZero, superstructure.getAimRotation3d().rotateBy(
-            new Rotation3d(drivebase.getHeading()))));
+        .plus(new Transform3d(new Translation3d(Meter.of(0), Meter.of(0), Meter.of(1)),
+            superstructure.getAimRotation3d().rotateBy(
+                new Rotation3d(drivebase.getHeading()))));
 
     return pose;
   }
