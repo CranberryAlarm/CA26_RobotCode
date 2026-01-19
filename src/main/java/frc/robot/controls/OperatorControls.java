@@ -52,5 +52,9 @@ public class OperatorControls {
     controller.b().whileTrue(
         superstructure.backFeedAllCommand()
             .finallyDo(() -> superstructure.stopFeedingAllCommand().schedule()));
+
+    controller.povUp().onTrue(superstructure.setTurretForward().withName("OperatorControls.setTurretForward"));
+    controller.povLeft().onTrue(superstructure.setTurretLeft().withName("OperatorControls.setTurretLeft"));
+    controller.povRight().onTrue(superstructure.setTurretRight().withName("OperatorControls.setTurretRight"));
   }
 }

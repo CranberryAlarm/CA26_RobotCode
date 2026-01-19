@@ -23,6 +23,7 @@ import frc.robot.subsystems.KickerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.TurretSubsystem;
 import swervelib.SwerveDrive;
 
 public class RobotContainer {
@@ -31,9 +32,10 @@ public class RobotContainer {
   private final IntakeSubsystem intake = new IntakeSubsystem();
   private final HopperSubsystem hopper = new HopperSubsystem();
   private final KickerSubsystem kicker = new KickerSubsystem();
+  private final TurretSubsystem turret = new TurretSubsystem();
   private final ShooterSubsystem shooter = new ShooterSubsystem();
 
-  private final Superstructure superstructure = new Superstructure(shooter, null, null, intake, hopper, kicker);
+  private final Superstructure superstructure = new Superstructure(shooter, turret, null, intake, hopper, kicker);
 
   private final SendableChooser<Command> autoChooser;
 
