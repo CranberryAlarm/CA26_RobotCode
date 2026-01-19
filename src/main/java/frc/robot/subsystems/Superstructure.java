@@ -315,6 +315,7 @@ public class Superstructure extends SubsystemBase {
    * Command to shoot - spins up shooter.
    */
   public Command shootCommand() {
+    // return shooter.sysId().withName("Superstructure.shoot");
     return shooter.spinUp().withName("Superstructure.shoot");
   }
 

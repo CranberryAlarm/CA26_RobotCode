@@ -7,26 +7,59 @@
       "height": 1077,
       "state": {
         "sidebar": {
-          "width": 408,
+          "width": 344,
           "expanded": [
             "/SmartDashboard/MapleSim/MatchData/Breakdown/blue Alliance",
             "/SmartDashboard/swerve/advantagescope/currentStates/1/angle",
             "/SmartDashboard/swerve/advantagescope/currentStates/0/angle",
             "/SmartDashboard/swerve/advantagescope/currentStates/3",
             "/SmartDashboard/swerve/advantagescope/currentStates/3/angle",
-            "/AdvantageKit",
-            "/AdvantageKit/RealOutputs/FieldSimulation",
-            "/AdvantageKit/RealOutputs",
-            "/SmartDashboard",
             "/SmartDashboard/swerve/modules",
             "/SmartDashboard/swerve/modules/frontright",
             "/SmartDashboard/swerve/modules/frontleft",
             "/SmartDashboard/swerve/modules/backright",
-            "/SmartDashboard/swerve/modules/backleft"
+            "/SmartDashboard/swerve/modules/backleft",
+            "/Mechanisms/Intake/IntakeMotor/rotor",
+            "/Mechanisms/Intake/IntakeMotor/current",
+            "/Mechanisms/Intake/IntakeMotor/motor",
+            "/Mechanisms/Hopper/HopperMotor/mechanism",
+            "/Mechanisms/Hopper/HopperMotor/rotor",
+            "/Mechanisms/Hopper/HopperMotor/current",
+            "/SmartDashboard/Mechanisms/Commands",
+            "/Mechanisms/IntakePivot/IntakePivotMotor",
+            "/Mechanisms/IntakePivot/IntakePivotMotor/rotor",
+            "/Mechanisms/IntakePivot/IntakePivotMotor/mechanism",
+            "/Mechanisms/Hopper/HopperMotor",
+            "/Mechanisms/Hopper/HopperMotor/motor",
+            "/Mechanisms/IntakePivot/IntakePivotMotor/closedloop",
+            "/Mechanisms/IntakePivot/IntakePivotMotor/closedloop/setpoint",
+            "/AdvantageKit/RealOutputs/FieldSimulation",
+            "/TheThriftyBot/CAN_15",
+            "/TheThriftyBot/CAN_16",
+            "/AdvantageKit/RealOutputs/Shooter",
+            "/AdvantageKit/RealOutputs/DriverControls",
+            "/Mechanisms/Shooter/ShooterMotor",
+            "/Mechanisms/Shooter/ShooterMotor/closedloop",
+            "/Mechanisms/Shooter/ShooterMotor/closedloop/setpoint",
+            "/Mechanisms/Shooter/ShooterMotor/current",
+            "/Mechanisms/Shooter/ShooterMotor/mechanism",
+            "/Mechanisms/Shooter/ShooterMotor/motor",
+            "/Mechanisms/Shooter/ShooterMotor/rotor",
+            "/Tuning",
+            "/Tuning/Shooter",
+            "/Tuning/Shooter/ShooterMotor/closedloop",
+            "/Tuning/Shooter/ShooterMotor/closedloop/feedback",
+            "/Tuning/Shooter/ShooterMotor/closedloop/feedforward",
+            "/Tuning/Shooter/ShooterMotor/closedloop/motionprofile",
+            "/Tuning/Shooter/ShooterMotor/closedloop/setpoint",
+            "/Tuning/Shooter/ShooterMotor",
+            "/Tuning/Shooter/ShooterMotor/mechanism",
+            "/Tuning/Shooter/ShooterMotor/mechanism/limit",
+            "/Tuning/Shooter/ShooterMotor/ramprate"
           ]
         },
         "tabs": {
-          "selected": 1,
+          "selected": 4,
           "tabs": [
             {
               "type": 0,
@@ -69,9 +102,18 @@
                       "model": "Crab Bot",
                       "color": "#00ff00"
                     }
+                  },
+                  {
+                    "type": "robot",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/DriverControls/TargetHubPose",
+                    "logType": "Pose2d",
+                    "visible": true,
+                    "options": {
+                      "model": "Duck Bot"
+                    }
                   }
                 ],
-                "game": "2025 Field (Welded)",
+                "game": "Evergreen",
                 "origin": "blue"
               },
               "controllerUUID": "56hy5kyvd0kjxfyigyn0v5dx374uh50y",
@@ -79,17 +121,56 @@
                 "cameraIndex": -1,
                 "orbitFov": 50,
                 "cameraPosition": [
-                  -8.213793838348083,
-                  9.984019446636196,
-                  -2.8847015884021476
+                  -10.264677470130257,
+                  12.102165553417098,
+                  4.460243870189451
                 ],
                 "cameraTarget": [
-                  -4.333498230620374,
-                  -1.8078313603407625,
-                  0.2364458308149924
+                  -3.391287936169506,
+                  -4.573033210987333,
+                  0.9772882480247251
                 ]
               },
               "controlsHeight": 329
+            },
+            {
+              "type": 1,
+              "title": "Commands",
+              "controller": {
+                "leftSources": [],
+                "rightSources": [],
+                "discreteSources": [
+                  {
+                    "type": "alerts",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/CommandScheduler/Running",
+                    "logType": "Alerts",
+                    "visible": true,
+                    "options": {}
+                  },
+                  {
+                    "type": "alerts",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/CommandScheduler/Subsystems",
+                    "logType": "Alerts",
+                    "visible": true,
+                    "options": {}
+                  }
+                ],
+                "leftLockedRange": null,
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "rightUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "pigoam74jesfb4nbj26dep7viktz08f8",
+              "renderer": null,
+              "controlsHeight": 200
             },
             {
               "type": 9,
@@ -135,24 +216,107 @@
             },
             {
               "type": 1,
-              "title": "Commands",
+              "title": "Shooter",
               "controller": {
-                "leftSources": [],
-                "rightSources": [],
-                "discreteSources": [
+                "leftSources": [
                   {
-                    "type": "alerts",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/CommandScheduler/Running",
-                    "logType": "Alerts",
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/FieldSimulation/hubDiff",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/Shooter/FollowerVelocity",
+                    "logType": "Number",
                     "visible": true,
-                    "options": {}
+                    "options": {
+                      "color": "#e5b31b",
+                      "size": "normal"
+                    }
                   },
                   {
-                    "type": "alerts",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/CommandScheduler/Subsystems",
-                    "logType": "Alerts",
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/Shooter/LeaderVelocity",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#af2437",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "discreteSources": [],
+                "leftLockedRange": null,
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "rightUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "43xa5zkag3om7orp2mzuhjxyyleru2bp",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 1,
+              "title": "IntakeRollers",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/Mechanisms/Intake/IntakeMotor/mechanism/velocity",
+                    "logType": "Number",
                     "visible": true,
-                    "options": {}
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/Mechanisms/Intake/IntakeMotor/motor/outputVoltage",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#af2437",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/Mechanisms/Intake/IntakeMotor/current/stator",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "discreteSources": [
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:/FMSInfo/FMSControlData",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#80588e"
+                    }
                   }
                 ],
                 "leftLockedRange": null,
@@ -168,7 +332,53 @@
                 "leftFilter": 0,
                 "rightFilter": 0
               },
-              "controllerUUID": "pigoam74jesfb4nbj26dep7viktz08f8",
+              "controllerUUID": "3w53yo8dirw5hm0kew03f0eufaery3ix",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 1,
+              "title": "Hopper",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/Mechanisms/Hopper/HopperMotor/mechanism/velocity",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/Mechanisms/Hopper/HopperMotor/rotor/velocity",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "discreteSources": [],
+                "leftLockedRange": null,
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "rightUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "7be9mz4ju6no9ykvx2ciao2zj05bezzx",
               "renderer": null,
               "controlsHeight": 200
             },
@@ -181,6 +391,62 @@
                 "highlight": false
               },
               "controlsHeight": 0
+            },
+            {
+              "type": 1,
+              "title": "IntakePivot",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/Mechanisms/IntakePivot/IntakePivotMotor/rotor/position",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/Mechanisms/IntakePivot/IntakePivotMotor/mechanism/position",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/Mechanisms/IntakePivot/IntakePivotMotor/closedloop/setpoint/position",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#af2437",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "discreteSources": [],
+                "leftLockedRange": null,
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "rightUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "wrkalnnws4h9aaj7fgcj2lmnl42eibne",
+              "renderer": null,
+              "controlsHeight": 200
             }
           ]
         }
