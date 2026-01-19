@@ -185,6 +185,18 @@ public class Superstructure extends SubsystemBase {
         .withName("Superstructure.aimAndWait");
   }
 
+  public Command setTurretForward() {
+    return turret.setAngle(Degrees.of(0)).withName("Superstructure.setTurretForward");
+  }
+
+  public Command setTurretLeft() {
+    return turret.setAngle(Degrees.of(-45)).withName("Superstructure.setTurretLeft");
+  }
+
+  public Command setTurretRight() {
+    return turret.setAngle(Degrees.of(45)).withName("Superstructure.setTurretRight");
+  }
+
   // Getters for current state
   public AngularVelocity getShooterSpeed() {
     return shooter.getSpeed();

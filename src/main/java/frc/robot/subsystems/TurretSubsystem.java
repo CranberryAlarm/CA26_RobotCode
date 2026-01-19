@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
 import com.thethriftybot.ThriftyNova;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
@@ -34,6 +36,7 @@ import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.local.NovaWrapper;
+import yams.motorcontrollers.local.SparkWrapper;
 
 public class TurretSubsystem extends SubsystemBase {
 
@@ -42,22 +45,26 @@ public class TurretSubsystem extends SubsystemBase {
   // 1 Neo, 6.875 in diameter, 4:1 gearbox, 10:1 pivot gearing, non-continuous
   // 360 deg
   // Total reduction: 4 * 10 = 40:1
-  private ThriftyNova nova = new ThriftyNova(Constants.TurretConstants.kMotorId);
+
+  // private ThriftyNova nova = new
+  // ThriftyNova(Constants.TurretConstants.kMotorId);
+
+  private SparkMax spark = new SparkMax(Constants.TurretConstants.kMotorId, MotorType.kBrushless);
 
   private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
       .withControlMode(ControlMode.CLOSED_LOOP)
-      .withClosedLoopController(100, 0, 0, DegreesPerSecond.of(180), DegreesPerSecondPerSecond.of(180))
-      .withFeedforward(new ArmFeedforward(0, 0, 0.1))
+      .withClosedLoopController(15.0, 0, 0, DegreesPerSecond.of(1080), DegreesPerSecondPerSecond.of(1080))
+      .withFeedforward(new ArmFeedforward(0, 0, 0))
       .withTelemetry("TurretMotor", TelemetryVerbosity.HIGH)
       .withGearing(new MechanismGearing(GearBox.fromReductionStages(4, 10)))
       .withMotorInverted(false)
-      .withIdleMode(MotorMode.BRAKE)
+      .withIdleMode(MotorMode.COAST)
       .withSoftLimit(Degrees.of(-MAX_ONE_DIR_FOV), Degrees.of(MAX_ONE_DIR_FOV))
-      .withStatorCurrentLimit(Amps.of(40))
-      .withClosedLoopRampRate(Seconds.of(0.1));
-  // .withOpenLoopRampRate(Seconds.of(0.1));
+      .withStatorCurrentLimit(Amps.of(10))
+      .withClosedLoopRampRate(Seconds.of(0.1))
+      .withOpenLoopRampRate(Seconds.of(0.1));
 
-  private SmartMotorController smc = new NovaWrapper(nova, DCMotor.getNEO(1), smcConfig);
+  private SmartMotorController smc = new SparkWrapper(spark, DCMotor.getNEO(1), smcConfig);
 
   private final PivotConfig turretConfig = new PivotConfig(smc)
       .withHardLimit(Degrees.of(-MAX_ONE_DIR_FOV - 5), Degrees.of(MAX_ONE_DIR_FOV + 5))
