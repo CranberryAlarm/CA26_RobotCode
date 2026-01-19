@@ -2,7 +2,7 @@ package frc.robot.commands;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.RPM;
 
 import java.util.Map;
 import java.util.function.Supplier;
@@ -40,7 +40,7 @@ public class ShootOnTheMoveCommand extends Command {
     // control. We
     // will be using the superstructure to control the shooting mechanism so it's a
     // requirement.
-    addRequirements(superstructure);
+    // addRequirements(superstructure);
   }
 
   @Override
@@ -114,9 +114,13 @@ public class ShootOnTheMoveCommand extends Command {
     latestShootSpeed = calculateRequiredShooterSpeed(correctedDistance);
     latestHoodAngle = calculateRequiredHoodAngle(correctedDistance);
 
-    // System.out.println("Shooting at distance: " + correctedDistance + " requires
-    // speed: " + latestShootSpeed + ", hood angle: " + latestHoodAngle + ", turret
-    // angle: " + latestTurretAngle);
+    superstructure.setShooterSetpoints(
+        latestShootSpeed,
+        latestTurretAngle,
+        latestHoodAngle);
+
+    System.out.println("Shooting at distance: " + correctedDistance + " requires speed: " + latestShootSpeed
+        + ", hood angle: " + latestHoodAngle + ", turret angle: " + latestTurretAngle);
   }
 
   private double getFlightTime(Distance distanceToTarget) {
@@ -125,7 +129,7 @@ public class ShootOnTheMoveCommand extends Command {
   }
 
   private AngularVelocity calculateRequiredShooterSpeed(Distance distanceToTarget) {
-    return RotationsPerSecond.of(SHOOTING_SPEED_BY_DISTANCE.get(distanceToTarget.in(Meters)));
+    return RPM.of(SHOOTING_SPEED_BY_DISTANCE.get(distanceToTarget.in(Meters)));
   }
 
   private Angle calculateRequiredHoodAngle(Distance distanceToTarget) {
@@ -139,9 +143,9 @@ public class ShootOnTheMoveCommand extends Command {
 
   // meters, RPS
   private static final InterpolatingDoubleTreeMap SHOOTING_SPEED_BY_DISTANCE = InterpolatingDoubleTreeMap.ofEntries(
-      Map.entry(1.0, 100.0),
-      Map.entry(2.0, 100.0),
-      Map.entry(3.0, 100.0));
+      Map.entry(1.0, 1000.0),
+      Map.entry(2.0, 2000.0),
+      Map.entry(3.0, 3000.0));
 
   // meters, degrees
   private static final InterpolatingDoubleTreeMap HOOD_ANGLE_BY_DISTANCE = InterpolatingDoubleTreeMap.ofEntries(

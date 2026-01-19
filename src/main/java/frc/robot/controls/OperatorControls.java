@@ -1,7 +1,9 @@
 package frc.robot.controls;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Feet;
 import static edu.wpi.first.units.Units.FeetPerSecond;
+import static edu.wpi.first.units.Units.RPM;
 
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.gamepieces.GamePieceProjectile;
@@ -115,12 +117,17 @@ public class OperatorControls {
     controller.povLeft().onTrue(superstructure.setTurretLeft().withName("OperatorControls.setTurretLeft"));
     controller.povRight().onTrue(superstructure.setTurretRight().withName("OperatorControls.setTurretRight"));
 
-    controller.povDown().whileTrue(
-        aimCommand(drivetrain, superstructure).ignoringDisable(true).withName("OperatorControls.aimCommand"));
+    controller.povDown().whileTrue(aimCommand(drivetrain, superstructure).withName("OperatorControls.aimCommand"));
   }
 
   private static Command aimCommand(SwerveSubsystem drivetrain, Superstructure superstructure) {
     return new ShootOnTheMoveCommand(drivetrain, superstructure, () -> superstructure.getAimPoint());
+  }
+
+  private static Command aimCommand2(SwerveSubsystem drivetrain, Superstructure superstructure) {
+    return Commands.parallel(
+        superstructure.shooter.setSpeed(RPM.of(5000)).asProxy(),
+        superstructure.turret.setAngle(Degrees.of(0)).asProxy());
   }
 
   public static Command fireAlgae(SwerveSubsystem drivetrain, Superstructure superstructure) {

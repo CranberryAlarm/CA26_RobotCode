@@ -4,6 +4,7 @@ import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Meter;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.RPM;
 
@@ -24,12 +25,12 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public class Superstructure extends SubsystemBase {
 
-  private final ShooterSubsystem shooter;
-  private final TurretSubsystem turret;
-  private final HoodSubsystem hood;
-  private final IntakeSubsystem intake;
-  private final HopperSubsystem hopper;
-  private final KickerSubsystem kicker;
+  public final ShooterSubsystem shooter;
+  public final TurretSubsystem turret;
+  public final HoodSubsystem hood;
+  public final IntakeSubsystem intake;
+  public final HopperSubsystem hopper;
+  public final KickerSubsystem kicker;
 
   // Default values for "ready" state
   private static final AngularVelocity DEFAULT_SHOOTER_SPEED = RPM.of(4000);
@@ -51,7 +52,7 @@ public class Superstructure extends SubsystemBase {
   private Angle targetTurretAngle = Degrees.of(0);
   private Angle targetHoodAngle = Degrees.of(0);
 
-  private Translation3d aimPoint = new Translation3d(Meters.of(0), Meters.of(0), Meters.of(0));
+  private Translation3d aimPoint = new Translation3d(Meter.of(11.902), Meter.of(4.031), Meter.of(0));
 
   public Superstructure(ShooterSubsystem shooter, TurretSubsystem turret, HoodSubsystem hood, IntakeSubsystem intake,
       HopperSubsystem hopper, KickerSubsystem kicker) {
@@ -62,7 +63,8 @@ public class Superstructure extends SubsystemBase {
     this.hopper = hopper;
     this.kicker = kicker;
 
-    this.aimPoint = new Translation3d(Meters.of(14.5), Meters.of(4), Meters.of(0));
+    // this.aimPoint = new Translation3d(Meters.of(14.5), Meters.of(4),
+    // Meters.of(0));
 
     // Create triggers for checking if mechanisms are at their targets
     this.isShooterAtSpeed = new Trigger(() -> false);
@@ -146,6 +148,35 @@ public class Superstructure extends SubsystemBase {
         .withName("Superstructure.aim");
   }
 
+  public void setShooterSetpoints(AngularVelocity shooterSpeed, Angle turretAngle, Angle hoodAngle) {
+    targetShooterSpeed = shooterSpeed;
+    targetTurretAngle = turretAngle;
+    targetHoodAngle = hoodAngle;
+  }
+
+  // /**
+  // * Aims the superstructure using suppliers - useful for dynamic targeting.
+  // *
+  // * @param shooterSpeedSupplier Supplier for target shooter speed
+  // * @param turretAngleSupplier Supplier for target turret angle
+  // * @param hoodAngleSupplier Supplier for target hood angle
+  // */
+  // public Command aimDynamicCommand(
+  // Supplier<AngularVelocity> shooterSpeedSupplier,
+  // Supplier<Angle> turretAngleSupplier,
+  // Supplier<Angle> hoodAngleSupplier) {
+  // return Commands.run(() -> {
+  // targetShooterSpeed = shooterSpeedSupplier.get();
+  // targetTurretAngle = turretAngleSupplier.get();
+  // targetHoodAngle = hoodAngleSupplier.get();
+  // }).alongWith(
+  // Commands.parallel(
+  // shooter.setSpeed(shooterSpeedSupplier.get()).asProxy(),
+  // turret.setAngle(turretAngleSupplier.get()).asProxy(),
+  // hood.setAngle(hoodAngleSupplier.get()).asProxy()))
+  // .withName("Superstructure.aimDynamic");
+  // }
+
   /**
    * Aims the superstructure using suppliers - useful for dynamic targeting.
    *
@@ -157,15 +188,10 @@ public class Superstructure extends SubsystemBase {
       Supplier<AngularVelocity> shooterSpeedSupplier,
       Supplier<Angle> turretAngleSupplier,
       Supplier<Angle> hoodAngleSupplier) {
-    return Commands.run(() -> {
-      targetShooterSpeed = shooterSpeedSupplier.get();
-      targetTurretAngle = turretAngleSupplier.get();
-      targetHoodAngle = hoodAngleSupplier.get();
-    }).alongWith(
-        Commands.parallel(
-            shooter.setSpeed(shooterSpeedSupplier.get()).asProxy(),
-            turret.setAngle(turretAngleSupplier.get()).asProxy(),
-            hood.setAngle(hoodAngleSupplier.get()).asProxy()))
+    return Commands.run(() -> Commands.parallel(
+        shooter.setSpeedDynamic(shooterSpeedSupplier).asProxy(),
+        turret.setAngleDynamic(turretAngleSupplier).asProxy(),
+        hood.setAngleDynamic(hoodAngleSupplier).asProxy()))
         .withName("Superstructure.aimDynamic");
   }
 
@@ -353,6 +379,11 @@ public class Superstructure extends SubsystemBase {
   @Override
   public void periodic() {
     // Superstructure doesn't need periodic updates - subsystems handle their own
+  }
+
+  public Command useRequirement() {
+    return runOnce(() -> {
+    });
   }
 
   public Pose3d getShooterPose() {
