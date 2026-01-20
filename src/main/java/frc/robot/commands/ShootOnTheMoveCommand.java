@@ -106,8 +106,7 @@ public class ShootOnTheMoveCommand extends Command {
     var vectorToTarget = drivetrain.getPose().getTranslation().minus(correctedTarget);
 
     var correctedDistance = Meters.of(vectorToTarget.getNorm());
-    var calculatedHeading = vectorToTarget.getAngle().rotateBy(drivetrain.getHeading())
-        .rotateBy(Rotation2d.fromDegrees(180)).getMeasure();
+    var calculatedHeading = vectorToTarget.getAngle().rotateBy(drivetrain.getHeading()).getMeasure();
 
     Logger.recordOutput("ShootOnTheMove/RobotHeading", drivetrain.getHeading());
     Logger.recordOutput("ShootOnTheMove/CalculatedHeading", calculatedHeading);
