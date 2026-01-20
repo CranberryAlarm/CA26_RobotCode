@@ -1,16 +1,13 @@
 package frc.robot.subsystems;
 
-import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
-
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Meter;
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.RPM;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Meter;
+import static edu.wpi.first.units.Units.RPM;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
@@ -239,7 +236,7 @@ public class Superstructure extends SubsystemBase {
     return new Rotation3d(
         Degrees.of(0), // no roll 🤞
         hood.getAngle().unaryMinus(), // pitch is negative hood angle
-        turret.getAngle());
+        turret.getAngle().plus(Degrees.of(180))); // yaw is turret angle + 180, because the turret is mounted backwards
   }
 
   /**
@@ -366,7 +363,11 @@ public class Superstructure extends SubsystemBase {
   public Pose3d getShooterPose() {
     // Position of the shooter relative to the "front" of the robot. Rotation
     // element is based on hood and turret angles
-    return new Pose3d(Meters.of(0), Meters.of(0), Meters.of(0), getAimRotation3d());
+    return new Pose3d(new Translation3d(
+        Meter.of(-0.3),
+        Meter.of(0),
+        Meter.of(0.6)),
+        getAimRotation3d());
   }
 
   public LinearVelocity getTangentialVelocity() {

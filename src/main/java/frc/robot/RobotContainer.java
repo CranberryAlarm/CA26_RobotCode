@@ -1,8 +1,6 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Meter;
-
 import java.io.File;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -10,7 +8,6 @@ import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -22,7 +19,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.controls.DriverControls;
 import frc.robot.controls.OperatorControls;
-import frc.robot.controls.PoseControls;
 import frc.robot.subsystems.HoodSubsystem;
 import frc.robot.subsystems.HopperSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -114,11 +110,10 @@ public class RobotContainer {
 
   public Pose3d getAimDirection() {
     // Apply robot heading first, then turret/hood rotation on top
-    Rotation3d robotHeading = new Rotation3d(0, 0, drivebase.getHeading().getRadians());
-    Rotation3d aimRotation = robotHeading.rotateBy(superstructure.getAimRotation3d());
+    Pose3d shooterPose = superstructure.getShooterPose();
 
-    var pose = drivebase.getPose3d()
-        .plus(new Transform3d(new Translation3d(Meter.of(0), Meter.of(0), Meter.of(1)), aimRotation));
+    var pose = drivebase.getPose3d().plus(new Transform3d(
+        shooterPose.getTranslation(), shooterPose.getRotation()));
 
     return pose;
   }

@@ -1,20 +1,18 @@
 package frc.robot.commands;
 
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.RPM;
-
 import java.util.Map;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.RPM;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
@@ -106,7 +104,9 @@ public class ShootOnTheMoveCommand extends Command {
     var vectorToTarget = drivetrain.getPose().getTranslation().minus(correctedTarget);
 
     var correctedDistance = Meters.of(vectorToTarget.getNorm());
-    var calculatedHeading = vectorToTarget.getAngle().rotateBy(drivetrain.getHeading()).getMeasure();
+    var calculatedHeading = vectorToTarget.getAngle()
+        .rotateBy(drivetrain.getHeading().unaryMinus())
+        .getMeasure();
 
     Logger.recordOutput("ShootOnTheMove/RobotHeading", drivetrain.getHeading());
     Logger.recordOutput("ShootOnTheMove/CalculatedHeading", calculatedHeading);
