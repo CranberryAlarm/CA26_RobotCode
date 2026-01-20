@@ -25,7 +25,6 @@
             "/Mechanisms/Hopper/HopperMotor/mechanism",
             "/Mechanisms/Hopper/HopperMotor/rotor",
             "/Mechanisms/Hopper/HopperMotor/current",
-            "/SmartDashboard/Mechanisms/Commands",
             "/Mechanisms/IntakePivot/IntakePivotMotor",
             "/Mechanisms/IntakePivot/IntakePivotMotor/rotor",
             "/Mechanisms/IntakePivot/IntakePivotMotor/mechanism",
@@ -33,7 +32,6 @@
             "/Mechanisms/Hopper/HopperMotor/motor",
             "/Mechanisms/IntakePivot/IntakePivotMotor/closedloop",
             "/Mechanisms/IntakePivot/IntakePivotMotor/closedloop/setpoint",
-            "/AdvantageKit/RealOutputs/FieldSimulation",
             "/TheThriftyBot/CAN_15",
             "/TheThriftyBot/CAN_16",
             "/AdvantageKit/RealOutputs/Shooter",
@@ -45,21 +43,39 @@
             "/Mechanisms/Shooter/ShooterMotor/mechanism",
             "/Mechanisms/Shooter/ShooterMotor/motor",
             "/Mechanisms/Shooter/ShooterMotor/rotor",
-            "/Tuning",
-            "/Tuning/Shooter",
-            "/Tuning/Shooter/ShooterMotor/closedloop",
             "/Tuning/Shooter/ShooterMotor/closedloop/feedback",
             "/Tuning/Shooter/ShooterMotor/closedloop/feedforward",
             "/Tuning/Shooter/ShooterMotor/closedloop/motionprofile",
             "/Tuning/Shooter/ShooterMotor/closedloop/setpoint",
-            "/Tuning/Shooter/ShooterMotor",
             "/Tuning/Shooter/ShooterMotor/mechanism",
             "/Tuning/Shooter/ShooterMotor/mechanism/limit",
-            "/Tuning/Shooter/ShooterMotor/ramprate"
+            "/Tuning/Shooter/ShooterMotor/ramprate",
+            "/Tuning/Turret/TurretMotor",
+            "/Tuning/Turret/TurretMotor/closedloop",
+            "/Tuning/Turret/TurretMotor/current",
+            "/Tuning/Turret/TurretMotor/current/limit",
+            "/Tuning/Turret/TurretMotor/closedloop/setpoint",
+            "/Tuning/Turret/TurretMotor/closedloop/motionprofile",
+            "/Tuning/Turret/TurretMotor/closedloop/feedforward",
+            "/Tuning/Turret/TurretMotor/closedloop/feedback",
+            "/Mechanisms/Turret",
+            "/Mechanisms/Turret/TurretMotor",
+            "/Mechanisms/Turret/TurretMotor/closedloop",
+            "/Mechanisms/Turret/TurretMotor/closedloop/setpoint",
+            "/Mechanisms/Turret/TurretMotor/current",
+            "/Mechanisms/Turret/TurretMotor/mechanism",
+            "/Mechanisms/Turret/TurretMotor/motor",
+            "/Mechanisms/Turret/TurretMotor/rotor",
+            "/SmartDashboard/Mechanisms/Commands",
+            "/Tuning/Turret",
+            "/AdvantageKit",
+            "/AdvantageKit/RealOutputs",
+            "/AdvantageKit/RealOutputs/ShootOnTheMove",
+            "/AdvantageKit/RealOutputs/ShootOnTheMove/RobotHeading"
           ]
         },
         "tabs": {
-          "selected": 4,
+          "selected": 1,
           "tabs": [
             {
               "type": 0,
@@ -80,7 +96,7 @@
                     "logType": "Pose2d",
                     "visible": true,
                     "options": {
-                      "model": "Crab Bot"
+                      "model": "Duck Bot"
                     }
                   },
                   {
@@ -111,6 +127,36 @@
                     "options": {
                       "model": "Duck Bot"
                     }
+                  },
+                  {
+                    "type": "cone",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/FieldSimulation/AimDirection",
+                    "logType": "Pose3d",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ff00",
+                      "position": "center"
+                    }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/FieldSimulation/AimTarget",
+                    "logType": "Pose3d",
+                    "visible": true,
+                    "options": {
+                      "model": "Duck Bot",
+                      "color": "#00ffff"
+                    }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/FieldSimulation/AimTargetCorrected",
+                    "logType": "Pose3d",
+                    "visible": true,
+                    "options": {
+                      "model": "Duck Bot",
+                      "color": "#ff00ff"
+                    }
                   }
                 ],
                 "game": "Evergreen",
@@ -121,17 +167,62 @@
                 "cameraIndex": -1,
                 "orbitFov": 50,
                 "cameraPosition": [
-                  -10.264677470130257,
-                  12.102165553417098,
-                  4.460243870189451
+                  -7.5321180841329785,
+                  7.404315570190774,
+                  -0.07748951025576772
                 ],
                 "cameraTarget": [
-                  -3.391287936169506,
-                  -4.573033210987333,
-                  0.9772882480247251
+                  -5.950588827209994,
+                  1.3086603939053425,
+                  -0.061381706244481145
                 ]
               },
-              "controlsHeight": 329
+              "controlsHeight": 430
+            },
+            {
+              "type": 1,
+              "title": "SOTM",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/ShootOnTheMove/RobotHeading/value",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/ShootOnTheMove/CalculatedHeading",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [],
+                "discreteSources": [],
+                "leftLockedRange": null,
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "rightUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "r4osgrvtuob9ky26vtvjubxgpml80oc1",
+              "renderer": null,
+              "controlsHeight": 200
             },
             {
               "type": 1,
@@ -215,6 +306,16 @@
               "controlsHeight": 200
             },
             {
+              "type": 5,
+              "title": "Console",
+              "controller": "NT:/AdvantageKit/RealOutputs/Console",
+              "controllerUUID": "uv5up5g3ebsg6srxe6xpjd0wk37924t2",
+              "renderer": {
+                "highlight": false
+              },
+              "controlsHeight": 0
+            },
+            {
               "type": 1,
               "title": "Shooter",
               "controller": {
@@ -267,6 +368,82 @@
                 "rightFilter": 0
               },
               "controllerUUID": "43xa5zkag3om7orp2mzuhjxyyleru2bp",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 1,
+              "title": "Turret",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/Mechanisms/Turret/TurretMotor/mechanism/velocity",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#e5b31b",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/Mechanisms/Turret/TurretMotor/closedloop/setpoint/velocity",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#80588e",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/Mechanisms/Turret/TurretMotor/motor/outputVoltage",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#e48b32",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/Mechanisms/Turret/TurretMotor/mechanism/position",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/Mechanisms/Turret/TurretMotor/closedloop/setpoint/position",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#af2437",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "discreteSources": [],
+                "leftLockedRange": null,
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "rightUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "y8fk3c1rybbz1fz244jf954wsqjto7ys",
               "renderer": null,
               "controlsHeight": 200
             },
@@ -381,16 +558,6 @@
               "controllerUUID": "7be9mz4ju6no9ykvx2ciao2zj05bezzx",
               "renderer": null,
               "controlsHeight": 200
-            },
-            {
-              "type": 5,
-              "title": "Console",
-              "controller": "NT:/AdvantageKit/RealOutputs/Console",
-              "controllerUUID": "uv5up5g3ebsg6srxe6xpjd0wk37924t2",
-              "renderer": {
-                "highlight": false
-              },
-              "controlsHeight": 0
             },
             {
               "type": 1,
