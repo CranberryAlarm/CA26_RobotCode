@@ -154,29 +154,6 @@ public class Superstructure extends SubsystemBase {
     targetHoodAngle = hoodAngle;
   }
 
-  // /**
-  // * Aims the superstructure using suppliers - useful for dynamic targeting.
-  // *
-  // * @param shooterSpeedSupplier Supplier for target shooter speed
-  // * @param turretAngleSupplier Supplier for target turret angle
-  // * @param hoodAngleSupplier Supplier for target hood angle
-  // */
-  // public Command aimDynamicCommand(
-  // Supplier<AngularVelocity> shooterSpeedSupplier,
-  // Supplier<Angle> turretAngleSupplier,
-  // Supplier<Angle> hoodAngleSupplier) {
-  // return Commands.run(() -> {
-  // targetShooterSpeed = shooterSpeedSupplier.get();
-  // targetTurretAngle = turretAngleSupplier.get();
-  // targetHoodAngle = hoodAngleSupplier.get();
-  // }).alongWith(
-  // Commands.parallel(
-  // shooter.setSpeed(shooterSpeedSupplier.get()).asProxy(),
-  // turret.setAngle(turretAngleSupplier.get()).asProxy(),
-  // hood.setAngle(hoodAngleSupplier.get()).asProxy()))
-  // .withName("Superstructure.aimDynamic");
-  // }
-
   /**
    * Aims the superstructure using suppliers - useful for dynamic targeting.
    *
@@ -188,10 +165,10 @@ public class Superstructure extends SubsystemBase {
       Supplier<AngularVelocity> shooterSpeedSupplier,
       Supplier<Angle> turretAngleSupplier,
       Supplier<Angle> hoodAngleSupplier) {
-    return Commands.run(() -> Commands.parallel(
+    return Commands.parallel(
         shooter.setSpeedDynamic(shooterSpeedSupplier).asProxy(),
         turret.setAngleDynamic(turretAngleSupplier).asProxy(),
-        hood.setAngleDynamic(hoodAngleSupplier).asProxy()))
+        hood.setAngleDynamic(hoodAngleSupplier).asProxy())
         .withName("Superstructure.aimDynamic");
   }
 

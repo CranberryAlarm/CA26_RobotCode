@@ -119,8 +119,10 @@ public class ShootOnTheMoveCommand extends Command {
         latestTurretAngle,
         latestHoodAngle);
 
-    System.out.println("Shooting at distance: " + correctedDistance + " requires speed: " + latestShootSpeed
-        + ", hood angle: " + latestHoodAngle + ", turret angle: " + latestTurretAngle);
+    // System.out.println("Shooting at distance: " + correctedDistance + " requires
+    // speed: " + latestShootSpeed
+    // + ", hood angle: " + latestHoodAngle + ", turret angle: " +
+    // latestTurretAngle);
   }
 
   private double getFlightTime(Distance distanceToTarget) {

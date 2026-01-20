@@ -124,12 +124,6 @@ public class OperatorControls {
     return new ShootOnTheMoveCommand(drivetrain, superstructure, () -> superstructure.getAimPoint());
   }
 
-  private static Command aimCommand2(SwerveSubsystem drivetrain, Superstructure superstructure) {
-    return Commands.parallel(
-        superstructure.shooter.setSpeed(RPM.of(5000)).asProxy(),
-        superstructure.turret.setAngle(Degrees.of(0)).asProxy());
-  }
-
   public static Command fireAlgae(SwerveSubsystem drivetrain, Superstructure superstructure) {
     return Commands.runOnce(() -> {
       System.err.println("FIRE!");

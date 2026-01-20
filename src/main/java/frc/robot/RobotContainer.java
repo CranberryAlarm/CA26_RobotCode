@@ -115,8 +115,7 @@ public class RobotContainer {
   public Pose3d getAimDirection() {
     var pose = drivebase.getPose3d()
         .plus(new Transform3d(new Translation3d(Meter.of(0), Meter.of(0), Meter.of(1)),
-            superstructure.getAimRotation3d().rotateBy(
-                new Rotation3d(drivebase.getHeading()))));
+            superstructure.getAimRotation3d().rotateBy(new Rotation3d(drivebase.getHeading()))));
 
     return pose;
   }

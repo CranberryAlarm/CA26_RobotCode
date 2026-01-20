@@ -101,7 +101,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public Command setSpeedDynamic(Supplier<AngularVelocity> speedSupplier) {
-    return shooter.setSpeed(speedSupplier.get());
+    return shooter.setSpeed(speedSupplier);
   }
 
   public Command spinUp() {
