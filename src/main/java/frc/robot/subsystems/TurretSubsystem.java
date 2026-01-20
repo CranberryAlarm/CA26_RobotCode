@@ -2,10 +2,14 @@ package frc.robot.subsystems;
 
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import static edu.wpi.first.units.Units.Amps;
@@ -14,6 +18,7 @@ import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
@@ -89,7 +94,9 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   public Angle getAngle() {
-    return turret.getAngle();
+    // Returns the turret angle in the robot's coordinate frame
+    // since the turret is mounted backwards, we need to add 180 degrees
+    return turret.getAngle().plus(Degrees.of(180));
   }
 
   public Command set(double dutyCycle) {
@@ -103,6 +110,12 @@ public class TurretSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     turret.updateTelemetry();
+
+    Logger.recordOutput("ASCalibration/FinalComponentPoses", new Pose3d[] {
+        new Pose3d(
+            -0.205, 0.0, 0.375,
+            new Rotation3d(0, 0, turret.getAngle().in(Radians)))
+    });
   }
 
   @Override

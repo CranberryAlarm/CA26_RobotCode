@@ -236,7 +236,7 @@ public class Superstructure extends SubsystemBase {
     return new Rotation3d(
         Degrees.of(0), // no roll 🤞
         hood.getAngle().unaryMinus(), // pitch is negative hood angle
-        turret.getAngle().plus(Degrees.of(180))); // yaw is turret angle + 180, because the turret is mounted backwards
+        turret.getAngle()); // yaw is turret angle + 180, because the turret is mounted backwards
   }
 
   /**
