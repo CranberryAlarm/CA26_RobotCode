@@ -113,9 +113,12 @@ public class RobotContainer {
   }
 
   public Pose3d getAimDirection() {
+    // Apply robot heading first, then turret/hood rotation on top
+    Rotation3d robotHeading = new Rotation3d(0, 0, drivebase.getHeading().getRadians());
+    Rotation3d aimRotation = robotHeading.rotateBy(superstructure.getAimRotation3d());
+
     var pose = drivebase.getPose3d()
-        .plus(new Transform3d(new Translation3d(Meter.of(0), Meter.of(0), Meter.of(1)),
-            superstructure.getAimRotation3d().rotateBy(new Rotation3d(drivebase.getHeading()))));
+        .plus(new Transform3d(new Translation3d(Meter.of(0), Meter.of(0), Meter.of(1)), aimRotation));
 
     return pose;
   }
