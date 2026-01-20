@@ -10,6 +10,7 @@ import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -105,7 +106,8 @@ public class ShootOnTheMoveCommand extends Command {
     var vectorToTarget = drivetrain.getPose().getTranslation().minus(correctedTarget);
 
     var correctedDistance = Meters.of(vectorToTarget.getNorm());
-    var calculatedHeading = vectorToTarget.getAngle().rotateBy(drivetrain.getHeading()).getMeasure();
+    var calculatedHeading = vectorToTarget.getAngle().rotateBy(drivetrain.getHeading())
+        .rotateBy(Rotation2d.fromDegrees(180)).getMeasure();
 
     Logger.recordOutput("ShootOnTheMove/RobotHeading", drivetrain.getHeading());
     Logger.recordOutput("ShootOnTheMove/CalculatedHeading", calculatedHeading);

@@ -88,7 +88,7 @@ public class HoodSubsystem extends SubsystemBase {
   }
 
   public Angle getAngle() {
-    return Degrees.of(75);
+    return Degrees.of(45);
     // return hood.getAngle();
   }
 

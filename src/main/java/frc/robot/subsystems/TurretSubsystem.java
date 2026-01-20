@@ -57,7 +57,7 @@ public class TurretSubsystem extends SubsystemBase {
       .withFeedforward(new ArmFeedforward(0, 0, 0))
       .withTelemetry("TurretMotor", TelemetryVerbosity.HIGH)
       .withGearing(new MechanismGearing(GearBox.fromReductionStages(4, 10)))
-      .withMotorInverted(false)
+      .withMotorInverted(true)
       .withIdleMode(MotorMode.COAST)
       .withSoftLimit(Degrees.of(-MAX_ONE_DIR_FOV), Degrees.of(MAX_ONE_DIR_FOV))
       .withStatorCurrentLimit(Amps.of(10))
