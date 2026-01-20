@@ -93,10 +93,14 @@ public class TurretSubsystem extends SubsystemBase {
     return turret.setAngle(Degrees.of(0));
   }
 
-  public Angle getAngle() {
+  public Angle getRobotAdjustedAngle() {
     // Returns the turret angle in the robot's coordinate frame
     // since the turret is mounted backwards, we need to add 180 degrees
     return turret.getAngle().plus(Degrees.of(180));
+  }
+
+  public Angle getRawAngle() {
+    return turret.getAngle();
   }
 
   public Command set(double dutyCycle) {

@@ -40,6 +40,9 @@ public class ShootOnTheMoveCommand extends Command {
     // will be using the superstructure to control the shooting mechanism so it's a
     // requirement.
     // addRequirements(superstructure);
+
+    // TODO: figure out if the above is actually required. Right now, when you start
+    // some other command, the auto aim can't start back up again
   }
 
   @Override
@@ -50,6 +53,8 @@ public class ShootOnTheMoveCommand extends Command {
     latestTurretAngle = superstructure.getTurretAngle();
     latestShootSpeed = superstructure.getShooterSpeed();
 
+    // TODO: when this current command ends, we should probably cancel the dynamic
+    // aim command
     superstructure.aimDynamicCommand(
         () -> {
           return this.latestShootSpeed;
@@ -113,7 +118,11 @@ public class ShootOnTheMoveCommand extends Command {
 
     latestTurretAngle = calculatedHeading;
     latestShootSpeed = calculateRequiredShooterSpeed(correctedDistance);
-    latestHoodAngle = calculateRequiredHoodAngle(correctedDistance);
+
+    // TODO: add this back if/when we have a real hood, for now, just set it to the
+    // current angle
+    // latestHoodAngle = calculateRequiredHoodAngle(correctedDistance);
+    latestHoodAngle = superstructure.getHoodAngle();
 
     superstructure.setShooterSetpoints(
         latestShootSpeed,

@@ -61,38 +61,11 @@ public class OperatorControls {
     // }).ignoringDisable(true).schedule();
     // }
 
-    // Intake controls - A to intake, B to eject
-    // controller.a().whileTrue(superstructure.intakeCommand());
-    // controller.b().whileTrue(superstructure.ejectCommand());
-
-    // Hopper controls - X to run hopper forward, Y to run backward
-    // controller.x().whileTrue(superstructure.hopperFeedCommand());
-    // controller.y().whileTrue(superstructure.hopperReverseCommand());
-
-    // Shooter controls - Right bumper to shoot
-    // controller.rightBumper().whileTrue(superstructure.shootCommand());
-    // controller.leftBumper().whileTrue(superstructure.stopShootingCommand());
-
-    // Kicker controls
-    // controller.back().whileTrue(superstructure.kickerFeedCommand());
-    // controller.start().whileTrue(superstructure.kickerStopCommand());
-
-    // Intake pivot controls
-    // controller.povUp().onTrue(superstructure.setIntakeStow());
-    // controller.povRight().onTrue(superstructure.setIntakeHold());
-    // controller.povRight().onTrue(superstructure.setIntakeDeployed());
-
     // REAL CONTROLS
     controller.start().onTrue(superstructure.rezeroIntakePivotCommand().ignoringDisable(true));
 
     controller.rightBumper()
         .whileTrue(superstructure.setIntakeDeployAndRoll().withName("OperatorControls.intakeDeployed"));
-
-    // WIP on shooter power LERP
-    // controller.y()
-    // .whileTrue(Commands.defer(
-    // () -> superstructure.shootWithDistanceCommand(drivetrain.getDistanceToHub()),
-    // java.util.Set.of()));
 
     controller.y().onTrue(superstructure.shootCommand());
     controller.x().whileTrue(superstructure.stopShootingCommand());
@@ -109,12 +82,10 @@ public class OperatorControls {
     controller.povLeft().onTrue(superstructure.setTurretLeft().withName("OperatorControls.setTurretLeft"));
     controller.povRight().onTrue(superstructure.setTurretRight().withName("OperatorControls.setTurretRight"));
 
-    controller.povDown().onTrue(
-        aimCommand(drivetrain, superstructure).ignoringDisable(true).withName("OperatorControls.aimCommand"));
-  }
-
-  private static Command aimCommand(SwerveSubsystem drivetrain, Superstructure superstructure) {
-    return new ShootOnTheMoveCommand(drivetrain, superstructure, () -> superstructure.getAimPoint());
+    controller.leftBumper().toggleOnTrue(
+        new ShootOnTheMoveCommand(drivetrain, superstructure, () -> superstructure.getAimPoint())
+            .ignoringDisable(true)
+            .withName("OperatorControls.aimCommand"));
   }
 
   public static Command fireAlgae(SwerveSubsystem drivetrain, Superstructure superstructure) {
