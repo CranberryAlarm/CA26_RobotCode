@@ -39,12 +39,12 @@ public class DriverControls {
         .scaleTranslation(0.25) // TODO: Tune speed scaling
         .deadband(ControllerConstants.DEADBAND);
 
-    controller.rightBumper().whileTrue(Commands.run(
-        () -> {
-          driveInputStream
-              .aim(getTargetPose())
-              .aimWhile(true);
-        }).finallyDo(() -> driveInputStream.aimWhile(false)));
+    // controller.rightBumper().whileTrue(Commands.run(
+    // () -> {
+    // driveInputStream
+    // .aim(getTargetPose())
+    // .aimWhile(true);
+    // }).finallyDo(() -> driveInputStream.aimWhile(false)));
 
     drivetrain.setDefaultCommand(
         drivetrain.driveFieldOriented(driveInputStream).withName("Drive" + ".test"));
@@ -86,7 +86,16 @@ public class DriverControls {
       // controller.back().whileTrue(fireAlgae(drivetrain));
     } else {
       controller.start().onTrue((Commands.runOnce(drivetrain::zeroGyro)));
-      controller.leftBumper().whileTrue(Commands.runOnce(drivetrain::lock, drivetrain).repeatedly());
+      // controller.leftBumper().whileTrue(Commands.runOnce(drivetrain::lock,
+      // drivetrain).repeatedly());
+
+      controller.leftBumper().whileTrue(
+          superstructure.feedAllCommand()
+              .finallyDo(() -> superstructure.stopFeedingAllCommand().schedule()));
+
+      controller.rightBumper()
+          .whileTrue(superstructure.setIntakeDeployAndRoll().withName("OperatorControls.intakeDeployed"));
+
     }
   }
 }

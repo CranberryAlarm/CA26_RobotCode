@@ -115,6 +115,7 @@ public class ShootOnTheMoveCommand extends Command {
 
     Logger.recordOutput("ShootOnTheMove/RobotHeading", drivetrain.getHeading());
     Logger.recordOutput("ShootOnTheMove/CalculatedHeading", calculatedHeading);
+    Logger.recordOutput("ShootOnTheMove/distanceToTarget", distanceToTarget);
 
     latestTurretAngle = calculatedHeading;
     latestShootSpeed = calculateRequiredShooterSpeed(correctedDistance);
@@ -151,13 +152,14 @@ public class ShootOnTheMoveCommand extends Command {
   // meters, seconds
   private static final InterpolatingDoubleTreeMap TIME_OF_FLIGHT_BY_DISTANCE = InterpolatingDoubleTreeMap.ofEntries(
       Map.entry(1.0, 1.0),
-      Map.entry(3.0, 1.5));
+      Map.entry(4.86, 1.5));
 
   // meters, RPS
   private static final InterpolatingDoubleTreeMap SHOOTING_SPEED_BY_DISTANCE = InterpolatingDoubleTreeMap.ofEntries(
-      Map.entry(1.0, 1000.0),
-      Map.entry(2.0, 2000.0),
-      Map.entry(3.0, 3000.0));
+      Map.entry(2.0, 2700.0),
+      Map.entry(3.0, 3000.0),
+      Map.entry(4.0, 3300.0),
+      Map.entry(4.86, 3750.0));
 
   // meters, degrees
   private static final InterpolatingDoubleTreeMap HOOD_ANGLE_BY_DISTANCE = InterpolatingDoubleTreeMap.ofEntries(
