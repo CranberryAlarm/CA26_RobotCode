@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.ShootOnTheMoveCommand;
 import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.util.RebuildFuelOnFly;
+import frc.robot.util.maplesim.RebuiltFuelOnFly;
 
 public class OperatorControls {
   public static final boolean MACOS_WEIRD_CONTROLLER = true;
@@ -102,7 +102,7 @@ public class OperatorControls {
       // LinearVelocity launchingSpeed,
       // Angle shooterAngle
 
-      GamePieceProjectile fuel = new RebuildFuelOnFly(
+      GamePieceProjectile fuel = new RebuiltFuelOnFly(
           drivetrain.getPose().getTranslation(),
           new Translation2d(),
           drivetrain.getSwerveDrive().getRobotVelocity().times(-1),

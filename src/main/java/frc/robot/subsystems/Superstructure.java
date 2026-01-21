@@ -320,7 +320,8 @@ public class Superstructure extends SubsystemBase {
 
     String readyOut = "R:" + isReadyToShoot.getAsBoolean();
 
-    System.err.println(shooterOut + " " + turretOut + " " + hoodOut + " " + readyOut);
+    // System.out.println(shooterOut + " " + turretOut + " " + hoodOut + " " +
+    // readyOut);
   }
 
   public Command useRequirement() {
