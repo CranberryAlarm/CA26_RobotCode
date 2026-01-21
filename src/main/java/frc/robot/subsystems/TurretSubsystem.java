@@ -16,8 +16,6 @@ import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
-import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
@@ -42,6 +40,7 @@ import yams.motorcontrollers.local.SparkWrapper;
 public class TurretSubsystem extends SubsystemBase {
 
   private final double MAX_ONE_DIR_FOV = 90; // degrees
+  public final Translation3d turretTranslation = new Translation3d(-0.205, 0.0, 0.375);
 
   // 1 Neo, 6.875 in diameter, 4:1 gearbox, 10:1 pivot gearing, non-continuous
   // 360 deg
@@ -73,8 +72,7 @@ public class TurretSubsystem extends SubsystemBase {
       .withMOI(0.05)
       .withTelemetry("Turret", TelemetryVerbosity.HIGH)
       .withMechanismPositionConfig(
-          new MechanismPositionConfig().withMovementPlane(Plane.XY).withRelativePosition(new Translation3d(
-              Meters.of(0), Meters.of(0), Inches.of(18))));
+          new MechanismPositionConfig().withMovementPlane(Plane.XY).withRelativePosition(turretTranslation));
 
   private Pivot turret = new Pivot(turretConfig);
 
@@ -117,7 +115,7 @@ public class TurretSubsystem extends SubsystemBase {
 
     Logger.recordOutput("ASCalibration/FinalComponentPoses", new Pose3d[] {
         new Pose3d(
-            -0.205, 0.0, 0.375,
+            turretTranslation,
             new Rotation3d(0, 0, turret.getAngle().in(Radians)))
     });
   }

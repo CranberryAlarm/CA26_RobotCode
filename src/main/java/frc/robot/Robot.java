@@ -52,11 +52,8 @@ public class Robot extends LoggedRobot {
     CommandsLogging.logRequiredSubsystems();
 
     if (Robot.isSimulation()) {
-      Pose3d[] algaePoses = arena.getGamePiecesArrayByType("Algae");
-      Logger.recordOutput("FieldSimulation/AlgaePoses", algaePoses);
-
-      Pose3d[] coralPoses = arena.getGamePiecesArrayByType("Coral");
-      Logger.recordOutput("FieldSimulation/CoralPoses", coralPoses);
+      Pose3d[] fuelPoses = arena.getGamePiecesArrayByType("Fuel");
+      Logger.recordOutput("FieldSimulation/FuelPoses", fuelPoses);
     }
 
     Logger.recordOutput("FieldSimulation/RobotPose", m_robotContainer.getRobotPose());

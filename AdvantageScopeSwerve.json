@@ -1,13 +1,13 @@
 {
   "hubs": [
     {
-      "x": -8,
-      "y": -8,
-      "width": 1680,
-      "height": 1077,
+      "x": -1080,
+      "y": 609,
+      "width": 1080,
+      "height": 936,
       "state": {
         "sidebar": {
-          "width": 344,
+          "width": 300,
           "expanded": [
             "/SmartDashboard/MapleSim/MatchData/Breakdown/blue Alliance",
             "/SmartDashboard/swerve/advantagescope/currentStates/1/angle",
@@ -34,7 +34,6 @@
             "/Mechanisms/IntakePivot/IntakePivotMotor/closedloop/setpoint",
             "/TheThriftyBot/CAN_15",
             "/TheThriftyBot/CAN_16",
-            "/AdvantageKit/RealOutputs/Shooter",
             "/AdvantageKit/RealOutputs/DriverControls",
             "/Mechanisms/Shooter/ShooterMotor",
             "/Mechanisms/Shooter/ShooterMotor/closedloop",
@@ -70,8 +69,10 @@
             "/Tuning/Turret",
             "/AdvantageKit",
             "/AdvantageKit/RealOutputs",
-            "/AdvantageKit/RealOutputs/ShootOnTheMove",
-            "/AdvantageKit/RealOutputs/ShootOnTheMove/RobotHeading"
+            "/AdvantageKit/RealOutputs/ShootOnTheMove/RobotHeading",
+            "/AdvantageKit/RealOutputs/ASCalibration",
+            "/AdvantageKit/RealOutputs/FieldSimulation",
+            "/AdvantageKit/RealOutputs/FieldSimulation/Shooter"
           ]
         },
         "tabs": {
@@ -96,8 +97,15 @@
                     "logType": "Pose2d",
                     "visible": true,
                     "options": {
-                      "model": "Duck Bot"
+                      "model": "2026 CA26"
                     }
+                  },
+                  {
+                    "type": "component",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/ASCalibration/FinalComponentPoses",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {}
                   },
                   {
                     "type": "ghost",
@@ -120,25 +128,6 @@
                     }
                   },
                   {
-                    "type": "robot",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/DriverControls/TargetHubPose",
-                    "logType": "Pose2d",
-                    "visible": true,
-                    "options": {
-                      "model": "Duck Bot"
-                    }
-                  },
-                  {
-                    "type": "cone",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/FieldSimulation/AimDirection",
-                    "logType": "Pose3d",
-                    "visible": true,
-                    "options": {
-                      "color": "#00ff00",
-                      "position": "center"
-                    }
-                  },
-                  {
                     "type": "ghost",
                     "logKey": "NT:/AdvantageKit/RealOutputs/FieldSimulation/AimTarget",
                     "logType": "Pose3d",
@@ -157,27 +146,56 @@
                       "model": "Duck Bot",
                       "color": "#ff00ff"
                     }
+                  },
+                  {
+                    "type": "trajectory",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/FieldSimulation/Shooter/ProjectileSuccessfulShot",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ff00",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "trajectory",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/FieldSimulation/Shooter/ProjectileUnsuccessfulShot",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#ff0000",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "gamePiece",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/FieldSimulation/FuelPoses",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {
+                      "variant": "Fuel"
+                    }
                   }
                 ],
-                "game": "Evergreen",
-                "origin": "blue"
+                "game": "2026 Field",
+                "origin": "auto"
               },
               "controllerUUID": "56hy5kyvd0kjxfyigyn0v5dx374uh50y",
               "renderer": {
                 "cameraIndex": -1,
                 "orbitFov": 50,
                 "cameraPosition": [
-                  -7.5321180841329785,
-                  7.404315570190774,
-                  -0.07748951025576772
+                  10.378995714785386,
+                  9.101397756194608,
+                  -0.10752311567010889
                 ],
                 "cameraTarget": [
-                  -5.950588827209994,
-                  1.3086603939053425,
-                  -0.061381706244481145
+                  4.495231078701326,
+                  -1.3207821976493825,
+                  -0.22073703807687897
                 ]
               },
-              "controlsHeight": 430
+              "controlsHeight": -570
             },
             {
               "type": 1,

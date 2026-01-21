@@ -1,17 +1,24 @@
 package frc.robot.controls;
 
+import org.ironmaple.simulation.SimulatedArena;
+import org.ironmaple.simulation.gamepieces.GamePieceProjectile;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import static edu.wpi.first.units.Units.Feet;
 import static edu.wpi.first.units.Units.Meter;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Robot;
 import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.util.maplesim.RebuiltFuelOnFly;
 import swervelib.SwerveInputStream;
 
 public class DriverControls {
@@ -73,21 +80,20 @@ public class DriverControls {
       // Overrides drive command above!
       // Might be useful for robot-oriented controls in testing
 
-      controller.a().onTrue((Commands.runOnce(drivetrain::zeroGyro)));
       controller.b().whileTrue(drivetrain.centerModulesCommand());
       controller.x().whileTrue(Commands.runOnce(drivetrain::lock, drivetrain).repeatedly());
       controller.y().onTrue((Commands.runOnce(drivetrain::zeroGyro)));
 
       controller.start().whileTrue(drivetrain.sysIdAngleMotorCommand());
       controller.back().whileTrue(drivetrain.sysIdDriveMotorCommand());
-
-      controller.leftBumper().onTrue(Commands.none());
     } else if (Robot.isSimulation()) {
-      // controller.back().whileTrue(fireAlgae(drivetrain));
+      // Fire fuel 10 times per second while button is held
+      controller.back().whileTrue(
+          Commands.repeatingSequence(
+              fireFuel(drivetrain, superstructure),
+              Commands.waitSeconds(0.1)));
     } else {
       controller.start().onTrue((Commands.runOnce(drivetrain::zeroGyro)));
-      // controller.leftBumper().whileTrue(Commands.runOnce(drivetrain::lock,
-      // drivetrain).repeatedly());
 
       controller.leftBumper().whileTrue(
           superstructure.feedAllCommand()
@@ -97,5 +103,40 @@ public class DriverControls {
           .whileTrue(superstructure.setIntakeDeployAndRoll().withName("OperatorControls.intakeDeployed"));
 
     }
+  }
+
+  public static Command fireFuel(SwerveSubsystem drivetrain, Superstructure superstructure) {
+    return Commands.runOnce(() -> {
+      SimulatedArena arena = SimulatedArena.getInstance();
+
+      System.out.println("FIRE!");
+
+      GamePieceProjectile fuel = new RebuiltFuelOnFly(
+          drivetrain.getPose().getTranslation(),
+          new Translation2d(
+              superstructure.turret.turretTranslation.getX() * -1,
+              superstructure.turret.turretTranslation.getY()),
+          drivetrain.getSwerveDrive().getRobotVelocity(),
+          superstructure.getAimRotation3d().toRotation2d(),
+          Feet.of(superstructure.turret.turretTranslation.getZ()),
+
+          // based on numbers from https://www.reca.lc/flywheel
+          // Adjust for simulation tuning
+          // 0.5 times because we're applying spin to the fuel as we shoot it
+          superstructure.getTangentialVelocity().times(0.5),
+          superstructure.getHoodAngle());
+
+      // Configure callbacks to visualize the flight trajectory of the projectile
+      fuel.withProjectileTrajectoryDisplayCallBack(
+          // Callback for when the note will eventually hit the target (if configured)
+          (pose3ds) -> Logger.recordOutput("FieldSimulation/Shooter/ProjectileSuccessfulShot",
+              pose3ds.toArray(Pose3d[]::new)),
+          // Callback for when the note will eventually miss the target, or if no target
+          // is configured
+          (pose3ds) -> Logger.recordOutput("FieldSimulation/Shooter/ProjectileUnsuccessfulShot",
+              pose3ds.toArray(Pose3d[]::new)));
+
+      arena.addGamePieceProjectile(fuel);
+    });
   }
 }

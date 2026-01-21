@@ -287,13 +287,6 @@ public class Superstructure extends SubsystemBase {
   }
 
   /**
-   * Command to shoot - spins up shooter.
-   */
-  public Command shootWithDistanceCommand(double distanceMeters) {
-    return shooter.shootAtDistance(distanceMeters).withName("Superstructure.shootWithDistance");
-  }
-
-  /**
    * Command to stop shooting - stops shooter.
    */
   public Command stopShootingCommand() {

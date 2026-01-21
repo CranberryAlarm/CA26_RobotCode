@@ -367,6 +367,10 @@ public class CommandsLogging {
         var subCommands = (List<Command>) sequenceSubCommandsField.get(sequence);
         var index = (Integer) sequenceCommandIndexField.get(sequence);
 
+        // Handle case where index is -1 (before sequence starts) or out of bounds
+        if (index < 0 || index >= subCommands.size()) {
+          return;
+        }
         var subCommand = subCommands.get(index);
         addCommand(subCommand, parentCommandName + ": " + getCommandName(subCommand), commandsList);
       } catch (IllegalAccessException e) {

@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import java.util.Map;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
@@ -10,7 +9,6 @@ import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.system.plant.DCMotor;
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Inches;
@@ -40,8 +38,6 @@ import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.local.SparkWrapper;
 
 public class ShooterSubsystem extends SubsystemBase {
-  private double temp_distance = 0.0;
-
   // 2 Neos, 4in shooter wheels
   // private final ThriftyNova leaderNova = new ThriftyNova(
   // Constants.ShooterConstants.kLeaderMotorId,
@@ -121,15 +117,6 @@ public class ShooterSubsystem extends SubsystemBase {
     // return shooter.setSpeed(RotationsPerSecond.of(500));
   }
 
-  public Command shootAtDistance(double distanceMeters) {
-    return run(() -> {
-      temp_distance = SHOOTING_SPEED_BY_DISTANCE.get(distanceMeters);
-
-      // leaderNova.setPercent(temp_distance);
-      // followerNova.setPercent(temp_distance);
-    });
-  }
-
   public Command stop() {
     return setSpeed(RPM.of(0));
     // return run(() -> {
@@ -155,17 +142,13 @@ public class ShooterSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // shooter.updateTelemetry();
-    // SHOOTER_SPEED = SmartDashboard.getNumber("ShooterSpeed", SHOOTER_SPEED);
-
-    Logger.recordOutput("Shooter/Setpoint", temp_distance);
     Logger.recordOutput("Shooter/LeaderVelocity", leaderSpark.getEncoder().getVelocity());
     Logger.recordOutput("Shooter/FollowerVelocity", followerSpark.getEncoder().getVelocity());
   }
 
   @Override
   public void simulationPeriodic() {
-    // shooter.simIterate();
+    shooter.simIterate();
   }
 
   private Distance wheelRadius() {
@@ -179,10 +162,4 @@ public class ShooterSubsystem extends SubsystemBase {
     return MetersPerSecond.of(getSpeed().in(RadiansPerSecond)
         * wheelRadius().in(Meters));
   }
-
-  // meters, RPS
-  private static final InterpolatingDoubleTreeMap SHOOTING_SPEED_BY_DISTANCE = InterpolatingDoubleTreeMap.ofEntries(
-      Map.entry(2.63, 0.55),
-      Map.entry(3.4, 0.6),
-      Map.entry(4.83, 0.69));
 }
