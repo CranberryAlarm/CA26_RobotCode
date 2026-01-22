@@ -10,6 +10,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import static edu.wpi.first.units.Units.Inches;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -62,6 +64,13 @@ public class RobotContainer {
     // Set up trigger to detect alliance changes
     new Trigger(() -> getAlliance() != currentAlliance)
         .onTrue(Commands.runOnce(() -> onAllianceChanged(getAlliance())).ignoringDisable(true));
+
+    // Triggers for auto aim/pass poses
+    new Trigger(() -> isInAllianceZone())
+        .onChange(Commands.runOnce(() -> onZoneChanged()).ignoringDisable(true));
+
+    new Trigger(() -> isOnAllianceOutpostSide())
+        .onChange(Commands.runOnce(() -> onZoneChanged()).ignoringDisable(true));
 
     if (!Robot.isReal() || true) {
       DriverStation.silenceJoystickConnectionWarning(true);
@@ -141,6 +150,45 @@ public class RobotContainer {
 
   private Alliance getAlliance() {
     return DriverStation.getAlliance().orElse(Alliance.Red);
+  }
+
+  private boolean isInAllianceZone() {
+    Alliance alliance = getAlliance();
+    Distance blueZone = Inches.of(182);
+    Distance redZone = Inches.of(469);
+
+    if (alliance == Alliance.Blue && drivebase.getPose().getMeasureX().lt(blueZone)) {
+      return true;
+    } else if (alliance == Alliance.Red && drivebase.getPose().getMeasureX().gt(redZone)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  private boolean isOnAllianceOutpostSide() {
+    Alliance alliance = getAlliance();
+    Distance midLine = Inches.of(158.84375);
+
+    if (alliance == Alliance.Blue && drivebase.getPose().getMeasureY().lt(midLine)) {
+      return true;
+    } else if (alliance == Alliance.Red && drivebase.getPose().getMeasureY().gt(midLine)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  private void onZoneChanged() {
+    if (isInAllianceZone()) {
+      superstructure.setAimPoint(Constants.AimPoints.getAllianceHubPosition());
+    } else {
+      if (isOnAllianceOutpostSide()) {
+        superstructure.setAimPoint(Constants.AimPoints.getAllianceOutpostPosition());
+      } else {
+        superstructure.setAimPoint(Constants.AimPoints.getAllianceFarSidePosition());
+      }
+    }
   }
 
   private void onAllianceChanged(Alliance alliance) {
