@@ -1,9 +1,12 @@
 package frc.robot.util.maplesim;
 
 import org.ironmaple.simulation.gamepieces.GamePieceProjectile;
+import org.ironmaple.utils.FieldMirroringUtils;
+import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
@@ -48,6 +51,18 @@ public class RebuiltFuelOnFly extends GamePieceProjectile {
                 shooterAngle);
 
         super.withTouchGroundHeight(Inches.of(3).in(Meters));
+
+        super.withTargetPosition(
+                () -> FieldMirroringUtils.toCurrentAllianceTranslation(new Translation3d(11.938, 4.034536, 1.5748)));
+
+        Logger.recordOutput("HubGoal", new Translation3d(11.938, 4.034536, 1.5748));
+
+        super.withTargetTolerance(
+                new Translation3d(
+                        Inches.of(23.5).in(Meters),
+                        Inches.of(23.5).in(Meters),
+                        Inches.of(1).in(Meters)));
+
         super.enableBecomesGamePieceOnFieldAfterTouchGround();
     }
 }

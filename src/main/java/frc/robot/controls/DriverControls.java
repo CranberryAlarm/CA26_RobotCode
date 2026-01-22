@@ -109,8 +109,6 @@ public class DriverControls {
     return Commands.runOnce(() -> {
       SimulatedArena arena = SimulatedArena.getInstance();
 
-      System.out.println("FIRE!");
-
       GamePieceProjectile fuel = new RebuiltFuelOnFly(
           drivetrain.getPose().getTranslation(),
           new Translation2d(
@@ -120,8 +118,6 @@ public class DriverControls {
           superstructure.getAimRotation3d().toRotation2d(),
           Feet.of(superstructure.turret.turretTranslation.getZ()),
 
-          // based on numbers from https://www.reca.lc/flywheel
-          // Adjust for simulation tuning
           // 0.5 times because we're applying spin to the fuel as we shoot it
           superstructure.getTangentialVelocity().times(0.5),
           superstructure.getHoodAngle());
