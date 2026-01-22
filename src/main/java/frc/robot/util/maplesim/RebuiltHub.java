@@ -93,6 +93,11 @@ public class RebuiltHub extends Goal {
   }
 
   @Override
+  protected boolean checkRotation(GamePiece GamePiece) {
+    return true;
+  }
+
+  @Override
   protected void addPoints() {
     arena.addValueToMatchBreakdown(isBlue, "TotalFuelInHub", 1);
     arena.addValueToMatchBreakdown(isBlue, "WastedFuel", arena.isActive(isBlue) ? 0 : 1);

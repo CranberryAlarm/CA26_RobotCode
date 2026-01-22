@@ -8,7 +8,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import static edu.wpi.first.units.Units.Feet;
 import static edu.wpi.first.units.Units.Meter;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -109,19 +108,15 @@ public class DriverControls {
     return Commands.runOnce(() -> {
       SimulatedArena arena = SimulatedArena.getInstance();
 
-      System.out.println("FIRE!");
-
       GamePieceProjectile fuel = new RebuiltFuelOnFly(
           drivetrain.getPose().getTranslation(),
           new Translation2d(
               superstructure.turret.turretTranslation.getX() * -1,
               superstructure.turret.turretTranslation.getY()),
           drivetrain.getSwerveDrive().getRobotVelocity(),
-          superstructure.getAimRotation3d().toRotation2d(),
-          Feet.of(superstructure.turret.turretTranslation.getZ()),
+          drivetrain.getPose().getRotation().rotateBy(superstructure.getAimRotation3d().toRotation2d()),
+          superstructure.turret.turretTranslation.getMeasureZ(),
 
-          // based on numbers from https://www.reca.lc/flywheel
-          // Adjust for simulation tuning
           // 0.5 times because we're applying spin to the fuel as we shoot it
           superstructure.getTangentialVelocity().times(0.5),
           superstructure.getHoodAngle());

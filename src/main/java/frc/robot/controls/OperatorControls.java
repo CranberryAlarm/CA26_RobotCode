@@ -87,45 +87,4 @@ public class OperatorControls {
             .ignoringDisable(true)
             .withName("OperatorControls.aimCommand"));
   }
-
-  public static Command fireAlgae(SwerveSubsystem drivetrain, Superstructure superstructure) {
-    return Commands.runOnce(() -> {
-      System.err.println("FIRE!");
-
-      SimulatedArena arena = SimulatedArena.getInstance();
-
-      // Translation2d robotPosition,
-      // Translation2d shooterPositionOnRobot,
-      // ChassisSpeeds chassisSpeeds,
-      // Rotation2d shooterFacing,
-      // Distance initialHeight,
-      // LinearVelocity launchingSpeed,
-      // Angle shooterAngle
-
-      GamePieceProjectile fuel = new RebuiltFuelOnFly(
-          drivetrain.getPose().getTranslation(),
-          new Translation2d(),
-          drivetrain.getSwerveDrive().getRobotVelocity().times(-1),
-          superstructure.getAimRotation3d().toRotation2d(),
-          Distance.ofBaseUnits(1, Feet),
-
-          // based on numbers from https://www.reca.lc/flywheel
-          // superstructure.getTangentialVelocity().times(0.5), // adjust for simulation
-          // tuning
-          LinearVelocity.ofBaseUnits(5, FeetPerSecond),
-          superstructure.getHoodAngle());
-
-      // Configure callbacks to visualize the flight trajectory of the projectile
-      fuel.withProjectileTrajectoryDisplayCallBack(
-          // Callback for when the note will eventually hit the target (if configured)
-          (pose3ds) -> Logger.recordOutput("FieldSimulation/Shooter/ProjectileSuccessfulShot",
-              pose3ds.toArray(Pose3d[]::new)),
-          // Callback for when the note will eventually miss the target, or if no target
-          // is configured
-          (pose3ds) -> Logger.recordOutput("FieldSimulation/Shooter/ProjectileUnsuccessfulShot",
-              pose3ds.toArray(Pose3d[]::new)));
-
-      arena.addGamePieceProjectile(fuel);
-    }).withName("Fire.Fuel");
-  }
 }
