@@ -11,7 +11,6 @@ import static edu.wpi.first.units.Units.RPM;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -48,7 +47,6 @@ public class Superstructure extends SubsystemBase {
 
   // Default aim point is red hub
   private Translation3d aimPoint = Constants.AimPoints.RED_HUB.value;
-  private final Trigger allianceTrigger;
 
   public Superstructure(ShooterSubsystem shooter, TurretSubsystem turret, HoodSubsystem hood, IntakeSubsystem intake,
       HopperSubsystem hopper, KickerSubsystem kicker) {
@@ -71,9 +69,6 @@ public class Superstructure extends SubsystemBase {
         () -> Math.abs(hood.getAngle().in(Degrees) - targetHoodAngle.in(Degrees)) < HOOD_TOLERANCE.in(Degrees));
 
     this.isReadyToShoot = isShooterAtSpeed.and(isTurretOnTarget).and(isHoodOnTarget);
-
-    // Create a trigger for checking the alliance and updating the aim point
-    this.allianceTrigger = new Trigger(() -> DriverStation.getAlliance().get() == DriverStation.Alliance.Red);
   }
 
   /**
