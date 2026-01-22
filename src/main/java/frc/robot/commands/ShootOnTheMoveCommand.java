@@ -153,6 +153,10 @@ public class ShootOnTheMoveCommand extends Command {
   private static final InterpolatingDoubleTreeMap TIME_OF_FLIGHT_BY_DISTANCE = InterpolatingDoubleTreeMap.ofEntries(
       Map.entry(1.0, 1.0),
       Map.entry(4.86, 1.5));
+  // TODO: add more data points here.
+  // CLOSE: NEED
+  // MID: maybe good enough
+  // FAR: NEED
 
   // meters, RPS
   private static final InterpolatingDoubleTreeMap SHOOTING_SPEED_BY_DISTANCE = InterpolatingDoubleTreeMap.ofEntries(

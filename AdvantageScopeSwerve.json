@@ -70,8 +70,6 @@
             "/AdvantageKit",
             "/AdvantageKit/RealOutputs",
             "/AdvantageKit/RealOutputs/ShootOnTheMove/RobotHeading",
-            "/AdvantageKit/RealOutputs/ASCalibration",
-            "/AdvantageKit/RealOutputs/FieldSimulation",
             "/AdvantageKit/RealOutputs/FieldSimulation/Shooter"
           ]
         },
@@ -111,7 +109,7 @@
                     "type": "ghost",
                     "logKey": "NT:/AdvantageKit/RealOutputs/FieldSimulation/TargetPose",
                     "logType": "Pose2d",
-                    "visible": true,
+                    "visible": false,
                     "options": {
                       "model": "Crab Bot",
                       "color": "#0000ff"
@@ -131,7 +129,7 @@
                     "type": "ghost",
                     "logKey": "NT:/AdvantageKit/RealOutputs/FieldSimulation/AimTarget",
                     "logType": "Pose3d",
-                    "visible": true,
+                    "visible": false,
                     "options": {
                       "model": "Duck Bot",
                       "color": "#00ffff"
@@ -141,7 +139,7 @@
                     "type": "ghost",
                     "logKey": "NT:/AdvantageKit/RealOutputs/FieldSimulation/AimTargetCorrected",
                     "logType": "Pose3d",
-                    "visible": true,
+                    "visible": false,
                     "options": {
                       "model": "Duck Bot",
                       "color": "#ff00ff"
@@ -185,17 +183,17 @@
                 "cameraIndex": -1,
                 "orbitFov": 50,
                 "cameraPosition": [
-                  10.378995714785386,
-                  9.101397756194608,
-                  -0.10752311567010889
+                  11.534767787918012,
+                  9.794331756031207,
+                  -5.627252825256971
                 ],
                 "cameraTarget": [
-                  4.495231078701326,
-                  -1.3207821976493825,
-                  -0.22073703807687897
+                  6.837520944122143,
+                  2.222662928789005,
+                  -1.7627162173818105
                 ]
               },
-              "controlsHeight": -570
+              "controlsHeight": 519
             },
             {
               "type": 1,

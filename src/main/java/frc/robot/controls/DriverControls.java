@@ -114,7 +114,7 @@ public class DriverControls {
               superstructure.turret.turretTranslation.getX() * -1,
               superstructure.turret.turretTranslation.getY()),
           drivetrain.getSwerveDrive().getRobotVelocity(),
-          superstructure.getAimRotation3d().toRotation2d(),
+          drivetrain.getPose().getRotation().rotateBy(superstructure.getAimRotation3d().toRotation2d()),
           superstructure.turret.turretTranslation.getMeasureZ(),
 
           // 0.5 times because we're applying spin to the fuel as we shoot it
