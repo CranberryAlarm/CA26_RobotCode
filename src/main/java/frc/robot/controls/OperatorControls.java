@@ -1,34 +1,65 @@
 package frc.robot.controls;
 
+import org.ironmaple.simulation.SimulatedArena;
+import org.ironmaple.simulation.gamepieces.GamePieceProjectile;
+import org.littletonrobotics.junction.Logger;
+
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Translation2d;
+import static edu.wpi.first.units.Units.Feet;
+import static edu.wpi.first.units.Units.FeetPerSecond;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.ShootOnTheMoveCommand;
 import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.util.maplesim.RebuiltFuelOnFly;
 
 public class OperatorControls {
+  public static final boolean MACOS_WEIRD_CONTROLLER = true;
 
   public static void configure(int port, SwerveSubsystem drivetrain, Superstructure superstructure) {
     CommandXboxController controller = new CommandXboxController(port);
 
-    // Intake controls - A to intake, B to eject
-    // controller.a().whileTrue(superstructure.intakeCommand());
-    // controller.b().whileTrue(superstructure.ejectCommand());
+    // if (Robot.isSimulation()) {
+    // controller.leftBumper().whileTrue(aimCommand(drivetrain, superstructure));
+    // controller.start().whileTrue(fireAlgae(drivetrain, superstructure));
 
-    // Hopper controls - X to run hopper forward, Y to run backward
-    // controller.x().whileTrue(superstructure.hopperFeedCommand());
-    // controller.y().whileTrue(superstructure.hopperReverseCommand());
+    // Commands.run(() -> {
+    // double leftX = controller.getLeftX();
+    // double leftY = controller.getLeftY();
+    // double rightY = controller.getRightY();
 
-    // Shooter controls - Right bumper to shoot
-    // controller.rightBumper().whileTrue(superstructure.shootCommand());
-    // controller.leftBumper().whileTrue(superstructure.stopShootingCommand());
+    // if (MACOS_WEIRD_CONTROLLER) {
+    // rightY = controller.getRightTriggerAxis() - controller.getLeftTriggerAxis();
+    // }
 
-    // Kicker controls
-    // controller.back().whileTrue(superstructure.kickerFeedCommand());
-    // controller.start().whileTrue(superstructure.kickerStopCommand());
+    // // Apply deadband
+    // if (Math.abs(leftX) < Constants.ControllerConstants.DEADBAND)
+    // leftX = 0;
+    // if (Math.abs(leftY) < Constants.ControllerConstants.DEADBAND)
+    // leftY = 0;
+    // if (Math.abs(rightY) < Constants.ControllerConstants.DEADBAND)
+    // rightY = 0;
 
-    // Intake pivot controls
-    // controller.povUp().onTrue(superstructure.setIntakeStow());
-    // controller.povRight().onTrue(superstructure.setIntakeHold());
-    // controller.povRight().onTrue(superstructure.setIntakeDeployed());
+    // Translation3d translation = new Translation3d(leftX, leftY, rightY);
+
+    // if (MACOS_WEIRD_CONTROLLER) {
+    // // MacOS Xbox controller mapping is weird - swap X and Y
+    // translation = new Translation3d(leftY, leftX, rightY);
+    // }
+
+    // // System.out.println("Adjusting pose by: " + translation.toString());
+
+    // var newAimPoint = superstructure.getAimPoint().plus(translation.times(0.05));
+    // // new Transform3d(leftX * 0.05, leftY * 0.05, rightY * 0.05));
+
+    // superstructure.setAimPoint(newAimPoint);
+    // }).ignoringDisable(true).schedule();
+    // }
 
     // REAL CONTROLS
     controller.start().onTrue(superstructure.rezeroIntakePivotCommand().ignoringDisable(true));
@@ -36,13 +67,7 @@ public class OperatorControls {
     controller.rightBumper()
         .whileTrue(superstructure.setIntakeDeployAndRoll().withName("OperatorControls.intakeDeployed"));
 
-    // WIP on shooter power LERP
-    // controller.y()
-    // .whileTrue(Commands.defer(
-    // () -> superstructure.shootWithDistanceCommand(drivetrain.getDistanceToHub()),
-    // java.util.Set.of()));
-
-    controller.y().whileTrue(superstructure.shootCommand());
+    controller.y().onTrue(superstructure.shootCommand());
     controller.x().whileTrue(superstructure.stopShootingCommand());
 
     controller.a().whileTrue(
@@ -52,5 +77,55 @@ public class OperatorControls {
     controller.b().whileTrue(
         superstructure.backFeedAllCommand()
             .finallyDo(() -> superstructure.stopFeedingAllCommand().schedule()));
+
+    controller.povUp().onTrue(superstructure.setTurretForward().withName("OperatorControls.setTurretForward"));
+    controller.povLeft().onTrue(superstructure.setTurretLeft().withName("OperatorControls.setTurretLeft"));
+    controller.povRight().onTrue(superstructure.setTurretRight().withName("OperatorControls.setTurretRight"));
+
+    controller.leftBumper().toggleOnTrue(
+        new ShootOnTheMoveCommand(drivetrain, superstructure, () -> superstructure.getAimPoint())
+            .ignoringDisable(true)
+            .withName("OperatorControls.aimCommand"));
+  }
+
+  public static Command fireAlgae(SwerveSubsystem drivetrain, Superstructure superstructure) {
+    return Commands.runOnce(() -> {
+      System.err.println("FIRE!");
+
+      SimulatedArena arena = SimulatedArena.getInstance();
+
+      // Translation2d robotPosition,
+      // Translation2d shooterPositionOnRobot,
+      // ChassisSpeeds chassisSpeeds,
+      // Rotation2d shooterFacing,
+      // Distance initialHeight,
+      // LinearVelocity launchingSpeed,
+      // Angle shooterAngle
+
+      GamePieceProjectile fuel = new RebuiltFuelOnFly(
+          drivetrain.getPose().getTranslation(),
+          new Translation2d(),
+          drivetrain.getSwerveDrive().getRobotVelocity().times(-1),
+          superstructure.getAimRotation3d().toRotation2d(),
+          Distance.ofBaseUnits(1, Feet),
+
+          // based on numbers from https://www.reca.lc/flywheel
+          // superstructure.getTangentialVelocity().times(0.5), // adjust for simulation
+          // tuning
+          LinearVelocity.ofBaseUnits(5, FeetPerSecond),
+          superstructure.getHoodAngle());
+
+      // Configure callbacks to visualize the flight trajectory of the projectile
+      fuel.withProjectileTrajectoryDisplayCallBack(
+          // Callback for when the note will eventually hit the target (if configured)
+          (pose3ds) -> Logger.recordOutput("FieldSimulation/Shooter/ProjectileSuccessfulShot",
+              pose3ds.toArray(Pose3d[]::new)),
+          // Callback for when the note will eventually miss the target, or if no target
+          // is configured
+          (pose3ds) -> Logger.recordOutput("FieldSimulation/Shooter/ProjectileUnsuccessfulShot",
+              pose3ds.toArray(Pose3d[]::new)));
+
+      arena.addGamePieceProjectile(fuel);
+    }).withName("Fire.Fuel");
   }
 }

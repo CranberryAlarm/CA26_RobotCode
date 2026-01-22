@@ -1,21 +1,15 @@
 package frc.robot.controls;
 
 import org.ironmaple.simulation.SimulatedArena;
-import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeAlgaeOnFly;
+import org.ironmaple.simulation.gamepieces.GamePieceProjectile;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
-import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Feet;
-import static edu.wpi.first.units.Units.FeetPerSecond;
 import static edu.wpi.first.units.Units.Meter;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -24,6 +18,7 @@ import frc.robot.Constants.ControllerConstants;
 import frc.robot.Robot;
 import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.util.maplesim.RebuiltFuelOnFly;
 import swervelib.SwerveInputStream;
 
 public class DriverControls {
@@ -48,15 +43,15 @@ public class DriverControls {
         .withControllerRotationAxis(() -> controller.getRightX() * -1)
         .robotRelative(false)
         .allianceRelativeControl(true)
-        // .scaleTranslation(0.25) // TODO: Tune speed scaling
+        .scaleTranslation(0.25) // TODO: Tune speed scaling
         .deadband(ControllerConstants.DEADBAND);
 
-    controller.rightBumper().whileTrue(Commands.run(
-        () -> {
-          driveInputStream
-              .aim(getTargetPose())
-              .aimWhile(true);
-        }).finallyDo(() -> driveInputStream.aimWhile(false)));
+    // controller.rightBumper().whileTrue(Commands.run(
+    // () -> {
+    // driveInputStream
+    // .aim(getTargetPose())
+    // .aimWhile(true);
+    // }).finallyDo(() -> driveInputStream.aimWhile(false)));
 
     drivetrain.setDefaultCommand(
         drivetrain.driveFieldOriented(driveInputStream).withName("Drive" + ".test"));
@@ -85,48 +80,54 @@ public class DriverControls {
       // Overrides drive command above!
       // Might be useful for robot-oriented controls in testing
 
-      controller.a().onTrue((Commands.runOnce(drivetrain::zeroGyro)));
       controller.b().whileTrue(drivetrain.centerModulesCommand());
       controller.x().whileTrue(Commands.runOnce(drivetrain::lock, drivetrain).repeatedly());
       controller.y().onTrue((Commands.runOnce(drivetrain::zeroGyro)));
 
       controller.start().whileTrue(drivetrain.sysIdAngleMotorCommand());
       controller.back().whileTrue(drivetrain.sysIdDriveMotorCommand());
-
-      controller.leftBumper().onTrue(Commands.none());
     } else if (Robot.isSimulation()) {
-      controller.back().whileTrue(fireAlgae(drivetrain));
+      // Fire fuel 10 times per second while button is held
+      controller.back().whileTrue(
+          Commands.repeatingSequence(
+              fireFuel(drivetrain, superstructure),
+              Commands.waitSeconds(0.1)));
     } else {
       controller.start().onTrue((Commands.runOnce(drivetrain::zeroGyro)));
-      controller.leftBumper().whileTrue(Commands.runOnce(drivetrain::lock, drivetrain).repeatedly());
+
+      controller.leftBumper().whileTrue(
+          superstructure.feedAllCommand()
+              .finallyDo(() -> superstructure.stopFeedingAllCommand().schedule()));
+
+      controller.rightBumper()
+          .whileTrue(superstructure.setIntakeDeployAndRoll().withName("OperatorControls.intakeDeployed"));
+
     }
   }
 
-  public static Command fireAlgae(SwerveSubsystem drivetrain) {
+  public static Command fireFuel(SwerveSubsystem drivetrain, Superstructure superstructure) {
     return Commands.runOnce(() -> {
-      System.err.println("FIRE!");
-
       SimulatedArena arena = SimulatedArena.getInstance();
 
-      // Translation2d robotPosition,
-      // Translation2d shooterPositionOnRobot,
-      // ChassisSpeeds chassisSpeeds,
-      // Rotation2d shooterFacing,
-      // Distance initialHeight,
-      // LinearVelocity launchingSpeed,
-      // Angle shooterAngle
+      System.out.println("FIRE!");
 
-      ReefscapeAlgaeOnFly algae = new ReefscapeAlgaeOnFly(
+      GamePieceProjectile fuel = new RebuiltFuelOnFly(
           drivetrain.getPose().getTranslation(),
-          new Translation2d(),
-          drivetrain.getSwerveDrive().getRobotVelocity().times(-1),
-          drivetrain.getSwerveDrive().getOdometryHeading(),
-          Distance.ofBaseUnits(1, Feet),
-          LinearVelocity.ofBaseUnits(5, FeetPerSecond),
-          Angle.ofBaseUnits(45, Degrees));
+          new Translation2d(
+              superstructure.turret.turretTranslation.getX() * -1,
+              superstructure.turret.turretTranslation.getY()),
+          drivetrain.getSwerveDrive().getRobotVelocity(),
+          superstructure.getAimRotation3d().toRotation2d(),
+          Feet.of(superstructure.turret.turretTranslation.getZ()),
+
+          // based on numbers from https://www.reca.lc/flywheel
+          // Adjust for simulation tuning
+          // 0.5 times because we're applying spin to the fuel as we shoot it
+          superstructure.getTangentialVelocity().times(0.5),
+          superstructure.getHoodAngle());
 
       // Configure callbacks to visualize the flight trajectory of the projectile
-      algae.withProjectileTrajectoryDisplayCallBack(
+      fuel.withProjectileTrajectoryDisplayCallBack(
           // Callback for when the note will eventually hit the target (if configured)
           (pose3ds) -> Logger.recordOutput("FieldSimulation/Shooter/ProjectileSuccessfulShot",
               pose3ds.toArray(Pose3d[]::new)),
@@ -135,7 +136,7 @@ public class DriverControls {
           (pose3ds) -> Logger.recordOutput("FieldSimulation/Shooter/ProjectileUnsuccessfulShot",
               pose3ds.toArray(Pose3d[]::new)));
 
-      arena.addGamePieceProjectile(algae);
-    }).withName("Fire.Algae");
+      arena.addGamePieceProjectile(fuel);
+    });
   }
 }

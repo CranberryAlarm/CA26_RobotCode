@@ -7,6 +7,9 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -16,24 +19,26 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.controls.DriverControls;
 import frc.robot.controls.OperatorControls;
-import frc.robot.controls.PoseControls;
+import frc.robot.subsystems.HoodSubsystem;
 import frc.robot.subsystems.HopperSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.KickerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.TurretSubsystem;
 import swervelib.SwerveDrive;
 
 public class RobotContainer {
   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
-
+  private final TurretSubsystem turret = new TurretSubsystem();
+  private final ShooterSubsystem shooter = new ShooterSubsystem();
   private final IntakeSubsystem intake = new IntakeSubsystem();
   private final HopperSubsystem hopper = new HopperSubsystem();
   private final KickerSubsystem kicker = new KickerSubsystem();
-  private final ShooterSubsystem shooter = new ShooterSubsystem();
+  private final HoodSubsystem hood = new HoodSubsystem();
 
-  private final Superstructure superstructure = new Superstructure(shooter, null, null, intake, hopper, kicker);
+  private final Superstructure superstructure = new Superstructure(shooter, turret, hood, intake, hopper, kicker);
 
   private final SendableChooser<Command> autoChooser;
 
@@ -45,7 +50,7 @@ public class RobotContainer {
     configureBindings();
     buildNamedAutoCommands();
 
-    if (!Robot.isReal()) {
+    if (!Robot.isReal() || true) {
       DriverStation.silenceJoystickConnectionWarning(true);
     }
 
@@ -101,5 +106,19 @@ public class RobotContainer {
 
   public Pose2d getRobotPose() {
     return drivebase.getPose();
+  }
+
+  public Pose3d getAimDirection() {
+    // Apply robot heading first, then turret/hood rotation on top
+    Pose3d shooterPose = superstructure.getShooterPose();
+
+    var pose = drivebase.getPose3d().plus(new Transform3d(
+        shooterPose.getTranslation(), shooterPose.getRotation()));
+
+    return pose;
+  }
+
+  public Translation3d getAimPoint() {
+    return superstructure.getAimPoint();
   }
 }

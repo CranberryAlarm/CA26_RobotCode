@@ -1,16 +1,16 @@
 package frc.robot;
 
 import org.ironmaple.simulation.SimulatedArena;
-import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeAlgaeOnField;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.util.CommandsLogging;
+import frc.robot.util.maplesim.Arena2026Rebuilt;
 
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
@@ -52,16 +52,15 @@ public class Robot extends LoggedRobot {
     CommandsLogging.logRequiredSubsystems();
 
     if (Robot.isSimulation()) {
-      Pose3d[] algaePoses = arena.getGamePiecesArrayByType("Algae");
-      Logger.recordOutput("FieldSimulation/AlgaePoses", algaePoses);
-
-      Pose3d[] coralPoses = arena.getGamePiecesArrayByType("Coral");
-      Logger.recordOutput("FieldSimulation/CoralPoses", coralPoses);
+      Pose3d[] fuelPoses = arena.getGamePiecesArrayByType("Fuel");
+      Logger.recordOutput("FieldSimulation/FuelPoses", fuelPoses);
     }
 
     Logger.recordOutput("FieldSimulation/RobotPose", m_robotContainer.getRobotPose());
     Logger.recordOutput("FieldSimulation/TargetPose",
         m_robotContainer.getSwerveDrive().field.getObject("targetPose").getPose());
+    Logger.recordOutput("FieldSimulation/AimDirection", m_robotContainer.getAimDirection());
+    Logger.recordOutput("FieldSimulation/AimTarget", new Pose3d(m_robotContainer.getAimPoint(), Rotation3d.kZero));
   }
 
   @Override
@@ -108,9 +107,15 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void simulationInit() {
+    // Shut down the old arena instance first to release ownership of all bodies
+    // (including the drivetrain) so they can be added to a new physics world
+    SimulatedArena.getInstance().shutDown();
+
+    SimulatedArena.overrideInstance(new Arena2026Rebuilt());
+
     arena = SimulatedArena.getInstance();
 
-    arena.addGamePiece(new ReefscapeAlgaeOnField(new Translation2d(14, 1)));
+    arena.addDriveTrainSimulation(m_robotContainer.getSwerveDrive().getMapleSimDrive().get());
   }
 
   @Override

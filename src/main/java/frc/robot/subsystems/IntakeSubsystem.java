@@ -127,7 +127,7 @@ public class IntakeSubsystem extends SubsystemBase {
   public Command backFeedAndRollCommand() {
     return Commands.run(() -> {
       setIntakeDeployed();
-      smc.setDutyCycle(-INTAKE_SPEED);
+      // smc.setDutyCycle(-INTAKE_SPEED);
     }, this).finallyDo(() -> {
       smc.setDutyCycle(0);
       setIntakeHold();
