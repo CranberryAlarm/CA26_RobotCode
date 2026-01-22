@@ -11,14 +11,17 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.controls.DriverControls;
 import frc.robot.controls.OperatorControls;
+import frc.robot.controls.PoseControls;
 import frc.robot.subsystems.HoodSubsystem;
 import frc.robot.subsystems.HopperSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -42,6 +45,9 @@ public class RobotContainer {
 
   private final SendableChooser<Command> autoChooser;
 
+  // Track current alliance for change detection
+  private Alliance currentAlliance = Alliance.Red;
+
   /**
    * The container for the robot. Contains subsystems, I/O devices, and commands.
    */
@@ -49,6 +55,13 @@ public class RobotContainer {
     // Configure the trigger bindings
     configureBindings();
     buildNamedAutoCommands();
+
+    // Initialize alliance (default to red if not present)
+    onAllianceChanged(getAlliance());
+
+    // Set up trigger to detect alliance changes
+    new Trigger(() -> getAlliance() != currentAlliance)
+        .onTrue(Commands.runOnce(() -> onAllianceChanged(getAlliance())).ignoringDisable(true));
 
     if (!Robot.isReal() || true) {
       DriverStation.silenceJoystickConnectionWarning(true);
@@ -72,7 +85,7 @@ public class RobotContainer {
     // Set up controllers
     DriverControls.configure(ControllerConstants.kDriverControllerPort, drivebase, superstructure);
     OperatorControls.configure(ControllerConstants.kOperatorControllerPort, drivebase, superstructure);
-    // PoseControls.configure(ControllerConstants.kPoseControllerPort, drivebase);
+    PoseControls.configure(ControllerConstants.kPoseControllerPort, drivebase);
   }
 
   private void buildNamedAutoCommands() {
@@ -120,5 +133,26 @@ public class RobotContainer {
 
   public Translation3d getAimPoint() {
     return superstructure.getAimPoint();
+  }
+
+  public void setAimPoint(Translation3d aimPoint) {
+    superstructure.setAimPoint(aimPoint);
+  }
+
+  private Alliance getAlliance() {
+    return DriverStation.getAlliance().orElse(Alliance.Red);
+  }
+
+  private void onAllianceChanged(Alliance alliance) {
+    currentAlliance = alliance;
+
+    // Update aim point based on alliance
+    if (alliance == Alliance.Blue) {
+      superstructure.setAimPoint(Constants.AimPoints.BLUE_HUB.value);
+    } else {
+      superstructure.setAimPoint(Constants.AimPoints.RED_HUB.value);
+    }
+
+    System.out.println("Alliance changed to: " + alliance);
   }
 }

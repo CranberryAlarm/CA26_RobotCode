@@ -11,10 +11,12 @@ import static edu.wpi.first.units.Units.RPM;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants;
 
 /**
  * Superstructure coordinates the shooter, turret, hood, and intake subsystems
@@ -35,17 +37,18 @@ public class Superstructure extends SubsystemBase {
   private static final Angle HOOD_TOLERANCE = Degrees.of(2);
 
   // Triggers for readiness checks
-  public final Trigger isShooterAtSpeed;
-  public final Trigger isTurretOnTarget;
-  public final Trigger isHoodOnTarget;
-  public final Trigger isReadyToShoot;
+  private final Trigger isShooterAtSpeed;
+  private final Trigger isTurretOnTarget;
+  private final Trigger isHoodOnTarget;
+  private final Trigger isReadyToShoot;
 
   private AngularVelocity targetShooterSpeed = RPM.of(0);
   private Angle targetTurretAngle = Degrees.of(0);
   private Angle targetHoodAngle = Degrees.of(0);
 
-  // Hard coded red hub aim point
-  private Translation3d aimPoint = new Translation3d(Meter.of(11.902), Meter.of(4.031), Meter.of(0));
+  // Default aim point is red hub
+  private Translation3d aimPoint = Constants.AimPoints.RED_HUB.value;
+  private final Trigger allianceTrigger;
 
   public Superstructure(ShooterSubsystem shooter, TurretSubsystem turret, HoodSubsystem hood, IntakeSubsystem intake,
       HopperSubsystem hopper, KickerSubsystem kicker) {
@@ -68,6 +71,9 @@ public class Superstructure extends SubsystemBase {
         () -> Math.abs(hood.getAngle().in(Degrees) - targetHoodAngle.in(Degrees)) < HOOD_TOLERANCE.in(Degrees));
 
     this.isReadyToShoot = isShooterAtSpeed.and(isTurretOnTarget).and(isHoodOnTarget);
+
+    // Create a trigger for checking the alliance and updating the aim point
+    this.allianceTrigger = new Trigger(() -> DriverStation.getAlliance().get() == DriverStation.Alliance.Red);
   }
 
   /**

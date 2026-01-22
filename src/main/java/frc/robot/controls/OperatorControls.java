@@ -1,22 +1,9 @@
 package frc.robot.controls;
 
-import org.ironmaple.simulation.SimulatedArena;
-import org.ironmaple.simulation.gamepieces.GamePieceProjectile;
-import org.littletonrobotics.junction.Logger;
-
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Translation2d;
-import static edu.wpi.first.units.Units.Feet;
-import static edu.wpi.first.units.Units.FeetPerSecond;
-import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.ShootOnTheMoveCommand;
 import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.util.maplesim.RebuiltFuelOnFly;
 
 public class OperatorControls {
   public static final boolean MACOS_WEIRD_CONTROLLER = true;
@@ -86,46 +73,5 @@ public class OperatorControls {
         new ShootOnTheMoveCommand(drivetrain, superstructure, () -> superstructure.getAimPoint())
             .ignoringDisable(true)
             .withName("OperatorControls.aimCommand"));
-  }
-
-  public static Command fireAlgae(SwerveSubsystem drivetrain, Superstructure superstructure) {
-    return Commands.runOnce(() -> {
-      System.err.println("FIRE!");
-
-      SimulatedArena arena = SimulatedArena.getInstance();
-
-      // Translation2d robotPosition,
-      // Translation2d shooterPositionOnRobot,
-      // ChassisSpeeds chassisSpeeds,
-      // Rotation2d shooterFacing,
-      // Distance initialHeight,
-      // LinearVelocity launchingSpeed,
-      // Angle shooterAngle
-
-      GamePieceProjectile fuel = new RebuiltFuelOnFly(
-          drivetrain.getPose().getTranslation(),
-          new Translation2d(),
-          drivetrain.getSwerveDrive().getRobotVelocity().times(-1),
-          superstructure.getAimRotation3d().toRotation2d(),
-          Distance.ofBaseUnits(1, Feet),
-
-          // based on numbers from https://www.reca.lc/flywheel
-          // superstructure.getTangentialVelocity().times(0.5), // adjust for simulation
-          // tuning
-          LinearVelocity.ofBaseUnits(5, FeetPerSecond),
-          superstructure.getHoodAngle());
-
-      // Configure callbacks to visualize the flight trajectory of the projectile
-      fuel.withProjectileTrajectoryDisplayCallBack(
-          // Callback for when the note will eventually hit the target (if configured)
-          (pose3ds) -> Logger.recordOutput("FieldSimulation/Shooter/ProjectileSuccessfulShot",
-              pose3ds.toArray(Pose3d[]::new)),
-          // Callback for when the note will eventually miss the target, or if no target
-          // is configured
-          (pose3ds) -> Logger.recordOutput("FieldSimulation/Shooter/ProjectileUnsuccessfulShot",
-              pose3ds.toArray(Pose3d[]::new)));
-
-      arena.addGamePieceProjectile(fuel);
-    }).withName("Fire.Fuel");
   }
 }
