@@ -1,8 +1,12 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+
 import com.thethriftybot.ThriftyNova;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
@@ -30,6 +34,7 @@ import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.local.NovaWrapper;
+import yams.motorcontrollers.local.SparkWrapper;
 
 public class IntakeSubsystem extends SubsystemBase {
 
@@ -60,18 +65,22 @@ public class IntakeSubsystem extends SubsystemBase {
   // 5:1, 5:1, 60/18 reduction
   private SmartMotorControllerConfig intakePivotSmartMotorConfig = new SmartMotorControllerConfig(this)
       .withControlMode(ControlMode.CLOSED_LOOP)
-      .withClosedLoopController(10, 0, 0, DegreesPerSecond.of(1080), DegreesPerSecondPerSecond.of(1080))
-      .withFeedforward(new ArmFeedforward(0, 0, 1.3))
+      .withClosedLoopController(25, 0, 0, DegreesPerSecond.of(360), DegreesPerSecondPerSecond.of(360))
+      .withFeedforward(new SimpleMotorFeedforward(0, 10, 0))
       .withTelemetry("IntakePivotMotor", TelemetryVerbosity.HIGH)
-      .withGearing(new MechanismGearing(GearBox.fromReductionStages(5, 5, 60.0 / 18.0, 42)))
+      .withGearing(new MechanismGearing(GearBox.fromReductionStages(5, 5, 60.0 / 18.0)))
+      // .withGearing(new MechanismGearing(GearBox.fromReductionStages(5, 5, 60.0 /
+      // 18.0, 42)))
       .withMotorInverted(false)
       .withIdleMode(MotorMode.COAST)
+      .withSoftLimit(Degrees.of(0), Degrees.of(150))
       .withStatorCurrentLimit(Amps.of(10))
-      .withClosedLoopRampRate(Seconds.of(0.1));
+      .withClosedLoopRampRate(Seconds.of(0.1))
+      .withOpenLoopRampRate(Seconds.of(0.1));
 
-  private ThriftyNova pivotMotor = new ThriftyNova(Constants.IntakeConstants.kPivotMotorId);
+  private SparkMax pivotMotor = new SparkMax(Constants.IntakeConstants.kPivotMotorId, MotorType.kBrushless);
 
-  private SmartMotorController intakePivotController = new NovaWrapper(pivotMotor, DCMotor.getNeoVortex(1),
+  private SmartMotorController intakePivotController = new SparkWrapper(pivotMotor, DCMotor.getNeoVortex(1),
       intakePivotSmartMotorConfig);
 
   private final ArmConfig intakePivotConfig = new ArmConfig(intakePivotController)
@@ -85,7 +94,7 @@ public class IntakeSubsystem extends SubsystemBase {
   private Arm intakePivot = new Arm(intakePivotConfig);
 
   public IntakeSubsystem() {
-    pivotMotor.factoryReset();
+    // pivotMotor.factoryReset();
   }
 
   /**
@@ -107,7 +116,7 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public Command rezero() {
-    return Commands.runOnce(() -> pivotMotor.setEncoderPosition(0), this).withName("IntakePivot.Rezero");
+    return Commands.runOnce(() -> pivotMotor.getEncoder().setPosition(0), this).withName("IntakePivot.Rezero");
   }
 
   /**
