@@ -295,8 +295,11 @@ public class Superstructure extends SubsystemBase {
   }
 
   // Re-zero intake pivot if needed
-  public Command rezeroIntakePivotCommand() {
-    return intake.rezero().withName("Superstructure.rezeroIntakePivot");
+  public Command rezeroIntakePivotAndTurretCommand() {
+    return Commands.parallel(
+        turret.rezero().withName("Superstructure.rezeroTurret"),
+        intake.rezero().withName("Superstructure.rezeroIntakePivot"))
+        .withName("Superstructure.rezeroIntakePivotAndTurret");
   }
 
   @Override

@@ -62,7 +62,7 @@ public class OperatorControls {
     // }
 
     // REAL CONTROLS
-    controller.start().onTrue(superstructure.rezeroIntakePivotCommand().ignoringDisable(true));
+    controller.start().onTrue(superstructure.rezeroIntakePivotAndTurretCommand().ignoringDisable(true));
 
     controller.rightBumper()
         .whileTrue(superstructure.setIntakeDeployAndRoll().withName("OperatorControls.intakeDeployed"));
