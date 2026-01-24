@@ -58,9 +58,7 @@ public class PoseControls {
       // Left (negative leftX) should move toward left side of field from driver POV
       // Blue alliance: left = +Y
       // Red alliance: left = -Y (flip Y direction)
-      boolean isRedAlliance = DriverStation.getAlliance()
-          .map(alliance -> alliance == DriverStation.Alliance.Red)
-          .orElse(false);
+      boolean isRedAlliance = Constants.isRedAlliance();
 
       double allianceMultiplier = isRedAlliance ? -1.0 : 1.0;
 

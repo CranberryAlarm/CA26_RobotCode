@@ -286,12 +286,7 @@ public class SwerveSubsystem extends SubsystemBase {
             // alliance
             // This will flip the path being followed to the red side of the field.
             // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-
-            var alliance = DriverStation.getAlliance();
-            if (alliance.isPresent()) {
-              return alliance.get() == DriverStation.Alliance.Red;
-            }
-            return false;
+            return Constants.isRedAlliance();
           },
           this
       // Reference to this subsystem to set requirements
@@ -657,24 +652,13 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   /**
-   * Checks if the alliance is red, defaults to false if alliance isn't available.
-   *
-   * @return true if the red alliance, false if blue. Defaults to false if none is
-   *         available.
-   */
-  private boolean isRedAlliance() {
-    var alliance = DriverStation.getAlliance();
-    return alliance.isPresent() ? alliance.get() == DriverStation.Alliance.Red : false;
-  }
-
-  /**
    * This will zero (calibrate) the robot to assume the current position is facing
    * forward
    * <p>
    * If red alliance rotate the robot 180 after the drivebase zero command
    */
   public void zeroGyroWithAlliance() {
-    if (isRedAlliance()) {
+    if (Constants.isRedAlliance()) {
       zeroGyro();
       // Set the pose 180 degrees
       resetOdometry(new Pose2d(getPose().getTranslation(), Rotation2d.fromDegrees(180)));

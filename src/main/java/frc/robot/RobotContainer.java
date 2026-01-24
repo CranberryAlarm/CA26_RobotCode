@@ -35,35 +35,39 @@ import frc.robot.subsystems.TurretSubsystem;
 import swervelib.SwerveDrive;
 
 public class RobotContainer {
-  private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
-  private final TurretSubsystem turret = new TurretSubsystem();
-  private final ShooterSubsystem shooter = new ShooterSubsystem();
-  private final IntakeSubsystem intake = new IntakeSubsystem();
-  private final HopperSubsystem hopper = new HopperSubsystem();
-  private final KickerSubsystem kicker = new KickerSubsystem();
-  private final HoodSubsystem hood = new HoodSubsystem();
+  // Instatiate each subsystem
+  private final SwerveSubsystem m_drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
+  private final ShooterSubsystem m_shooter = new ShooterSubsystem();
+  private final TurretSubsystem m_turret = new TurretSubsystem();
+  private final HoodSubsystem m_hood = new HoodSubsystem();
+  private final IntakeSubsystem m_intake = new IntakeSubsystem();
+  private final HopperSubsystem m_hopper = new HopperSubsystem();
+  private final KickerSubsystem m_kicker = new KickerSubsystem();
 
-  private final Superstructure superstructure = new Superstructure(shooter, turret, hood, intake, hopper, kicker);
+  // Create the Superstructure, passing in all relevant subsystem
+  private final Superstructure m_superstructure = new Superstructure(m_shooter, m_turret, m_hood, m_intake, m_hopper, m_kicker);
 
-  private final SendableChooser<Command> autoChooser;
+  private final SendableChooser<Command> m_autoChooser;
 
   // Track current alliance for change detection
-  private Alliance currentAlliance = Alliance.Red;
+  private Alliance m_currentAlliance = Alliance.Red;
 
   /**
    * The container for the robot. Contains subsystems, I/O devices, and commands.
    */
   public RobotContainer() {
-    // Configure the trigger bindings
+    // Configure bindings between controllers and robot commands
     configureBindings();
+
+    // Create "Named" autonomous commands for PathPlanner/Choreo
     buildNamedAutoCommands();
 
     // Initialize alliance (default to red if not present)
     onAllianceChanged(getAlliance());
 
     // Set up trigger to detect alliance changes
-    new Trigger(() -> getAlliance() != currentAlliance)
-        .onTrue(Commands.runOnce(() -> onAllianceChanged(getAlliance())).ignoringDisable(true));
+    new Trigger(() -> Constants.getAlliance() != m_currentAlliance)
+        .onTrue(Commands.runOnce(() -> onAllianceChanged(Constants.getAlliance())).ignoringDisable(true));
 
     // Triggers for auto aim/pass poses
     new Trigger(() -> isInAllianceZone())
@@ -77,129 +81,179 @@ public class RobotContainer {
     }
 
     // Have the autoChooser pull in all PathPlanner autos as options
-    autoChooser = AutoBuilder.buildAutoChooser();
+    m_autoChooser = AutoBuilder.buildAutoChooser();
 
     // Set the default auto (do nothing)
-    autoChooser.setDefaultOption("Do Nothing", Commands.none());
+    m_autoChooser.setDefaultOption("Do Nothing", Commands.none());
 
     // Add a simple auto option to have the robot drive forward for 1 second then
     // stop
-    autoChooser.addOption("Drive Forward", drivebase.driveForward().withTimeout(10));
+    m_autoChooser.addOption("Drive Forward", m_drivebase.driveForward().withTimeout(10));
 
     // Put the autoChooser on the SmartDashboard
-    SmartDashboard.putData("Auto Chooser", autoChooser);
+    SmartDashboard.putData("Auto Chooser", m_autoChooser);
   }
 
+  /**
+   * Configure bindings between Joysticks/Gamepads and commands
+   */
   private void configureBindings() {
     // Set up controllers
-    DriverControls.configure(ControllerConstants.kDriverControllerPort, drivebase, superstructure);
-    OperatorControls.configure(ControllerConstants.kOperatorControllerPort, drivebase, superstructure);
-    PoseControls.configure(ControllerConstants.kPoseControllerPort, drivebase);
+    DriverControls.configure(ControllerConstants.kDriverControllerPort, m_drivebase, m_superstructure);
+    OperatorControls.configure(ControllerConstants.kOperatorControllerPort, m_drivebase, m_superstructure);
+    PoseControls.configure(ControllerConstants.kPoseControllerPort, m_drivebase);
   }
 
+  /**
+   * Create and register our "Named" autonomous Commands
+   *
+   * Named autonomous commands can be referenced from PathPlanner and Choreo
+   * to trigger at specific points throughout paths:
+   *
+   * PathPlanner: https://pathplanner.dev/pplib-named-commands.html
+   * Choreo: https://choreo.autos/usage/editing-paths/#pathplanner-interop
+   */
   private void buildNamedAutoCommands() {
     // Add any auto commands to the NamedCommands here
     NamedCommands.registerCommand("ScoreCoral",
-        Commands.runOnce(() -> System.out.println("Scoring Coral!"), drivebase)
+        Commands.runOnce(() -> System.out.println("Scoring Coral!"), m_drivebase)
             .andThen(Commands.waitSeconds(1))
             .withName("Auto.ScoreCoral"));
 
     NamedCommands.registerCommand("Dealgae",
-        Commands.runOnce(() -> System.out.println("Dealgae!"), drivebase)
+        Commands.runOnce(() -> System.out.println("Dealgae!"), m_drivebase)
             .andThen(Commands.waitSeconds(1))
             .withName("Auto.Dealgae"));
 
     NamedCommands.registerCommand("driveBackwards",
-        drivebase.driveBackwards().withTimeout(1)
+        m_drivebase.driveBackwards().withTimeout(1)
             .withName("Auto.driveBackwards"));
 
     NamedCommands.registerCommand("driveForwards",
-        drivebase.driveForward().withTimeout(2)
+        m_drivebase.driveForward().withTimeout(2)
             .withName("Auto.driveForwards"));
   }
 
+  /**
+   * Get the active autonomous selection from Glass/SmartDashboard
+   *
+   * @return The currently selected autonomous command
+   */
   public Command getAutonomousCommand() {
-    return autoChooser.getSelected();
+    return m_autoChooser.getSelected();
   }
 
   public SwerveDrive getSwerveDrive() {
-    return drivebase.getSwerveDrive();
+    return m_drivebase.getSwerveDrive();
   }
 
+  /**
+   * Get the current robot pose (position and rotation), as reported by the drivebase
+   *
+   * @return Current robot pose
+   */
   public Pose2d getRobotPose() {
-    return drivebase.getPose();
+    return m_drivebase.getPose();
   }
 
+  /**
+   * Get the position and aim direction of the shooter
+   *
+   * @return Current Pose3d (position and rotation) of the shooter
+   */
   public Pose3d getAimDirection() {
     // Apply robot heading first, then turret/hood rotation on top
-    Pose3d shooterPose = superstructure.getShooterPose();
+    Pose3d shooterPose = m_superstructure.getShooterPose();
 
-    var pose = drivebase.getPose3d().plus(new Transform3d(
+    Pose3d pose = m_drivebase.getPose3d().plus(new Transform3d(
         shooterPose.getTranslation(), shooterPose.getRotation()));
 
     return pose;
   }
 
+  /**
+   * Get the field location that the shooter is aiming towards
+   *
+   * @return The field location the shooter is aiming towards
+   */
   public Translation3d getAimPoint() {
-    return superstructure.getAimPoint();
+    return m_superstructure.getAimPoint();
   }
 
+  /**
+   * Set the field location that the shooter should aim towards
+   *
+   * @param aimPoint Field location to aim towards
+  */
   public void setAimPoint(Translation3d aimPoint) {
-    superstructure.setAimPoint(aimPoint);
+    m_superstructure.setAimPoint(aimPoint);
   }
 
-  private Alliance getAlliance() {
-    return DriverStation.getAlliance().orElse(Alliance.Red);
-  }
-
+  /**
+   * Checks if robot is in it's own alliance zone
+   *
+   * @return true when the robot is within it's alliance zone, false otherwise
+   */
   private boolean isInAllianceZone() {
-    Alliance alliance = getAlliance();
+    Alliance alliance = Constants.getAlliance();
     Distance blueZone = Inches.of(182);
     Distance redZone = Inches.of(469);
 
-    if (alliance == Alliance.Blue && drivebase.getPose().getMeasureX().lt(blueZone)) {
+    if (alliance == Alliance.Blue && m_drivebase.getPose().getMeasureX().lt(blueZone)) {
       return true;
-    } else if (alliance == Alliance.Red && drivebase.getPose().getMeasureX().gt(redZone)) {
+    } else if (alliance == Alliance.Red && m_drivebase.getPose().getMeasureX().gt(redZone)) {
       return true;
     }
 
     return false;
   }
 
+  /**
+   * Checks if robot is in the "Outpost" half of the field
+   *
+   * This is determining the Y location (left/right) of the robot
+   *
+   * @return true when the robot is on the Outpost side, false otherwise
+   */
   private boolean isOnAllianceOutpostSide() {
-    Alliance alliance = getAlliance();
+    Alliance alliance = Constants.getAlliance();
     Distance midLine = Inches.of(158.84375);
 
-    if (alliance == Alliance.Blue && drivebase.getPose().getMeasureY().lt(midLine)) {
+    if (alliance == Alliance.Blue && m_drivebase.getPose().getMeasureY().lt(midLine)) {
       return true;
-    } else if (alliance == Alliance.Red && drivebase.getPose().getMeasureY().gt(midLine)) {
+    } else if (alliance == Alliance.Red && m_drivebase.getPose().getMeasureY().gt(midLine)) {
       return true;
     }
 
     return false;
   }
 
+  /**
+   * Perform all necessary actions when the robot moves from one zone to another
+   *
+   * If the robot is within it's own alliance zone, aim at the hub to score.
+   * Otherwise, aim at the appropriate corner of it's alliance zone for passing.
+   */
   private void onZoneChanged() {
     if (isInAllianceZone()) {
-      superstructure.setAimPoint(Constants.AimPoints.getAllianceHubPosition());
+      m_superstructure.setAimPoint(Constants.AimPoints.getAllianceHubPosition());
     } else {
       if (isOnAllianceOutpostSide()) {
-        superstructure.setAimPoint(Constants.AimPoints.getAllianceOutpostPosition());
+        m_superstructure.setAimPoint(Constants.AimPoints.getAllianceOutpostPosition());
       } else {
-        superstructure.setAimPoint(Constants.AimPoints.getAllianceFarSidePosition());
+        m_superstructure.setAimPoint(Constants.AimPoints.getAllianceFarSidePosition());
       }
     }
   }
 
+  /**
+   * Perform all necessary actions when the alliance changes.
+   */
   private void onAllianceChanged(Alliance alliance) {
-    currentAlliance = alliance;
+    m_currentAlliance = alliance;
 
-    // Update aim point based on alliance
-    if (alliance == Alliance.Blue) {
-      superstructure.setAimPoint(Constants.AimPoints.BLUE_HUB.value);
-    } else {
-      superstructure.setAimPoint(Constants.AimPoints.RED_HUB.value);
-    }
+    // Update aim point depending on which zone the robot is in
+    onZoneChanged();
 
     System.out.println("Alliance changed to: " + alliance);
   }

@@ -10,6 +10,25 @@ public final class Constants {
   public static boolean NT4_LOGGING = true;
   public static boolean USB_LOGGING = false;
 
+  /**
+   * Returns the current alliance from the FMS. Defaults to Red if alliance isn't available.
+   *
+   * @return The current alliance from the FMS. Defaults to Red if not available.
+   */
+  public static DriverStation.Alliance getAlliance() {
+    return DriverStation.getAlliance().orElse(DriverStation.Alliance.Red);
+  }
+
+  /**
+   * Checks if the alliance is red, defaults to true if alliance isn't available.
+   *
+   * @return true if the red alliance, false if blue. Defaults to true if none is
+   *         available.
+   */
+  public static boolean isRedAlliance() {
+    return getAlliance() == DriverStation.Alliance.Red;
+  }
+
   public static enum AimPoints {
     RED_HUB(new Translation3d(11.938, 4.034536, 1.5748)),
     RED_OUTPOST(new Translation3d(15.75, 7.25, 0)),
@@ -26,15 +45,15 @@ public final class Constants {
     }
 
     public static final Translation3d getAllianceHubPosition() {
-      return DriverStation.getAlliance().get() == DriverStation.Alliance.Red ? RED_HUB.value : BLUE_HUB.value;
+      return isRedAlliance() ? RED_HUB.value : BLUE_HUB.value;
     }
 
     public static final Translation3d getAllianceOutpostPosition() {
-      return DriverStation.getAlliance().get() == DriverStation.Alliance.Red ? RED_OUTPOST.value : BLUE_OUTPOST.value;
+      return isRedAlliance() ? RED_OUTPOST.value : BLUE_OUTPOST.value;
     }
 
     public static final Translation3d getAllianceFarSidePosition() {
-      return DriverStation.getAlliance().get() == DriverStation.Alliance.Red ? RED_FAR_SIDE.value : BLUE_FAR_SIDE.value;
+      return isRedAlliance() ? RED_FAR_SIDE.value : BLUE_FAR_SIDE.value;
     }
   }
 

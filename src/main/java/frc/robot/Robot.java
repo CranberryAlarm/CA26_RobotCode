@@ -21,7 +21,7 @@ public class Robot extends LoggedRobot {
 
   public Robot() {
     // Set the Project Name for Advantage Scope Logging
-    Logger.recordMetadata("ProjectName", "CA_Ri3D_2026"); 
+    Logger.recordMetadata("ProjectName", "CA_Ri3D_2026");
 
     // Setup Advantage Scope to publish to NetworkTables
     if (Constants.NT4_LOGGING) {
