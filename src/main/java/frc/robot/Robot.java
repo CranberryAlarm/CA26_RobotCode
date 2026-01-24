@@ -4,6 +4,7 @@ import org.ironmaple.simulation.SimulatedArena;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -16,45 +17,42 @@ public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
 
   private final RobotContainer m_robotContainer;
-  private SimulatedArena arena;
+  private SimulatedArena m_arena;
 
   public Robot() {
-    Logger.recordMetadata("ProjectName", "CA_Ri3D_2026"); // Set a metadata value
+    // Set the Project Name for Advantage Scope Logging
+    Logger.recordMetadata("ProjectName", "CA_Ri3D_2026"); 
 
-    Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
+    // Setup Advantage Scope to publish to NetworkTables
+    if (Constants.NT4_LOGGING) {
+      Logger.addDataReceiver(new NT4Publisher());
+    }
 
-    if (isReal()) {
-      // Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
+    // Setup Advantage Scope to publish to USB
+    if (isReal() && Constants.USB_LOGGING) {
+      // Log to a USB stick ("/U/logs")
+      Logger.addDataReceiver(new WPILOGWriter());
     }
 
     Logger.start();
 
-    // Register command logging callbacks with CommandScheduler
+    // Register CommandsLogging callbacks with CommandScheduler so Advantage Scope can log commands
     CommandScheduler.getInstance().onCommandInitialize(CommandsLogging::commandStarted);
     CommandScheduler.getInstance().onCommandFinish(CommandsLogging::commandEnded);
-    CommandScheduler.getInstance()
-        .onCommandInterrupt(
-            (interrupted, interrupting) -> {
-              interrupting.ifPresent(
-                  interrupter -> CommandsLogging.runningInterrupters.put(interrupter, interrupted));
-              CommandsLogging.commandEnded(interrupted);
-            });
+    CommandScheduler.getInstance().onCommandInterrupt(CommandsLogging::commandInterrupted);
 
+    // Create the RobotContainer
     m_robotContainer = new RobotContainer();
   }
 
   @Override
   public void robotPeriodic() {
+    // Run the CommandScheduler logic (must be called in robotPeriodic())
     CommandScheduler.getInstance().run();
 
     // Log running commands and subsystem requirements
     CommandsLogging.logRunningCommands();
     CommandsLogging.logRequiredSubsystems();
-
-    if (Robot.isSimulation()) {
-      Pose3d[] fuelPoses = arena.getGamePiecesArrayByType("Fuel");
-      Logger.recordOutput("FieldSimulation/FuelPoses", fuelPoses);
-    }
 
     Logger.recordOutput("FieldSimulation/RobotPose", m_robotContainer.getRobotPose());
     Logger.recordOutput("FieldSimulation/TargetPose",
@@ -73,9 +71,10 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void autonomousInit() {
+    // Get the selected autonomous command from Glass/SmartDashboard
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
-    // schedule the autonomous command (example)
+    // Schedule the selected autonomous command
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
@@ -87,6 +86,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopInit() {
+    // Cancel any autonomous commands before starting teleop
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
@@ -98,6 +98,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void testInit() {
+    // Cancel all commands before starting test periodic
     CommandScheduler.getInstance().cancelAll();
   }
 
@@ -111,15 +112,21 @@ public class Robot extends LoggedRobot {
     // (including the drivetrain) so they can be added to a new physics world
     SimulatedArena.getInstance().shutDown();
 
+    // Create an assign a new arena instance for the 2026 field
     SimulatedArena.overrideInstance(new Arena2026Rebuilt());
 
-    arena = SimulatedArena.getInstance();
+    m_arena = SimulatedArena.getInstance();
 
-    arena.addDriveTrainSimulation(m_robotContainer.getSwerveDrive().getMapleSimDrive().get());
+    // Add the SwerveDrive simulation to the arena
+    m_arena.addDriveTrainSimulation(m_robotContainer.getSwerveDrive().getMapleSimDrive().get());
   }
 
   @Override
   public void simulationPeriodic() {
-    arena.simulationPeriodic();
+    m_arena.simulationPeriodic();
+
+    // Run the fuel game piece simulation
+    Pose3d[] fuelPoses = m_arena.getGamePiecesArrayByType("Fuel");
+    Logger.recordOutput("FieldSimulation/FuelPoses", fuelPoses);
   }
 }

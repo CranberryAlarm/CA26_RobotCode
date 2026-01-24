@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.littletonrobotics.junction.Logger;
@@ -62,6 +63,13 @@ public class CommandsLogging {
     for (final Subsystem subsystem : command.getRequirements()) {
       requiredSubsystems.remove(subsystem);
     }
+  }
+
+  public static void commandInterrupted(final Command interrupted, final Optional<Command> interrupting)
+  {
+    interrupting.ifPresent(
+        interrupter -> CommandsLogging.runningInterrupters.put(interrupter, interrupted));
+    CommandsLogging.commandEnded(interrupted);
   }
 
   private static final Field wrapperCommandField;
