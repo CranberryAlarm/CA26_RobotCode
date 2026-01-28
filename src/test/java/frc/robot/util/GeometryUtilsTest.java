@@ -1,23 +1,24 @@
 package frc.robot.util;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import frc.robot.TestUtils;
 
 /**
  * Unit tests for GeometryUtils.
- * Tests distance calculations, angle operations, and coordinate transformations.
+ * Tests distance calculations, angle operations, and coordinate
+ * transformations.
  */
 @DisplayName("GeometryUtils")
 class GeometryUtilsTest {
@@ -94,16 +95,16 @@ class GeometryUtilsTest {
         @ParameterizedTest
         @DisplayName("should calculate correct angle to target")
         @CsvSource({
-            "0, 0, 1, 0, 0",     // East -> 0 degrees
-            "0, 0, 0, 1, 90",    // North -> 90 degrees
-            "0, 0, -1, 0, 180",  // West -> 180 degrees
-            "0, 0, 0, -1, -90",  // South -> -90 degrees
-            "0, 0, 1, 1, 45",    // Northeast -> 45 degrees
+                "0, 0, 1, 0, 0", // East -> 0 degrees
+                "0, 0, 0, 1, 90", // North -> 90 degrees
+                "0, 0, -1, 0, 180", // West -> 180 degrees
+                "0, 0, 0, -1, -90", // South -> -90 degrees
+                "0, 0, 1, 1, 45", // Northeast -> 45 degrees
         })
         void angleToTarget(double x1, double y1, double x2, double y2, double expectedDegrees) {
             Translation2d from = new Translation2d(x1, y1);
             Translation2d to = new Translation2d(x2, y2);
-            
+
             Rotation2d angle = GeometryUtils.angleTo(from, to);
             assertEquals(expectedDegrees, angle.getDegrees(), DELTA);
         }
@@ -115,7 +116,7 @@ class GeometryUtilsTest {
             Pose2d robotPose = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
             // Target directly ahead
             Translation2d targetAhead = new Translation2d(5, 0);
-            
+
             Rotation2d relAngle = GeometryUtils.relativeAngleTo(robotPose, targetAhead);
             assertEquals(0, relAngle.getDegrees(), DELTA, "Target ahead should be 0 relative angle");
         }
@@ -125,7 +126,7 @@ class GeometryUtilsTest {
         void relativeAngleLeft() {
             Pose2d robotPose = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
             Translation2d targetLeft = new Translation2d(0, 5);
-            
+
             Rotation2d relAngle = GeometryUtils.relativeAngleTo(robotPose, targetLeft);
             assertEquals(90, relAngle.getDegrees(), DELTA, "Target left should be 90 relative angle");
         }
@@ -137,10 +138,10 @@ class GeometryUtilsTest {
             Pose2d robotPose = new Pose2d(0, 0, Rotation2d.fromDegrees(90));
             // Target at +X (east)
             Translation2d target = new Translation2d(5, 0);
-            
+
             Rotation2d relAngle = GeometryUtils.relativeAngleTo(robotPose, target);
-            assertEquals(-90, relAngle.getDegrees(), DELTA, 
-                "Target to robot's right should be -90 degrees");
+            assertEquals(-90, relAngle.getDegrees(), DELTA,
+                    "Target to robot's right should be -90 degrees");
         }
     }
 
@@ -160,7 +161,7 @@ class GeometryUtilsTest {
         void pointInsideRadius() {
             Translation2d center = new Translation2d(0, 0);
             Translation2d point = new Translation2d(1, 1);
-            
+
             assertTrue(GeometryUtils.isWithinRadius(center, point, 2));
         }
 
@@ -169,7 +170,7 @@ class GeometryUtilsTest {
         void pointAtBoundary() {
             Translation2d center = new Translation2d(0, 0);
             Translation2d point = new Translation2d(3, 4); // Distance = 5
-            
+
             assertTrue(GeometryUtils.isWithinRadius(center, point, 5));
         }
 
@@ -178,7 +179,7 @@ class GeometryUtilsTest {
         void pointOutsideRadius() {
             Translation2d center = new Translation2d(0, 0);
             Translation2d point = new Translation2d(3, 4); // Distance = 5
-            
+
             assertFalse(GeometryUtils.isWithinRadius(center, point, 4.9));
         }
     }
@@ -192,7 +193,7 @@ class GeometryUtilsTest {
         void facingTargetDirectly() {
             Pose2d robot = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
             Translation2d target = new Translation2d(5, 0);
-            
+
             assertTrue(GeometryUtils.isFacingTarget(robot, target, Math.toRadians(5)));
         }
 
@@ -201,7 +202,7 @@ class GeometryUtilsTest {
         void facingTargetWithinTolerance() {
             Pose2d robot = new Pose2d(0, 0, Rotation2d.fromDegrees(5)); // Slightly rotated
             Translation2d target = new Translation2d(5, 0);
-            
+
             assertTrue(GeometryUtils.isFacingTarget(robot, target, Math.toRadians(10)));
         }
 
@@ -210,7 +211,7 @@ class GeometryUtilsTest {
         void notFacingTarget() {
             Pose2d robot = new Pose2d(0, 0, Rotation2d.fromDegrees(45));
             Translation2d target = new Translation2d(5, 0);
-            
+
             assertFalse(GeometryUtils.isFacingTarget(robot, target, Math.toRadians(10)));
         }
     }
@@ -224,9 +225,9 @@ class GeometryUtilsTest {
         void lerpAtZero() {
             Translation2d start = new Translation2d(0, 0);
             Translation2d end = new Translation2d(10, 10);
-            
+
             Translation2d result = GeometryUtils.lerp(start, end, 0);
-            
+
             assertEquals(0, result.getX(), DELTA);
             assertEquals(0, result.getY(), DELTA);
         }
@@ -236,9 +237,9 @@ class GeometryUtilsTest {
         void lerpAtOne() {
             Translation2d start = new Translation2d(0, 0);
             Translation2d end = new Translation2d(10, 10);
-            
+
             Translation2d result = GeometryUtils.lerp(start, end, 1);
-            
+
             assertEquals(10, result.getX(), DELTA);
             assertEquals(10, result.getY(), DELTA);
         }
@@ -248,9 +249,9 @@ class GeometryUtilsTest {
         void lerpAtHalf() {
             Translation2d start = new Translation2d(0, 0);
             Translation2d end = new Translation2d(10, 10);
-            
+
             Translation2d result = GeometryUtils.lerp(start, end, 0.5);
-            
+
             assertEquals(5, result.getX(), DELTA);
             assertEquals(5, result.getY(), DELTA);
         }
@@ -260,10 +261,10 @@ class GeometryUtilsTest {
         void lerpClamps() {
             Translation2d start = new Translation2d(0, 0);
             Translation2d end = new Translation2d(10, 10);
-            
+
             Translation2d resultNegative = GeometryUtils.lerp(start, end, -0.5);
             Translation2d resultOverOne = GeometryUtils.lerp(start, end, 1.5);
-            
+
             assertEquals(0, resultNegative.getX(), DELTA, "Negative t should clamp to 0");
             assertEquals(10, resultOverOne.getX(), DELTA, "t > 1 should clamp to 1");
         }
@@ -278,9 +279,9 @@ class GeometryUtilsTest {
         void mirrorXCoordinate() {
             double fieldLength = 16.54;
             Pose2d pose = new Pose2d(5, 3, Rotation2d.fromDegrees(0));
-            
+
             Pose2d mirrored = GeometryUtils.mirrorPose(pose, fieldLength);
-            
+
             assertEquals(fieldLength - 5, mirrored.getX(), DELTA);
         }
 
@@ -289,9 +290,9 @@ class GeometryUtilsTest {
         void mirrorPreservesY() {
             double fieldLength = 16.54;
             Pose2d pose = new Pose2d(5, 3, Rotation2d.fromDegrees(0));
-            
+
             Pose2d mirrored = GeometryUtils.mirrorPose(pose, fieldLength);
-            
+
             assertEquals(3, mirrored.getY(), DELTA);
         }
 
@@ -300,9 +301,9 @@ class GeometryUtilsTest {
         void mirrorRotation() {
             double fieldLength = 16.54;
             Pose2d pose = new Pose2d(5, 3, Rotation2d.fromDegrees(30));
-            
+
             Pose2d mirrored = GeometryUtils.mirrorPose(pose, fieldLength);
-            
+
             assertEquals(150, mirrored.getRotation().getDegrees(), DELTA);
         }
 
@@ -311,14 +312,14 @@ class GeometryUtilsTest {
         void doubleMirror() {
             double fieldLength = 16.54;
             Pose2d original = new Pose2d(5, 3, Rotation2d.fromDegrees(45));
-            
+
             Pose2d doubleMirrored = GeometryUtils.mirrorPose(
-                GeometryUtils.mirrorPose(original, fieldLength), fieldLength);
-            
+                    GeometryUtils.mirrorPose(original, fieldLength), fieldLength);
+
             assertEquals(original.getX(), doubleMirrored.getX(), DELTA);
             assertEquals(original.getY(), doubleMirrored.getY(), DELTA);
-            assertEquals(original.getRotation().getDegrees(), 
-                doubleMirrored.getRotation().getDegrees(), DELTA);
+            assertEquals(original.getRotation().getDegrees(),
+                    doubleMirrored.getRotation().getDegrees(), DELTA);
         }
     }
 
@@ -330,12 +331,12 @@ class GeometryUtilsTest {
         @DisplayName("should convert to polar correctly")
         void toPolarBasic() {
             Translation2d point = new Translation2d(3, 4); // Radius should be 5
-            
+
             double[] polar = GeometryUtils.toPolar(point);
-            
+
             assertEquals(5, polar[0], DELTA, "Radius should be 5");
-            assertTrue(polar[1] > 0 && polar[1] < Math.PI / 2, 
-                "Angle should be in first quadrant");
+            assertTrue(polar[1] > 0 && polar[1] < Math.PI / 2,
+                    "Angle should be in first quadrant");
         }
 
         @Test
@@ -343,9 +344,9 @@ class GeometryUtilsTest {
         void fromPolarBasic() {
             double radius = 5;
             double angle = Math.PI / 4; // 45 degrees
-            
+
             Translation2d result = GeometryUtils.fromPolar(radius, angle);
-            
+
             assertEquals(radius * Math.cos(angle), result.getX(), DELTA);
             assertEquals(radius * Math.sin(angle), result.getY(), DELTA);
         }
@@ -354,10 +355,10 @@ class GeometryUtilsTest {
         @DisplayName("round trip should preserve point")
         void polarRoundTrip() {
             Translation2d original = new Translation2d(3, 4);
-            
+
             double[] polar = GeometryUtils.toPolar(original);
             Translation2d result = GeometryUtils.fromPolar(polar[0], polar[1]);
-            
+
             assertEquals(original.getX(), result.getX(), DELTA);
             assertEquals(original.getY(), result.getY(), DELTA);
         }
@@ -370,12 +371,12 @@ class GeometryUtilsTest {
         @ParameterizedTest
         @DisplayName("should normalize angles to [-π, π]")
         @CsvSource({
-            "0, 0",
-            "3.14159, 3.14159",
-            "-3.14159, -3.14159",
-            "6.28318, 0",         // 2π -> 0
-            "-6.28318, 0",        // -2π -> 0
-            "4.71239, -1.57079",  // 3π/2 -> -π/2
+                "0, 0",
+                "3.14159, 3.14159",
+                "-3.14159, -3.14159",
+                "6.28318, 0", // 2π -> 0
+                "-6.28318, 0", // -2π -> 0
+                "4.71239, -1.57079", // 3π/2 -> -π/2
         })
         void normalizeAngle(double input, double expected) {
             double result = GeometryUtils.normalizeAngle(input);
@@ -398,12 +399,12 @@ class GeometryUtilsTest {
         @DisplayName("should find shortest path")
         void shortestPath() {
             // From 0 to π/2 should be π/2 (90 degrees)
-            assertEquals(Math.PI / 2, 
-                GeometryUtils.shortestAngularDifference(0, Math.PI / 2), ANGLE_DELTA);
-            
+            assertEquals(Math.PI / 2,
+                    GeometryUtils.shortestAngularDifference(0, Math.PI / 2), ANGLE_DELTA);
+
             // From 0 to -π/2 should be -π/2 (-90 degrees)
-            assertEquals(-Math.PI / 2, 
-                GeometryUtils.shortestAngularDifference(0, -Math.PI / 2), ANGLE_DELTA);
+            assertEquals(-Math.PI / 2,
+                    GeometryUtils.shortestAngularDifference(0, -Math.PI / 2), ANGLE_DELTA);
         }
 
         @Test
@@ -412,7 +413,7 @@ class GeometryUtilsTest {
             // From small positive to small negative should be shortest path
             double from = Math.toRadians(10);
             double to = Math.toRadians(-10);
-            
+
             double diff = GeometryUtils.shortestAngularDifference(from, to);
             assertEquals(Math.toRadians(-20), diff, ANGLE_DELTA);
         }

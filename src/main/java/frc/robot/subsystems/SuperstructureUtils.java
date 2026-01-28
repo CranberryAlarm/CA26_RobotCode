@@ -2,7 +2,6 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.RPM;
-
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 
@@ -23,9 +22,9 @@ public final class SuperstructureUtils {
 
     /**
      * Checks if the shooter is at the target speed within tolerance.
-     * 
+     *
      * @param currentSpeed current shooter speed
-     * @param targetSpeed target shooter speed
+     * @param targetSpeed  target shooter speed
      * @return true if within tolerance
      */
     public static boolean isShooterAtSpeed(AngularVelocity currentSpeed, AngularVelocity targetSpeed) {
@@ -34,22 +33,22 @@ public final class SuperstructureUtils {
 
     /**
      * Checks if the shooter is at the target speed within a custom tolerance.
-     * 
+     *
      * @param currentSpeed current shooter speed
-     * @param targetSpeed target shooter speed  
-     * @param tolerance custom tolerance
+     * @param targetSpeed  target shooter speed
+     * @param tolerance    custom tolerance
      * @return true if within tolerance
      */
-    public static boolean isShooterAtSpeed(AngularVelocity currentSpeed, AngularVelocity targetSpeed, 
+    public static boolean isShooterAtSpeed(AngularVelocity currentSpeed, AngularVelocity targetSpeed,
             AngularVelocity tolerance) {
         return Math.abs(currentSpeed.in(RPM) - targetSpeed.in(RPM)) < tolerance.in(RPM);
     }
 
     /**
      * Checks if the turret is on target within tolerance.
-     * 
+     *
      * @param currentAngle current turret angle
-     * @param targetAngle target turret angle
+     * @param targetAngle  target turret angle
      * @return true if within tolerance
      */
     public static boolean isTurretOnTarget(Angle currentAngle, Angle targetAngle) {
@@ -58,10 +57,10 @@ public final class SuperstructureUtils {
 
     /**
      * Checks if the turret is on target within a custom tolerance.
-     * 
+     *
      * @param currentAngle current turret angle
-     * @param targetAngle target turret angle
-     * @param tolerance custom tolerance
+     * @param targetAngle  target turret angle
+     * @param tolerance    custom tolerance
      * @return true if within tolerance
      */
     public static boolean isTurretOnTarget(Angle currentAngle, Angle targetAngle, Angle tolerance) {
@@ -70,9 +69,9 @@ public final class SuperstructureUtils {
 
     /**
      * Checks if the hood is on target within tolerance.
-     * 
+     *
      * @param currentAngle current hood angle
-     * @param targetAngle target hood angle
+     * @param targetAngle  target hood angle
      * @return true if within tolerance
      */
     public static boolean isHoodOnTarget(Angle currentAngle, Angle targetAngle) {
@@ -81,10 +80,10 @@ public final class SuperstructureUtils {
 
     /**
      * Checks if the hood is on target within a custom tolerance.
-     * 
+     *
      * @param currentAngle current hood angle
-     * @param targetAngle target hood angle
-     * @param tolerance custom tolerance
+     * @param targetAngle  target hood angle
+     * @param tolerance    custom tolerance
      * @return true if within tolerance
      */
     public static boolean isHoodOnTarget(Angle currentAngle, Angle targetAngle, Angle tolerance) {
@@ -93,13 +92,13 @@ public final class SuperstructureUtils {
 
     /**
      * Checks if all mechanisms are ready to shoot.
-     * 
+     *
      * @param shooterCurrent current shooter speed
-     * @param shooterTarget target shooter speed
-     * @param turretCurrent current turret angle
-     * @param turretTarget target turret angle
-     * @param hoodCurrent current hood angle
-     * @param hoodTarget target hood angle
+     * @param shooterTarget  target shooter speed
+     * @param turretCurrent  current turret angle
+     * @param turretTarget   target turret angle
+     * @param hoodCurrent    current hood angle
+     * @param hoodTarget     target hood angle
      * @return true if all mechanisms are ready
      */
     public static boolean isReadyToShoot(
@@ -107,15 +106,15 @@ public final class SuperstructureUtils {
             Angle turretCurrent, Angle turretTarget,
             Angle hoodCurrent, Angle hoodTarget) {
         return isShooterAtSpeed(shooterCurrent, shooterTarget) &&
-               isTurretOnTarget(turretCurrent, turretTarget) &&
-               isHoodOnTarget(hoodCurrent, hoodTarget);
+                isTurretOnTarget(turretCurrent, turretTarget) &&
+                isHoodOnTarget(hoodCurrent, hoodTarget);
     }
 
     /**
      * Calculates the shooter speed error.
-     * 
+     *
      * @param currentSpeed current speed
-     * @param targetSpeed target speed
+     * @param targetSpeed  target speed
      * @return error in RPM (positive = too slow, negative = too fast)
      */
     public static double getShooterError(AngularVelocity currentSpeed, AngularVelocity targetSpeed) {
@@ -124,9 +123,9 @@ public final class SuperstructureUtils {
 
     /**
      * Calculates the turret angle error.
-     * 
+     *
      * @param currentAngle current angle
-     * @param targetAngle target angle
+     * @param targetAngle  target angle
      * @return error in degrees
      */
     public static double getTurretError(Angle currentAngle, Angle targetAngle) {
@@ -135,9 +134,9 @@ public final class SuperstructureUtils {
 
     /**
      * Calculates the hood angle error.
-     * 
+     *
      * @param currentAngle current angle
-     * @param targetAngle target angle
+     * @param targetAngle  target angle
      * @return error in degrees
      */
     public static double getHoodError(Angle currentAngle, Angle targetAngle) {
@@ -148,13 +147,12 @@ public final class SuperstructureUtils {
      * Result record for readiness status with details.
      */
     public record ReadinessStatus(
-        boolean shooterReady,
-        boolean turretReady,
-        boolean hoodReady,
-        double shooterError,
-        double turretError,
-        double hoodError
-    ) {
+            boolean shooterReady,
+            boolean turretReady,
+            boolean hoodReady,
+            double shooterError,
+            double turretError,
+            double hoodError) {
         public boolean isReady() {
             return shooterReady && turretReady && hoodReady;
         }
@@ -162,13 +160,13 @@ public final class SuperstructureUtils {
 
     /**
      * Gets detailed readiness status for all mechanisms.
-     * 
+     *
      * @param shooterCurrent current shooter speed
-     * @param shooterTarget target shooter speed
-     * @param turretCurrent current turret angle
-     * @param turretTarget target turret angle
-     * @param hoodCurrent current hood angle
-     * @param hoodTarget target hood angle
+     * @param shooterTarget  target shooter speed
+     * @param turretCurrent  current turret angle
+     * @param turretTarget   target turret angle
+     * @param hoodCurrent    current hood angle
+     * @param hoodTarget     target hood angle
      * @return detailed readiness status
      */
     public static ReadinessStatus getReadinessStatus(
@@ -176,12 +174,11 @@ public final class SuperstructureUtils {
             Angle turretCurrent, Angle turretTarget,
             Angle hoodCurrent, Angle hoodTarget) {
         return new ReadinessStatus(
-            isShooterAtSpeed(shooterCurrent, shooterTarget),
-            isTurretOnTarget(turretCurrent, turretTarget),
-            isHoodOnTarget(hoodCurrent, hoodTarget),
-            getShooterError(shooterCurrent, shooterTarget),
-            getTurretError(turretCurrent, turretTarget),
-            getHoodError(hoodCurrent, hoodTarget)
-        );
+                isShooterAtSpeed(shooterCurrent, shooterTarget),
+                isTurretOnTarget(turretCurrent, turretTarget),
+                isHoodOnTarget(hoodCurrent, hoodTarget),
+                getShooterError(shooterCurrent, shooterTarget),
+                getTurretError(turretCurrent, turretTarget),
+                getHoodError(hoodCurrent, hoodTarget));
     }
 }

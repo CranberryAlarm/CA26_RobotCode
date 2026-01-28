@@ -1,18 +1,18 @@
 package frc.robot.subsystems;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static edu.wpi.first.units.Units.*;
-
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularVelocity;
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.ValueSource;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.RPM;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 import frc.robot.TestUtils;
 import frc.robot.subsystems.SuperstructureUtils.ReadinessStatus;
 
@@ -42,7 +42,7 @@ class SuperstructureUtilsTest {
             AngularVelocity target = RPM.of(3000);
 
             assertTrue(SuperstructureUtils.isShooterAtSpeed(current, target),
-                "Should be at speed when exactly at target");
+                    "Should be at speed when exactly at target");
         }
 
         @Test
@@ -52,7 +52,7 @@ class SuperstructureUtilsTest {
             AngularVelocity current = RPM.of(3000 + 99); // Just under 100 RPM tolerance
 
             assertTrue(SuperstructureUtils.isShooterAtSpeed(current, target),
-                "Should be at speed when 99 RPM away (under 100 RPM tolerance)");
+                    "Should be at speed when 99 RPM away (under 100 RPM tolerance)");
         }
 
         @Test
@@ -62,7 +62,7 @@ class SuperstructureUtilsTest {
             AngularVelocity current = RPM.of(3000 + 101); // Just outside tolerance
 
             assertFalse(SuperstructureUtils.isShooterAtSpeed(current, target),
-                "Should not be at speed when 101 RPM away (outside 100 RPM tolerance)");
+                    "Should not be at speed when 101 RPM away (outside 100 RPM tolerance)");
         }
 
         @Test
@@ -72,27 +72,27 @@ class SuperstructureUtilsTest {
             AngularVelocity current = RPM.of(3000 + 200); // Well outside tolerance
 
             assertFalse(SuperstructureUtils.isShooterAtSpeed(current, target),
-                "Should not be at speed when 200 RPM away");
+                    "Should not be at speed when 200 RPM away");
         }
 
         @ParameterizedTest
         @DisplayName("should handle various speed differences correctly")
         @CsvSource({
-            "3000, 3000, true",   // Exact
-            "3000, 3050, true",   // Within tolerance (50 RPM)
-            "3000, 3099, true",   // Just inside tolerance (99 < 101)
-            "3000, 3101, false",  // Outside boundary (101 > 100)
-            "3000, 3200, false",  // Outside
-            "3000, 2901, true",   // Below target, within tolerance (99 < 100)
-            "3000, 2899, false",  // Below target, outside boundary (101 > 100)
-            "3000, 2800, false"   // Below target, outside
+                "3000, 3000, true", // Exact
+                "3000, 3050, true", // Within tolerance (50 RPM)
+                "3000, 3099, true", // Just inside tolerance (99 < 101)
+                "3000, 3101, false", // Outside boundary (101 > 100)
+                "3000, 3200, false", // Outside
+                "3000, 2901, true", // Below target, within tolerance (99 < 100)
+                "3000, 2899, false", // Below target, outside boundary (101 > 100)
+                "3000, 2800, false" // Below target, outside
         })
         void shooterToleranceParameterized(double target, double current, boolean expected) {
             AngularVelocity currentSpeed = RPM.of(current);
             AngularVelocity targetSpeed = RPM.of(target);
 
             assertEquals(expected, SuperstructureUtils.isShooterAtSpeed(currentSpeed, targetSpeed),
-                String.format("Current: %.0f, Target: %.0f should be %s", current, target, expected));
+                    String.format("Current: %.0f, Target: %.0f should be %s", current, target, expected));
         }
 
         @Test
@@ -103,7 +103,7 @@ class SuperstructureUtilsTest {
             AngularVelocity tolerance = RPM.of(200); // Larger tolerance
 
             assertTrue(SuperstructureUtils.isShooterAtSpeed(current, target, tolerance),
-                "Should be at speed with custom larger tolerance");
+                    "Should be at speed with custom larger tolerance");
         }
     }
 
@@ -118,7 +118,7 @@ class SuperstructureUtilsTest {
             Angle target = Degrees.of(45);
 
             assertTrue(SuperstructureUtils.isTurretOnTarget(current, target),
-                "Should be on target when exactly at target angle");
+                    "Should be on target when exactly at target angle");
         }
 
         @Test
@@ -128,7 +128,7 @@ class SuperstructureUtilsTest {
             Angle current = Degrees.of(45.5); // 0.5 degrees away
 
             assertTrue(SuperstructureUtils.isTurretOnTarget(current, target),
-                "Should be on target when 0.5 degrees away");
+                    "Should be on target when 0.5 degrees away");
         }
 
         @Test
@@ -138,25 +138,25 @@ class SuperstructureUtilsTest {
             Angle current = Degrees.of(46); // Exactly 1 degree away
 
             assertFalse(SuperstructureUtils.isTurretOnTarget(current, target),
-                "Should not be on target when exactly at 1 degree boundary");
+                    "Should not be on target when exactly at 1 degree boundary");
         }
 
         @ParameterizedTest
         @DisplayName("should handle positive and negative angles")
         @CsvSource({
-            "0, 0, true",
-            "45, 45.5, true",
-            "-45, -45.5, true",
-            "90, 89.5, true",
-            "-90, -89, false",
-            "0, 1.5, false"
+                "0, 0, true",
+                "45, 45.5, true",
+                "-45, -45.5, true",
+                "90, 89.5, true",
+                "-90, -89, false",
+                "0, 1.5, false"
         })
         void turretToleranceParameterized(double current, double target, boolean expected) {
             Angle currentAngle = Degrees.of(current);
             Angle targetAngle = Degrees.of(target);
 
             assertEquals(expected, SuperstructureUtils.isTurretOnTarget(currentAngle, targetAngle),
-                String.format("Current: %.1f°, Target: %.1f° should be %s", current, target, expected));
+                    String.format("Current: %.1f°, Target: %.1f° should be %s", current, target, expected));
         }
 
         @Test
@@ -167,7 +167,7 @@ class SuperstructureUtilsTest {
             Angle tolerance = Degrees.of(5);
 
             assertTrue(SuperstructureUtils.isTurretOnTarget(current, target, tolerance),
-                "Should be on target with custom larger tolerance");
+                    "Should be on target with custom larger tolerance");
         }
     }
 
@@ -182,7 +182,7 @@ class SuperstructureUtilsTest {
             Angle current = Degrees.of(31.5); // 1.5 degrees away
 
             assertTrue(SuperstructureUtils.isHoodOnTarget(current, target),
-                "Should be on target when 1.5 degrees away (within 2 degree tolerance)");
+                    "Should be on target when 1.5 degrees away (within 2 degree tolerance)");
         }
 
         @Test
@@ -192,25 +192,25 @@ class SuperstructureUtilsTest {
             Angle current = Degrees.of(32); // Exactly 2 degrees away
 
             assertFalse(SuperstructureUtils.isHoodOnTarget(current, target),
-                "Should not be on target when exactly at 2 degree boundary");
+                    "Should not be on target when exactly at 2 degree boundary");
         }
 
         @ParameterizedTest
         @DisplayName("should handle typical hood angles")
         @CsvSource({
-            "15, 15, true",     // Exact
-            "30, 31, true",     // 1 deg diff < 2 deg tolerance
-            "45, 43.5, true",   // 1.5 deg diff < 2 deg tolerance (changed from 43 which was exactly 2)
-            "60, 62.5, false",  // 2.5 deg diff >= 2 deg tolerance
-            "75, 75, true",     // Exact
-            "90, 87, false"     // 3 deg diff >= 2 deg tolerance
+                "15, 15, true", // Exact
+                "30, 31, true", // 1 deg diff < 2 deg tolerance
+                "45, 43.5, true", // 1.5 deg diff < 2 deg tolerance (changed from 43 which was exactly 2)
+                "60, 62.5, false", // 2.5 deg diff >= 2 deg tolerance
+                "75, 75, true", // Exact
+                "90, 87, false" // 3 deg diff >= 2 deg tolerance
         })
         void hoodToleranceParameterized(double current, double target, boolean expected) {
             Angle currentAngle = Degrees.of(current);
             Angle targetAngle = Degrees.of(target);
 
             assertEquals(expected, SuperstructureUtils.isHoodOnTarget(currentAngle, targetAngle),
-                String.format("Current: %.1f°, Target: %.1f° should be %s", current, target, expected));
+                    String.format("Current: %.1f°, Target: %.1f° should be %s", current, target, expected));
         }
     }
 
@@ -222,9 +222,9 @@ class SuperstructureUtilsTest {
         @DisplayName("should return true when all mechanisms ready")
         void allReady() {
             assertTrue(SuperstructureUtils.isReadyToShoot(
-                RPM.of(3000), RPM.of(3000),      // Shooter
-                Degrees.of(45), Degrees.of(45),  // Turret
-                Degrees.of(30), Degrees.of(30)   // Hood
+                    RPM.of(3000), RPM.of(3000), // Shooter
+                    Degrees.of(45), Degrees.of(45), // Turret
+                    Degrees.of(30), Degrees.of(30) // Hood
             ), "Should be ready when all mechanisms at target");
         }
 
@@ -232,9 +232,9 @@ class SuperstructureUtilsTest {
         @DisplayName("should return false when shooter not ready")
         void shooterNotReady() {
             assertFalse(SuperstructureUtils.isReadyToShoot(
-                RPM.of(2500), RPM.of(3000),      // Shooter NOT ready (500 RPM off)
-                Degrees.of(45), Degrees.of(45),  // Turret ready
-                Degrees.of(30), Degrees.of(30)   // Hood ready
+                    RPM.of(2500), RPM.of(3000), // Shooter NOT ready (500 RPM off)
+                    Degrees.of(45), Degrees.of(45), // Turret ready
+                    Degrees.of(30), Degrees.of(30) // Hood ready
             ), "Should not be ready when shooter off target");
         }
 
@@ -242,9 +242,9 @@ class SuperstructureUtilsTest {
         @DisplayName("should return false when turret not ready")
         void turretNotReady() {
             assertFalse(SuperstructureUtils.isReadyToShoot(
-                RPM.of(3000), RPM.of(3000),      // Shooter ready
-                Degrees.of(40), Degrees.of(45),  // Turret NOT ready (5 degrees off)
-                Degrees.of(30), Degrees.of(30)   // Hood ready
+                    RPM.of(3000), RPM.of(3000), // Shooter ready
+                    Degrees.of(40), Degrees.of(45), // Turret NOT ready (5 degrees off)
+                    Degrees.of(30), Degrees.of(30) // Hood ready
             ), "Should not be ready when turret off target");
         }
 
@@ -252,9 +252,9 @@ class SuperstructureUtilsTest {
         @DisplayName("should return false when hood not ready")
         void hoodNotReady() {
             assertFalse(SuperstructureUtils.isReadyToShoot(
-                RPM.of(3000), RPM.of(3000),      // Shooter ready
-                Degrees.of(45), Degrees.of(45),  // Turret ready
-                Degrees.of(25), Degrees.of(30)   // Hood NOT ready (5 degrees off)
+                    RPM.of(3000), RPM.of(3000), // Shooter ready
+                    Degrees.of(45), Degrees.of(45), // Turret ready
+                    Degrees.of(25), Degrees.of(30) // Hood NOT ready (5 degrees off)
             ), "Should not be ready when hood off target");
         }
 
@@ -262,9 +262,9 @@ class SuperstructureUtilsTest {
         @DisplayName("should return false when multiple mechanisms not ready")
         void multipleNotReady() {
             assertFalse(SuperstructureUtils.isReadyToShoot(
-                RPM.of(2500), RPM.of(3000),      // Shooter NOT ready
-                Degrees.of(40), Degrees.of(45),  // Turret NOT ready
-                Degrees.of(25), Degrees.of(30)   // Hood NOT ready
+                    RPM.of(2500), RPM.of(3000), // Shooter NOT ready
+                    Degrees.of(40), Degrees.of(45), // Turret NOT ready
+                    Degrees.of(25), Degrees.of(30) // Hood NOT ready
             ), "Should not be ready when multiple mechanisms off target");
         }
 
@@ -272,9 +272,9 @@ class SuperstructureUtilsTest {
         @DisplayName("should allow small errors within all tolerances")
         void allWithinTolerance() {
             assertTrue(SuperstructureUtils.isReadyToShoot(
-                RPM.of(3050), RPM.of(3000),      // Shooter 50 RPM off (within 100)
-                Degrees.of(45.5), Degrees.of(45), // Turret 0.5° off (within 1°)
-                Degrees.of(31), Degrees.of(30)   // Hood 1° off (within 2°)
+                    RPM.of(3050), RPM.of(3000), // Shooter 50 RPM off (within 100)
+                    Degrees.of(45.5), Degrees.of(45), // Turret 0.5° off (within 1°)
+                    Degrees.of(31), Degrees.of(30) // Hood 1° off (within 2°)
             ), "Should be ready when all within tolerance");
         }
     }
@@ -324,10 +324,9 @@ class SuperstructureUtilsTest {
         @DisplayName("should provide detailed status when all ready")
         void detailedStatusAllReady() {
             ReadinessStatus status = SuperstructureUtils.getReadinessStatus(
-                RPM.of(3000), RPM.of(3000),
-                Degrees.of(45), Degrees.of(45),
-                Degrees.of(30), Degrees.of(30)
-            );
+                    RPM.of(3000), RPM.of(3000),
+                    Degrees.of(45), Degrees.of(45),
+                    Degrees.of(30), Degrees.of(30));
 
             assertTrue(status.shooterReady(), "Shooter should be ready");
             assertTrue(status.turretReady(), "Turret should be ready");
@@ -343,9 +342,9 @@ class SuperstructureUtilsTest {
         @DisplayName("should provide detailed status when partially ready")
         void detailedStatusPartiallyReady() {
             ReadinessStatus status = SuperstructureUtils.getReadinessStatus(
-                RPM.of(3000), RPM.of(3000),      // Ready
-                Degrees.of(40), Degrees.of(45),  // Not ready (5° off)
-                Degrees.of(30), Degrees.of(30)   // Ready
+                    RPM.of(3000), RPM.of(3000), // Ready
+                    Degrees.of(40), Degrees.of(45), // Not ready (5° off)
+                    Degrees.of(30), Degrees.of(30) // Ready
             );
 
             assertTrue(status.shooterReady(), "Shooter should be ready");
@@ -360,9 +359,9 @@ class SuperstructureUtilsTest {
         @DisplayName("should track errors even when ready")
         void errorsTrackedWhenReady() {
             ReadinessStatus status = SuperstructureUtils.getReadinessStatus(
-                RPM.of(3050), RPM.of(3000),       // Ready but 50 RPM off
-                Degrees.of(45.5), Degrees.of(45), // Ready but 0.5° off
-                Degrees.of(31), Degrees.of(30)    // Ready but 1° off
+                    RPM.of(3050), RPM.of(3000), // Ready but 50 RPM off
+                    Degrees.of(45.5), Degrees.of(45), // Ready but 0.5° off
+                    Degrees.of(31), Degrees.of(30) // Ready but 1° off
             );
 
             assertTrue(status.isReady(), "Should be ready overall");
@@ -380,11 +379,11 @@ class SuperstructureUtilsTest {
         @DisplayName("should have correct default tolerances")
         void defaultTolerances() {
             assertEquals(100, SuperstructureUtils.SHOOTER_TOLERANCE.in(RPM), DELTA,
-                "Shooter tolerance should be 100 RPM");
+                    "Shooter tolerance should be 100 RPM");
             assertEquals(1, SuperstructureUtils.TURRET_TOLERANCE.in(Degrees), DELTA,
-                "Turret tolerance should be 1 degree");
+                    "Turret tolerance should be 1 degree");
             assertEquals(2, SuperstructureUtils.HOOD_TOLERANCE.in(Degrees), DELTA,
-                "Hood tolerance should be 2 degrees");
+                    "Hood tolerance should be 2 degrees");
         }
     }
 }

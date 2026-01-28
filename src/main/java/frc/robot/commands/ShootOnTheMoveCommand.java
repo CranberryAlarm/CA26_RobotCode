@@ -111,7 +111,8 @@ public class ShootOnTheMoveCommand extends Command {
 
     // TODO: add this back if/when we have a real hood, for now, just set it to the
     // current angle
-    // latestHoodAngle = ShootingCalculations.calculateRequiredHoodAngle(correctedDistance);
+    // latestHoodAngle =
+    // ShootingCalculations.calculateRequiredHoodAngle(correctedDistance);
     latestHoodAngle = superstructure.getHoodAngle();
 
     superstructure.setShooterSetpoints(

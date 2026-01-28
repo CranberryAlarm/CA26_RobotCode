@@ -1,16 +1,9 @@
 package frc.robot.commands;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static edu.wpi.first.units.Units.*;
-
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Distance;
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -18,12 +11,23 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.RPM;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Distance;
 import frc.robot.TestUtils;
 import frc.robot.commands.ShootingCalculations.ShootingParameters;
 
 /**
  * Unit tests for ShootingCalculations.
- * Tests trajectory calculations, interpolation tables, and movement compensation.
+ * Tests trajectory calculations, interpolation tables, and movement
+ * compensation.
  *
  * Following best practices:
  * - Test names clearly describe what is being tested
@@ -65,7 +69,7 @@ class ShootingCalculationsTest {
 
             double actualTime = ShootingCalculations.getFlightTimeMeters(midDistance);
             assertEquals(expectedTime, actualTime, DELTA,
-                "Flight time should interpolate linearly between data points");
+                    "Flight time should interpolate linearly between data points");
         }
 
         @Test
@@ -76,12 +80,12 @@ class ShootingCalculationsTest {
 
             double expectedTime = ShootingCalculations.getFlightTimeMeters(2.0);
             assertEquals(expectedTime, time, DELTA,
-                "Distance unit method should produce same result as meters method");
+                    "Distance unit method should produce same result as meters method");
         }
 
         @ParameterizedTest
         @DisplayName("should return consistent times for various distances")
-        @ValueSource(doubles = {1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 4.86})
+        @ValueSource(doubles = { 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 4.86 })
         void flightTimeConsistency(double distance) {
             double time = ShootingCalculations.getFlightTimeMeters(distance);
 
@@ -97,7 +101,7 @@ class ShootingCalculationsTest {
             for (double distance = 1.0; distance <= 4.86; distance += 0.5) {
                 double time = ShootingCalculations.getFlightTimeMeters(distance);
                 assertTrue(time >= prevTime,
-                    String.format("Flight time should increase with distance (at %.1fm)", distance));
+                        String.format("Flight time should increase with distance (at %.1fm)", distance));
                 prevTime = time;
             }
         }
@@ -124,15 +128,15 @@ class ShootingCalculationsTest {
         @ParameterizedTest
         @DisplayName("should return correct speed at known data points")
         @CsvSource({
-            "2.0, 2700.0",
-            "3.0, 3000.0",
-            "4.0, 3300.0",
-            "4.86, 3750.0"
+                "2.0, 2700.0",
+                "3.0, 3000.0",
+                "4.0, 3300.0",
+                "4.86, 3750.0"
         })
         void shooterSpeedAtKnownPoints(double distance, double expectedRPM) {
             double actualRPM = ShootingCalculations.calculateRequiredShooterSpeedRPM(distance);
             assertEquals(expectedRPM, actualRPM, RPM_DELTA,
-                String.format("Speed at %.2fm should be %.0f RPM", distance, expectedRPM));
+                    String.format("Speed at %.2fm should be %.0f RPM", distance, expectedRPM));
         }
 
         @Test
@@ -143,7 +147,7 @@ class ShootingCalculationsTest {
 
             // Linear interpolation: 2700 + (3000-2700) * 0.5 = 2850
             assertEquals(2850.0, speed, RPM_DELTA,
-                "Speed should interpolate linearly between 2700 and 3000 RPM");
+                    "Speed should interpolate linearly between 2700 and 3000 RPM");
         }
 
         @Test
@@ -153,7 +157,7 @@ class ShootingCalculationsTest {
             AngularVelocity speed = ShootingCalculations.calculateRequiredShooterSpeed(distance);
 
             assertEquals(3000.0, speed.in(RPM), RPM_DELTA,
-                "AngularVelocity should have correct RPM value");
+                    "AngularVelocity should have correct RPM value");
         }
 
         @Test
@@ -163,7 +167,7 @@ class ShootingCalculationsTest {
             for (double distance = 2.0; distance <= 4.86; distance += 0.25) {
                 double speed = ShootingCalculations.calculateRequiredShooterSpeedRPM(distance);
                 assertTrue(speed >= prevSpeed,
-                    String.format("Shooter speed should increase with distance (at %.2fm)", distance));
+                        String.format("Shooter speed should increase with distance (at %.2fm)", distance));
                 prevSpeed = speed;
             }
         }
@@ -176,14 +180,14 @@ class ShootingCalculationsTest {
         @ParameterizedTest
         @DisplayName("should return correct angle at known data points")
         @CsvSource({
-            "1.0, 15.0",
-            "2.0, 30.0",
-            "3.0, 45.0"
+                "1.0, 15.0",
+                "2.0, 30.0",
+                "3.0, 45.0"
         })
         void hoodAngleAtKnownPoints(double distance, double expectedDegrees) {
             double actualDegrees = ShootingCalculations.calculateRequiredHoodAngleDegrees(distance);
             assertEquals(expectedDegrees, actualDegrees, ANGLE_DELTA,
-                String.format("Hood angle at %.1fm should be %.0f degrees", distance, expectedDegrees));
+                    String.format("Hood angle at %.1fm should be %.0f degrees", distance, expectedDegrees));
         }
 
         @Test
@@ -194,7 +198,7 @@ class ShootingCalculationsTest {
 
             // Linear interpolation: 15 + (30-15) * 0.5 = 22.5
             assertEquals(22.5, angle, ANGLE_DELTA,
-                "Hood angle should interpolate linearly");
+                    "Hood angle should interpolate linearly");
         }
 
         @Test
@@ -204,7 +208,7 @@ class ShootingCalculationsTest {
             Angle angle = ShootingCalculations.calculateRequiredHoodAngle(distance);
 
             assertEquals(30.0, angle.in(Degrees), ANGLE_DELTA,
-                "Angle should have correct degree value");
+                    "Angle should have correct degree value");
         }
     }
 
@@ -234,7 +238,7 @@ class ShootingCalculationsTest {
 
             // Should aim behind our future position, so correction is negative
             assertEquals(-1.5, correction.getX(), DELTA,
-                "X correction should be -1.5m when moving 1m/s for 1.5s");
+                    "X correction should be -1.5m when moving 1m/s for 1.5s");
             assertEquals(0, correction.getY(), DELTA, "Y correction should be 0");
         }
 
@@ -249,7 +253,7 @@ class ShootingCalculationsTest {
 
             assertEquals(0, correction.getX(), DELTA, "X correction should be 0");
             assertEquals(-2.0, correction.getY(), DELTA,
-                "Y correction should be -2m when moving 2m/s for 1s");
+                    "Y correction should be -2m when moving 2m/s for 1s");
         }
 
         @Test
@@ -274,7 +278,7 @@ class ShootingCalculationsTest {
             Translation2d correction2 = ShootingCalculations.calculateCorrectiveVector(velocity, 2.0);
 
             assertEquals(correction1.getX() * 2, correction2.getX(), DELTA,
-                "Correction should scale linearly with time");
+                    "Correction should scale linearly with time");
         }
 
         @Test
@@ -316,7 +320,7 @@ class ShootingCalculationsTest {
 
             // 2D distance: sqrt(3^2 + 4^2) = 5
             assertEquals(5.0, distance.in(Meters), DELTA,
-                "Ground distance should be 2D Euclidean distance");
+                    "Ground distance should be 2D Euclidean distance");
         }
 
         @Test
@@ -328,7 +332,7 @@ class ShootingCalculationsTest {
             Distance distance = ShootingCalculations.calculateGroundDistance(point1, point2);
 
             assertEquals(0, distance.in(Meters), DELTA,
-                "Points directly above each other should have 0 ground distance");
+                    "Points directly above each other should have 0 ground distance");
         }
     }
 
@@ -350,7 +354,7 @@ class ShootingCalculationsTest {
             // This means the turret heading calculation may have a specific convention
             // The result is 0° because the vector points in the +X direction
             assertEquals(0, heading.in(Degrees), ANGLE_DELTA,
-                "Turret heading follows implementation convention");
+                    "Turret heading follows implementation convention");
         }
 
         @Test
@@ -370,7 +374,7 @@ class ShootingCalculationsTest {
             // That angle is 180°, minus robot heading of 90° = 90°
             double headingDegrees = heading.in(Degrees);
             assertTrue(Math.abs(headingDegrees) <= 180,
-                "Heading should be within -180 to 180 degrees");
+                    "Heading should be within -180 to 180 degrees");
         }
 
         @Test
@@ -386,7 +390,7 @@ class ShootingCalculationsTest {
 
             // The magnitudes should be the same
             assertEquals(Math.abs(headingLeft.in(Degrees)), Math.abs(headingRight.in(Degrees)),
-                ANGLE_DELTA, "Left and right targets should have symmetric headings");
+                    ANGLE_DELTA, "Left and right targets should have symmetric headings");
         }
     }
 
@@ -401,12 +405,12 @@ class ShootingCalculationsTest {
             ChassisSpeeds stationary = new ChassisSpeeds(0, 0, 0);
 
             Translation2d correctedTarget = ShootingCalculations.calculateCorrectedTarget(
-                originalTarget, stationary, 1.0);
+                    originalTarget, stationary, 1.0);
 
             assertEquals(originalTarget.getX(), correctedTarget.getX(), DELTA,
-                "X should be unchanged when stationary");
+                    "X should be unchanged when stationary");
             assertEquals(originalTarget.getY(), correctedTarget.getY(), DELTA,
-                "Y should be unchanged when stationary");
+                    "Y should be unchanged when stationary");
         }
 
         @Test
@@ -417,13 +421,13 @@ class ShootingCalculationsTest {
             double timeOfFlight = 1.0;
 
             Translation2d correctedTarget = ShootingCalculations.calculateCorrectedTarget(
-                originalTarget, movingForward, timeOfFlight);
+                    originalTarget, movingForward, timeOfFlight);
 
             // Moving forward, so target shifts backward (negative X relative to original)
             assertEquals(originalTarget.getX() - 2.0, correctedTarget.getX(), DELTA,
-                "Target X should shift opposite to velocity");
+                    "Target X should shift opposite to velocity");
             assertEquals(originalTarget.getY(), correctedTarget.getY(), DELTA,
-                "Target Y should be unchanged");
+                    "Target Y should be unchanged");
         }
     }
 
@@ -441,7 +445,7 @@ class ShootingCalculationsTest {
             ChassisSpeeds velocity = new ChassisSpeeds(0, 0, 0); // Stationary
 
             ShootingParameters params = ShootingCalculations.calculateShootingParameters(
-                shooterPos, targetPos, robotPos, robotHeading, velocity);
+                    shooterPos, targetPos, robotPos, robotHeading, velocity);
 
             assertNotNull(params.shooterSpeed(), "Shooter speed should not be null");
             assertNotNull(params.turretAngle(), "Turret angle should not be null");
@@ -460,17 +464,17 @@ class ShootingCalculationsTest {
             ChassisSpeeds velocity = new ChassisSpeeds(0, 0, 0);
 
             ShootingParameters params = ShootingCalculations.calculateShootingParameters(
-                shooterPos, targetPos, robotPos, robotHeading, velocity);
+                    shooterPos, targetPos, robotPos, robotHeading, velocity);
 
             // At 3m, shooter speed should be around 3000 RPM
             double rpm = params.shooterSpeed().in(RPM);
             assertTrue(rpm >= 2500 && rpm <= 3500,
-                String.format("Shooter speed (%.0f RPM) should be reasonable for 3m shot", rpm));
+                    String.format("Shooter speed (%.0f RPM) should be reasonable for 3m shot", rpm));
 
             // Hood angle should be reasonable
             double hoodDeg = params.hoodAngle().in(Degrees);
             assertTrue(hoodDeg >= 0 && hoodDeg <= 90,
-                String.format("Hood angle (%.1f°) should be within 0-90 degrees", hoodDeg));
+                    String.format("Hood angle (%.1f°) should be within 0-90 degrees", hoodDeg));
         }
 
         @Test
@@ -485,15 +489,15 @@ class ShootingCalculationsTest {
             ChassisSpeeds moving = new ChassisSpeeds(2.0, 0, 0);
 
             ShootingParameters paramsStationary = ShootingCalculations.calculateShootingParameters(
-                shooterPos, targetPos, robotPos, robotHeading, stationary);
+                    shooterPos, targetPos, robotPos, robotHeading, stationary);
             ShootingParameters paramsMoving = ShootingCalculations.calculateShootingParameters(
-                shooterPos, targetPos, robotPos, robotHeading, moving);
+                    shooterPos, targetPos, robotPos, robotHeading, moving);
 
             // Parameters should be different when moving
             assertNotEquals(
-                paramsStationary.correctedDistance().in(Meters),
-                paramsMoving.correctedDistance().in(Meters),
-                "Corrected distance should differ when moving");
+                    paramsStationary.correctedDistance().in(Meters),
+                    paramsMoving.correctedDistance().in(Meters),
+                    "Corrected distance should differ when moving");
         }
     }
 }

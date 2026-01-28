@@ -17,7 +17,7 @@ public final class GeometryUtils {
 
     /**
      * Calculates the distance between two poses.
-     * 
+     *
      * @param pose1 first pose
      * @param pose2 second pose
      * @return distance in meters
@@ -28,7 +28,7 @@ public final class GeometryUtils {
 
     /**
      * Calculates the distance between two translation2ds.
-     * 
+     *
      * @param t1 first translation
      * @param t2 second translation
      * @return distance in meters
@@ -39,7 +39,7 @@ public final class GeometryUtils {
 
     /**
      * Calculates the 3D distance between two Translation3d points.
-     * 
+     *
      * @param t1 first point
      * @param t2 second point
      * @return 3D Euclidean distance
@@ -53,9 +53,9 @@ public final class GeometryUtils {
 
     /**
      * Calculates the angle from one point to another.
-     * 
+     *
      * @param from starting point
-     * @param to ending point
+     * @param to   ending point
      * @return angle from first point to second
      */
     public static Rotation2d angleTo(Translation2d from, Translation2d to) {
@@ -64,8 +64,8 @@ public final class GeometryUtils {
 
     /**
      * Calculates the relative angle to a target from a robot's perspective.
-     * 
-     * @param robotPose robot's current pose
+     *
+     * @param robotPose      robot's current pose
      * @param targetPosition target position
      * @return angle to target relative to robot's heading
      */
@@ -76,9 +76,9 @@ public final class GeometryUtils {
 
     /**
      * Checks if a point is within a specified radius of another point.
-     * 
+     *
      * @param center center point
-     * @param point point to check
+     * @param point  point to check
      * @param radius radius in meters
      * @return true if within radius
      */
@@ -88,9 +88,9 @@ public final class GeometryUtils {
 
     /**
      * Checks if a robot is facing a target within a tolerance angle.
-     * 
-     * @param robotPose robot's pose
-     * @param targetPosition target position
+     *
+     * @param robotPose        robot's pose
+     * @param targetPosition   target position
      * @param toleranceRadians tolerance in radians
      * @return true if robot is facing target within tolerance
      */
@@ -101,10 +101,10 @@ public final class GeometryUtils {
 
     /**
      * Interpolates between two translations.
-     * 
+     *
      * @param start starting point
-     * @param end ending point
-     * @param t interpolation factor (0 = start, 1 = end)
+     * @param end   ending point
+     * @param t     interpolation factor (0 = start, 1 = end)
      * @return interpolated point
      */
     public static Translation2d lerp(Translation2d start, Translation2d end, double t) {
@@ -115,22 +115,21 @@ public final class GeometryUtils {
     /**
      * Mirrors a pose for the opposite alliance.
      * Assumes a field width of approximately 16.54 meters.
-     * 
-     * @param pose pose to mirror
+     *
+     * @param pose        pose to mirror
      * @param fieldLength length of the field in meters
      * @return mirrored pose
      */
     public static Pose2d mirrorPose(Pose2d pose, double fieldLength) {
         return new Pose2d(
-            fieldLength - pose.getX(),
-            pose.getY(),
-            new Rotation2d(Math.PI).minus(pose.getRotation())
-        );
+                fieldLength - pose.getX(),
+                pose.getY(),
+                new Rotation2d(Math.PI).minus(pose.getRotation()));
     }
 
     /**
      * Converts a translation to polar coordinates.
-     * 
+     *
      * @param translation the translation to convert
      * @return array of [radius, angle in radians]
      */
@@ -142,21 +141,20 @@ public final class GeometryUtils {
 
     /**
      * Creates a translation from polar coordinates.
-     * 
-     * @param radius distance from origin
+     *
+     * @param radius       distance from origin
      * @param angleRadians angle in radians
      * @return Translation2d from polar coordinates
      */
     public static Translation2d fromPolar(double radius, double angleRadians) {
         return new Translation2d(
-            radius * Math.cos(angleRadians),
-            radius * Math.sin(angleRadians)
-        );
+                radius * Math.cos(angleRadians),
+                radius * Math.sin(angleRadians));
     }
 
     /**
      * Normalizes an angle to be within [-pi, pi].
-     * 
+     *
      * @param angleRadians angle in radians
      * @return normalized angle
      */
@@ -172,9 +170,9 @@ public final class GeometryUtils {
 
     /**
      * Calculates the shortest angular difference between two angles.
-     * 
+     *
      * @param fromRadians starting angle in radians
-     * @param toRadians ending angle in radians
+     * @param toRadians   ending angle in radians
      * @return shortest angular difference (can be positive or negative)
      */
     public static double shortestAngularDifference(double fromRadians, double toRadians) {
