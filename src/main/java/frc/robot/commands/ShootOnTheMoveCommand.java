@@ -1,6 +1,5 @@
 package frc.robot.commands;
 
-import java.util.Map;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
@@ -9,13 +8,9 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
-import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.RPM;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -80,31 +75,25 @@ public class ShootOnTheMoveCommand extends Command {
     var shooterLocation = drivetrain.getPose3d().getTranslation()
         .plus(superstructure.getShooterPose().getTranslation());
 
-    // Ignore this parameter for now, the range tables will account for it :/
-    // var deltaH = target.getMeasureZ().minus(shooterLocation.getMeasureZ());
-    var shooterOnGround = new Translation2d(shooterLocation.getX(), shooterLocation.getY());
-    var targetOnGround = new Translation2d(target.getX(), target.getY());
+    // Project to ground plane for 2D calculations
+    var shooterOnGround = ShootingCalculations.projectToGround(shooterLocation);
+    var targetOnGround = ShootingCalculations.projectToGround(target);
 
     var distanceToTarget = Meters.of(shooterOnGround.getDistance(targetOnGround));
 
-    // Get time of flight. We could try to do this analytically but for now it's
-    // easier and more realistic
-    // to use a simple linear approximation based on empirical data.
-    double timeOfFlight = getFlightTime(distanceToTarget);
+    // Get time of flight using utility class
+    double timeOfFlight = ShootingCalculations.getFlightTime(distanceToTarget);
 
     // Calculate corrective vector based on our current velocity multiplied by time
     // of flight.
-    // If we're stationary, this should be zero. If we're backing up, this will be
-    // "ahead" of the target, etc.
-    var updatedPosition = drivetrain.getFieldVelocity().times(timeOfFlight);
-    var correctiveVector = new Translation2d(updatedPosition.vxMetersPerSecond, updatedPosition.vyMetersPerSecond)
-        .unaryMinus();
-    var correctiveVector3d = new Translation3d(correctiveVector.getX(), correctiveVector.getY(), 0);
+    var correctiveVector3d = ShootingCalculations.calculateCorrectiveVector3d(
+        drivetrain.getFieldVelocity(), timeOfFlight);
 
     Logger.recordOutput("FieldSimulation/AimTargetCorrected",
         new Pose3d(target.plus(correctiveVector3d), Rotation3d.kZero));
 
-    var correctedTarget = targetOnGround.plus(correctiveVector);
+    var correctedTarget = targetOnGround.plus(
+        new Translation2d(correctiveVector3d.getX(), correctiveVector3d.getY()));
 
     var vectorToTarget = drivetrain.getPose().getTranslation().minus(correctedTarget);
 
@@ -118,11 +107,11 @@ public class ShootOnTheMoveCommand extends Command {
     Logger.recordOutput("ShootOnTheMove/distanceToTarget", distanceToTarget);
 
     latestTurretAngle = calculatedHeading;
-    latestShootSpeed = calculateRequiredShooterSpeed(correctedDistance);
+    latestShootSpeed = ShootingCalculations.calculateRequiredShooterSpeed(correctedDistance);
 
     // TODO: add this back if/when we have a real hood, for now, just set it to the
     // current angle
-    // latestHoodAngle = calculateRequiredHoodAngle(correctedDistance);
+    // latestHoodAngle = ShootingCalculations.calculateRequiredHoodAngle(correctedDistance);
     latestHoodAngle = superstructure.getHoodAngle();
 
     superstructure.setShooterSetpoints(
@@ -135,39 +124,4 @@ public class ShootOnTheMoveCommand extends Command {
     // + ", hood angle: " + latestHoodAngle + ", turret angle: " +
     // latestTurretAngle);
   }
-
-  private double getFlightTime(Distance distanceToTarget) {
-    // Simple linear approximation based on empirical data.
-    return TIME_OF_FLIGHT_BY_DISTANCE.get(distanceToTarget.in(Meters));
-  }
-
-  private AngularVelocity calculateRequiredShooterSpeed(Distance distanceToTarget) {
-    return RPM.of(SHOOTING_SPEED_BY_DISTANCE.get(distanceToTarget.in(Meters)));
-  }
-
-  private Angle calculateRequiredHoodAngle(Distance distanceToTarget) {
-    return Degrees.of(HOOD_ANGLE_BY_DISTANCE.get(distanceToTarget.in(Meters)));
-  }
-
-  // meters, seconds
-  private static final InterpolatingDoubleTreeMap TIME_OF_FLIGHT_BY_DISTANCE = InterpolatingDoubleTreeMap.ofEntries(
-      Map.entry(1.0, 1.0),
-      Map.entry(4.86, 1.5));
-  // TODO: add more data points here.
-  // CLOSE: NEED
-  // MID: maybe good enough
-  // FAR: NEED
-
-  // meters, RPS
-  private static final InterpolatingDoubleTreeMap SHOOTING_SPEED_BY_DISTANCE = InterpolatingDoubleTreeMap.ofEntries(
-      Map.entry(2.0, 2700.0),
-      Map.entry(3.0, 3000.0),
-      Map.entry(4.0, 3300.0),
-      Map.entry(4.86, 3750.0));
-
-  // meters, degrees
-  private static final InterpolatingDoubleTreeMap HOOD_ANGLE_BY_DISTANCE = InterpolatingDoubleTreeMap.ofEntries(
-      Map.entry(1.0, 15.0),
-      Map.entry(2.0, 30.0),
-      Map.entry(3.0, 45.0));
 }
