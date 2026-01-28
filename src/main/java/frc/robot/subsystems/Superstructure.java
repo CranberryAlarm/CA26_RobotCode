@@ -16,6 +16,12 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
+import frc.robot.subsystems.feeder.Hopper;
+import frc.robot.subsystems.feeder.Kicker;
+import frc.robot.subsystems.hood.Hood;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.turret.Turret;
 
 /**
  * Superstructure coordinates the shooter, turret, hood, and intake subsystems
@@ -23,12 +29,12 @@ import frc.robot.Constants;
  */
 public class Superstructure extends SubsystemBase {
 
-  public final ShooterSubsystem shooter;
-  public final TurretSubsystem turret;
-  public final HoodSubsystem hood;
-  public final IntakeSubsystem intake;
-  public final HopperSubsystem hopper;
-  public final KickerSubsystem kicker;
+  public final Shooter shooter;
+  public final Turret turret;
+  public final Hood hood;
+  public final Intake intake;
+  public final Hopper hopper;
+  public final Kicker kicker;
 
   // Tolerance for "at setpoint" checks
   private static final AngularVelocity SHOOTER_TOLERANCE = RPM.of(100);
@@ -48,8 +54,8 @@ public class Superstructure extends SubsystemBase {
   // Default aim point is red hub
   private Translation3d aimPoint = Constants.AimPoints.RED_HUB.value;
 
-  public Superstructure(ShooterSubsystem shooter, TurretSubsystem turret, HoodSubsystem hood, IntakeSubsystem intake,
-      HopperSubsystem hopper, KickerSubsystem kicker) {
+  public Superstructure(Shooter shooter, Turret turret, Hood hood, Intake intake,
+      Hopper hopper, Kicker kicker) {
     this.shooter = shooter;
     this.turret = turret;
     this.hood = hood;

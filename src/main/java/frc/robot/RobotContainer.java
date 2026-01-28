@@ -24,26 +24,45 @@ import frc.robot.Constants.ControllerConstants;
 import frc.robot.controls.DriverControls;
 import frc.robot.controls.OperatorControls;
 import frc.robot.controls.PoseControls;
-import frc.robot.subsystems.HoodSubsystem;
-import frc.robot.subsystems.HopperSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.KickerSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.subsystems.TurretSubsystem;
+import frc.robot.subsystems.feeder.Hopper;
+import frc.robot.subsystems.feeder.Kicker;
+import frc.robot.subsystems.feeder.RollerIO;
+import frc.robot.subsystems.feeder.RollerIONova;
+import frc.robot.subsystems.feeder.RollerIOSim;
+import frc.robot.subsystems.hood.Hood;
+import frc.robot.subsystems.hood.HoodIO;
+import frc.robot.subsystems.hood.HoodIOSim;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakePivotIO;
+import frc.robot.subsystems.intake.IntakePivotIOSim;
+import frc.robot.subsystems.intake.IntakePivotIOSparkMax;
+import frc.robot.subsystems.intake.IntakeRollerIO;
+import frc.robot.subsystems.intake.IntakeRollerIONova;
+import frc.robot.subsystems.intake.IntakeRollerIOSim;
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterIO;
+import frc.robot.subsystems.shooter.ShooterIOSim;
+import frc.robot.subsystems.shooter.ShooterIOSparkMax;
+import frc.robot.subsystems.turret.Turret;
+import frc.robot.subsystems.turret.TurretIO;
+import frc.robot.subsystems.turret.TurretIOSim;
+import frc.robot.subsystems.turret.TurretIOSparkMax;
 import swervelib.SwerveDrive;
 
 public class RobotContainer {
   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
-  private final TurretSubsystem turret = new TurretSubsystem();
-  private final ShooterSubsystem shooter = new ShooterSubsystem();
-  private final IntakeSubsystem intake = new IntakeSubsystem();
-  private final HopperSubsystem hopper = new HopperSubsystem();
-  private final KickerSubsystem kicker = new KickerSubsystem();
-  private final HoodSubsystem hood = new HoodSubsystem();
+  
+  // IO-based subsystems with hardware/sim implementations
+  private final Shooter shooter;
+  private final Turret turret;
+  private final Hood hood;
+  private final Intake intake;
+  private final Hopper hopper;
+  private final Kicker kicker;
 
-  private final Superstructure superstructure = new Superstructure(shooter, turret, hood, intake, hopper, kicker);
+  private final Superstructure superstructure;
 
   private final SendableChooser<Command> autoChooser;
 
@@ -54,6 +73,31 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, I/O devices, and commands.
    */
   public RobotContainer() {
+    // Create subsystems with appropriate IO implementations based on real/sim
+    if (Robot.isReal()) {
+      // Real hardware implementations
+      shooter = new Shooter(new ShooterIOSparkMax());
+      turret = new Turret(new TurretIOSparkMax());
+      hood = new Hood(new HoodIOSim()); // Hood hardware not implemented yet
+      intake = new Intake(
+          new IntakeRollerIONova(),
+          new IntakePivotIOSparkMax());
+      hopper = new Hopper(
+          new RollerIONova(Constants.HopperConstants.kHopperMotorId, true, true, 40));
+      kicker = new Kicker(
+          new RollerIONova(Constants.KickerConstants.kKickerMotorId, true, true, 20));
+    } else {
+      // Simulation implementations
+      shooter = new Shooter(new ShooterIOSim());
+      turret = new Turret(new TurretIOSim());
+      hood = new Hood(new HoodIOSim());
+      intake = new Intake(new IntakeRollerIOSim(), new IntakePivotIOSim());
+      hopper = new Hopper(new RollerIOSim());
+      kicker = new Kicker(new RollerIOSim());
+    }
+
+    superstructure = new Superstructure(shooter, turret, hood, intake, hopper, kicker);
+
     // Configure the trigger bindings
     configureBindings();
     buildNamedAutoCommands();
