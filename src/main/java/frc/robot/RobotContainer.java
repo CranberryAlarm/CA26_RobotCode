@@ -28,32 +28,26 @@ import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.feeder.Hopper;
 import frc.robot.subsystems.feeder.Kicker;
-import frc.robot.subsystems.feeder.RollerIO;
 import frc.robot.subsystems.feeder.RollerIONova;
 import frc.robot.subsystems.feeder.RollerIOSim;
 import frc.robot.subsystems.hood.Hood;
-import frc.robot.subsystems.hood.HoodIO;
 import frc.robot.subsystems.hood.HoodIOSim;
 import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.intake.IntakePivotIO;
 import frc.robot.subsystems.intake.IntakePivotIOSim;
 import frc.robot.subsystems.intake.IntakePivotIOSparkMax;
-import frc.robot.subsystems.intake.IntakeRollerIO;
 import frc.robot.subsystems.intake.IntakeRollerIONova;
 import frc.robot.subsystems.intake.IntakeRollerIOSim;
 import frc.robot.subsystems.shooter.Shooter;
-import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOSim;
 import frc.robot.subsystems.shooter.ShooterIOSparkMax;
 import frc.robot.subsystems.turret.Turret;
-import frc.robot.subsystems.turret.TurretIO;
 import frc.robot.subsystems.turret.TurretIOSim;
 import frc.robot.subsystems.turret.TurretIOSparkMax;
 import swervelib.SwerveDrive;
 
 public class RobotContainer {
   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
-  
+
   // IO-based subsystems with hardware/sim implementations
   private final Shooter shooter;
   private final Turret turret;
