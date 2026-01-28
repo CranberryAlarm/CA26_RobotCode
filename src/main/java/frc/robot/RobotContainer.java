@@ -41,8 +41,6 @@ import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIOSim;
 import frc.robot.subsystems.shooter.ShooterIOSparkMax;
 import frc.robot.subsystems.turret.Turret;
-import frc.robot.subsystems.turret.TurretIOSim;
-import frc.robot.subsystems.turret.TurretIOSparkMax;
 import swervelib.SwerveDrive;
 
 public class RobotContainer {
@@ -68,10 +66,12 @@ public class RobotContainer {
    */
   public RobotContainer() {
     // Create subsystems with appropriate IO implementations based on real/sim
+    // Turret uses YAMS which handles both real and sim internally
+    turret = new Turret();
+
     if (Robot.isReal()) {
       // Real hardware implementations
       shooter = new Shooter(new ShooterIOSparkMax());
-      turret = new Turret(new TurretIOSparkMax());
       hood = new Hood(new HoodIOSim()); // Hood hardware not implemented yet
       intake = new Intake(
           new IntakeRollerIONova(),
@@ -83,7 +83,6 @@ public class RobotContainer {
     } else {
       // Simulation implementations
       shooter = new Shooter(new ShooterIOSim());
-      turret = new Turret(new TurretIOSim());
       hood = new Hood(new HoodIOSim());
       intake = new Intake(new IntakeRollerIOSim(), new IntakePivotIOSim());
       hopper = new Hopper(new RollerIOSim());

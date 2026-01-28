@@ -14,24 +14,21 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /**
- * Turret subsystem using AdvantageKit IO layer pattern.
- * Controls a rotating turret mechanism.
+ * Turret subsystem with AdvantageKit logging.
+ * Uses YAMS for motor control and simulation.
  */
 public class Turret extends SubsystemBase {
 
   // Turret position on robot (from original code)
   public final Translation3d turretTranslation = new Translation3d(-0.205, 0.0, 0.375);
 
-  private final TurretIO io;
+  private final TurretIO io = new TurretIO();
   private final TurretIOInputsAutoLogged inputs = new TurretIOInputsAutoLogged();
 
   /**
    * Creates a new Turret subsystem.
-   *
-   * @param io the IO implementation to use
    */
-  public Turret(TurretIO io) {
-    this.io = io;
+  public Turret() {
   }
 
   @Override
