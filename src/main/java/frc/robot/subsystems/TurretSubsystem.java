@@ -7,7 +7,7 @@ import org.littletonrobotics.junction.Logger;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 
-import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -22,6 +22,7 @@ import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import yams.gearing.GearBox;
@@ -53,8 +54,8 @@ public class TurretSubsystem extends SubsystemBase {
 
   private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
       .withControlMode(ControlMode.CLOSED_LOOP)
-      .withClosedLoopController(60.0, 0, 0, DegreesPerSecond.of(10800), DegreesPerSecondPerSecond.of(10800))
-      .withFeedforward(new ArmFeedforward(0, 0, 0))
+      .withClosedLoopController(15.0, 0, 0, DegreesPerSecond.of(2440), DegreesPerSecondPerSecond.of(2440))
+      .withFeedforward(new SimpleMotorFeedforward(0, 7.5, 0))
       .withTelemetry("TurretMotor", TelemetryVerbosity.HIGH)
       .withGearing(new MechanismGearing(GearBox.fromReductionStages(4, 10)))
       .withMotorInverted(true)
@@ -103,6 +104,10 @@ public class TurretSubsystem extends SubsystemBase {
 
   public Command set(double dutyCycle) {
     return turret.set(dutyCycle);
+  }
+
+  public Command rezero() {
+    return Commands.runOnce(() -> spark.getEncoder().setPosition(0), this).withName("Turret.Rezero");
   }
 
   public Command sysId() {

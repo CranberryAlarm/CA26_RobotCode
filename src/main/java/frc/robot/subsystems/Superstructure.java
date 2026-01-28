@@ -240,8 +240,8 @@ public class Superstructure extends SubsystemBase {
   public Command feedAllCommand() {
     return Commands.parallel(
         hopper.feedCommand().asProxy(),
-        kicker.feedCommand().asProxy(),
-        intake.setPivotAngle(Degrees.of(46)).asProxy()).withName("Superstructure.feedAll");
+        kicker.feedCommand().asProxy()).withName("Superstructure.feedAll");
+    // intake.setPivotAngle(Degrees.of(46)).asProxy()).withName("Superstructure.feedAll");
   }
 
   public Command backFeedAllCommand() {
@@ -295,8 +295,11 @@ public class Superstructure extends SubsystemBase {
   }
 
   // Re-zero intake pivot if needed
-  public Command rezeroIntakePivotCommand() {
-    return intake.rezero().withName("Superstructure.rezeroIntakePivot");
+  public Command rezeroIntakePivotAndTurretCommand() {
+    return Commands.parallel(
+        turret.rezero().withName("Superstructure.rezeroTurret"),
+        intake.rezero().withName("Superstructure.rezeroIntakePivot"))
+        .withName("Superstructure.rezeroIntakePivotAndTurret");
   }
 
   @Override
